@@ -1,19 +1,27 @@
 package ricky.easybrowser.page.webpage;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.utils.OnBackInteractionListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,7 +31,7 @@ import ricky.easybrowser.R;
  * Use the {@link WebPageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WebPageFragment extends Fragment {
+public class WebPageFragment extends Fragment implements OnBackInteractionListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -37,8 +45,7 @@ public class WebPageFragment extends Fragment {
 
     private WebView webView;
     private ImageView goButton;
-
-    private WebViewClient webViewClient;
+    private EditText webAddress;
 
     public WebPageFragment() {
         // Required empty public constructor
@@ -69,8 +76,27 @@ public class WebPageFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
 
-        webViewClient = new WebViewClient() {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_web_page, container, false);
+        initViews(rootView);
+
+        return rootView;
+    }
+
+    private void initViews(View rootView) {
+        webView = rootView.findViewById(R.id.page_webview);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setSupportZoom(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 return super.shouldOverrideUrlLoading(view, request);
@@ -84,33 +110,52 @@ public class WebPageFragment extends Fragment {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                webAddress.setText(url);
             }
-        };
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_web_page, container, false);
-        webView = rootView.findViewById(R.id.page_webview);
-        webView.setWebViewClient(webViewClient);
+        });
 
         goButton = rootView.findViewById(R.id.goto_button);
         goButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                webView.loadUrl(mParam1);
+                loadInputUrl();
             }
         });
 
-        return rootView;
+        webAddress = rootView.findViewById(R.id.page_url_edittext);
+        webAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
+                        || actionId == EditorInfo.IME_ACTION_SEND
+                        || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    webAddress.clearFocus();
+                    if (getContext() instanceof Activity) {
+                        Activity activity = (Activity) getContext();
+                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
+                    }
+
+                    loadInputUrl();
+                }
+                return false;
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onWebInteraction(uri);
+            mListener.onWebInteraction(webView);
+        }
+    }
+
+    private void loadInputUrl() {
+        if (webAddress.getText() != null) {
+            String url = webAddress.getText().toString();
+            webView.loadUrl(url);
+        } else {
+            webView.loadUrl(mParam1);
         }
     }
 
@@ -136,12 +181,22 @@ public class WebPageFragment extends Fragment {
         super.onResume();
         webView.onResume();
         webView.loadUrl(mParam1);
+        webAddress.setText(mParam1);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         webView.onPause();
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -156,6 +211,6 @@ public class WebPageFragment extends Fragment {
      */
     public interface OnWebInteractionListener {
         // TODO: Update argument type and name
-        void onWebInteraction(Uri uri);
+        void onWebInteraction(WebView webview);
     }
 }

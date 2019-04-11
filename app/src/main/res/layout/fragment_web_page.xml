@@ -16,12 +16,13 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentRight="true"
-            android:src="@drawable/ic_launcher_background"/>
+            android:src="@mipmap/arrow_circle_right"/>
 
         <EditText
             android:id="@+id/page_url_edittext"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:singleLine="true"
             android:layout_toLeftOf="@id/goto_button"/>
 
     </RelativeLayout>
