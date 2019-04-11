@@ -2,13 +2,10 @@ package ricky.easybrowser.page.browsertab;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.webkit.WebView;
-
-import java.util.List;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragment;

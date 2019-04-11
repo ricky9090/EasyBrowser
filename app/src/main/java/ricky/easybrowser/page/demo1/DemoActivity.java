@@ -1,6 +1,6 @@
 package ricky.easybrowser.page.demo1;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import ricky.easybrowser.R;

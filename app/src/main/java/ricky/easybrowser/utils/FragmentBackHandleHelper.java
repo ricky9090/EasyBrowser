@@ -1,7 +1,7 @@
 package ricky.easybrowser.utils;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.List;
 
@@ -16,6 +16,10 @@ public class FragmentBackHandleHelper {
         for (int i = 0; i < fragments.size(); i++) {
             Fragment fragment = fragments.get(i);
             if (isFragmentBackable(fragment)) {
+                return true;
+            }
+            if (fragmentManager.getBackStackEntryCount() > 0) {
+                fragmentManager.popBackStack();
                 return true;
             }
         }
