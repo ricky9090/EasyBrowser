@@ -4,12 +4,8 @@
     android:layout_height="match_parent"
     android:stretchColumns="*">
 
-    <TableRow android:id="@+id/row_1">
+    <TableRow android:id="@+id/row_1" />
 
-
-
-    </TableRow>
-
-    <TableRow android:id="@+id/row_2"/>
+    <TableRow android:id="@+id/row_2" />
 
 </TableLayout>

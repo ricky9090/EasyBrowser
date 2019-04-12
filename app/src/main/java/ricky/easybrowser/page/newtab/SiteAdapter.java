@@ -68,18 +68,16 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder
         int start = position * pageSize;
         for (int i = start; (i - start) < pageSize; i++) {
             int indexOffset = i - start;
-            View view = holder.getItemView(indexOffset);
-            ImageView icon = view.findViewById(R.id.item_image);
-            TextView title = view.findViewById(R.id.item_title);
+            SiteItemHolder siteHolder = holder.getItemHolder(indexOffset);
 
             if (i >= dataList.size()) {
-                icon.setVisibility(View.GONE);
-                title.setVisibility(View.GONE);
-                view.setOnClickListener(null);
+                siteHolder.icon.setVisibility(View.GONE);
+                siteHolder.title.setVisibility(View.GONE);
+                siteHolder.itemView.setOnClickListener(null);
             } else {
                 final SiteEntity siteEntity = dataList.get(i);
-                title.setText(siteEntity.getSiteName());
-                view.setOnClickListener(new View.OnClickListener() {
+                siteHolder.title.setText(siteEntity.getSiteName());
+                siteHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (listener != null) {
@@ -107,12 +105,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder
         TableRow row1;
         TableRow row2;
         int pageSize;
-
-        public SiteViewHolder(@NonNull View itemView) {
-            super(itemView);
-            row1 = itemView.findViewById(R.id.row_1);
-            row2 = itemView.findViewById(R.id.row_2);
-        }
 
         public SiteViewHolder(@NonNull View itemView, int pageSize) {
             super(itemView);
@@ -142,6 +134,30 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder
                 int offset = i - pageSize / 2;
                 return row2.getChildAt(offset);
             }
+        }
+
+        public SiteItemHolder getItemHolder(int i) {
+            View view = getItemView(i);
+            if (view == null) {
+                return null;
+            }
+
+            SiteItemHolder holder = new SiteItemHolder(view);
+            return holder;
+        }
+    }
+
+    static class SiteItemHolder {
+        View itemView;
+
+        ImageView icon;
+        TextView title;
+
+        public SiteItemHolder(View itemView) {
+            this.itemView = itemView;
+
+            icon = itemView.findViewById(R.id.item_image);
+            title = itemView.findViewById(R.id.item_title);
         }
     }
 
