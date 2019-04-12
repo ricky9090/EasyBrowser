@@ -3,12 +3,15 @@ package ricky.easybrowser.page.newtab;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import ricky.easybrowser.R;
 
 /**
@@ -30,6 +33,9 @@ public class NewTabFragment extends Fragment {
     private String mParam2;
 
     private Button addTabButton;
+    private RecyclerView siteGird;
+
+    private SiteAdapter siteAdapter;
 
     private OnTabInteractionListener mListener;
 
@@ -74,20 +80,30 @@ public class NewTabFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_new_tab, container, false);
-        addTabButton = rootView.findViewById(R.id.add_tab);
-        addTabButton.setOnClickListener(new View.OnClickListener() {
+        initViews(rootView);
+        return rootView;
+    }
+
+    private void initViews(View rootView) {
+        siteGird = rootView.findViewById(R.id.site_grid);
+        siteGird.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+        siteAdapter = new SiteAdapter(getContext(), SiteAdapter.DEFAULT_PAGE_SIZE);
+        siteAdapter.appendDataList(SiteAdapter.getTestDataList());
+        siteAdapter.setListener(new SiteAdapter.OnSiteItemClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSiteItemClick(SiteEntity siteEntity) {
                 if (mListener != null) {
                     Uri uri = new Uri.Builder()
                             .scheme("http://")
-                            .authority("www.baidu.com")
+                            .authority(siteEntity.getSiteUrl())
                             .build();
                     mListener.onTabtInteraction(uri);
                 }
             }
         });
-        return rootView;
+        siteGird.setAdapter(siteAdapter);
+        PagerSnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(siteGird);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
