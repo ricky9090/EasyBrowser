@@ -43,7 +43,7 @@ public class WebPageFragment extends Fragment implements OnBackInteractionListen
 
     private OnWebInteractionListener mListener;
 
-    private WebView webView;
+    private EasyWebView webView;
     private ImageView goButton;
     private EditText webAddress;
 
@@ -90,12 +90,7 @@ public class WebPageFragment extends Fragment implements OnBackInteractionListen
 
     private void initViews(View rootView) {
         webView = rootView.findViewById(R.id.page_webview);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        webView.getSettings().setLoadWithOverviewMode(true);
+
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
