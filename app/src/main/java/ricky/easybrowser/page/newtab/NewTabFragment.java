@@ -7,12 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import ricky.easybrowser.R;
+import ricky.easybrowser.page.webpage.WebPageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +36,7 @@ public class NewTabFragment extends Fragment {
 
     private Button addTabButton;
     private RecyclerView siteGird;
+    private FrameLayout frameLayout;
 
     private SiteAdapter siteAdapter;
 
@@ -92,18 +95,27 @@ public class NewTabFragment extends Fragment {
         siteAdapter.setListener(new SiteAdapter.OnSiteItemClickListener() {
             @Override
             public void onSiteItemClick(SiteEntity siteEntity) {
-                if (mListener != null) {
+                /*if (mListener != null) {
                     Uri uri = new Uri.Builder()
                             .scheme("http://")
                             .authority(siteEntity.getSiteUrl())
                             .build();
                     mListener.onTabtInteraction(uri);
-                }
+                }*/
+                Uri uri = new Uri.Builder()
+                        .scheme("http://")
+                        .authority(siteEntity.getSiteUrl())
+                        .build();
+                WebPageView webPageView = new WebPageView(getContext());
+                frameLayout.addView(webPageView);
+                webPageView.loadUrl(uri.getScheme() + uri.getHost());
             }
         });
         siteGird.setAdapter(siteAdapter);
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(siteGird);
+
+        frameLayout = rootView.findViewById(R.id.tab_test_frame);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

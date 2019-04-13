@@ -9,10 +9,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragment;
+import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 import ricky.easybrowser.page.webpage.WebPageFragment;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
-public class BrowserActivity extends AppCompatActivity implements NewTabFragment.OnTabInteractionListener,
+public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener,
         WebPageFragment.OnWebInteractionListener {
 
     String newTabFragmentTag;
@@ -24,7 +25,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         if (savedInstanceState == null) {
             newTabFragmentTag = "newtab" + System.currentTimeMillis();
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.page_frame, NewTabFragment.newInstance(), newTabFragmentTag)
+                    .replace(R.id.page_frame, NewTabFragmentV2.newInstance(), newTabFragmentTag)
                     .commit();
         }
     }
@@ -35,7 +36,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         newTabFragmentTag = null;
     }
 
-    @Override
+    /*@Override
     public void onTabtInteraction(Uri uri) {
         if (uri == null) {
             return;
@@ -46,6 +47,11 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.page_frame, WebPageFragment.newInstance(url, null))
                 .commit();
+    }*/
+
+    @Override
+    public void onTabtInteraction(Uri uri) {
+
     }
 
     @Override
@@ -70,7 +76,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             } else {
                 newTabFragmentTag = "newtab" + System.currentTimeMillis();
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.page_frame, NewTabFragment.newInstance(), newTabFragmentTag)
+                        .replace(R.id.page_frame, NewTabFragmentV2.newInstance(), newTabFragmentTag)
                         .commit();
             }
             return;

@@ -25,6 +25,11 @@
         android:layout_height="wrap_content"
         android:background="#99CCAA"/>
 
+    <FrameLayout
+        android:id="@+id/tab_test_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
 
 </LinearLayout>
