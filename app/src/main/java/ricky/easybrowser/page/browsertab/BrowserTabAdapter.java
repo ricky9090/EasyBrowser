@@ -39,11 +39,16 @@ public class BrowserTabAdapter extends FragmentStatePagerAdapter {
         return fragmentList.size();
     }
 
+    /**
+     * 当有Tab页面移除后，需要根据页面原Index值，判断位置是否发生改变，触发刷新
+     *
+     * @see <a href="https://stackoverflow.com/questions/10849552/update-viewpager-dynamically">
+     *     update-viewpager-dynamically</a>
+     * @see <a href="https://www.jianshu.com/p/266861496508">ViewPager刷新问题详解</a>
+     */
     @Override
     public int getItemPosition(@NonNull Object object) {
-        /**
-         * 当有项目移除后，需要根据页面原Index值，判断位置是否发生改变
-         */
+
         EasyLog.d(TAG, "getItemPosition called");
         if (firstRemoedItem != -1 && object instanceof NewTabFragmentV2) {
             NewTabFragmentV2 tab = (NewTabFragmentV2) object;
