@@ -2,7 +2,6 @@ package ricky.easybrowser.page.browsertab;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -12,6 +11,8 @@ import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
@@ -21,10 +22,15 @@ import ricky.easybrowser.utils.FragmentBackHandleHelper;
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener,
         WebPageFragment.OnWebInteractionListener {
 
-    ViewPager viewPager;
+    NoScrollViewPager viewPager;
     Button addTabButton;
+    Button showTabsButton;
     List<Fragment> fragments = new ArrayList<>();
     BrowserTabAdapter adapter;
+
+    RecyclerView tabRecyclerView;
+    TabQuickViewAdapter tabQuickViewAdapter;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,19 +38,47 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         setContentView(R.layout.activity_browser);
 
         viewPager = findViewById(R.id.web_viewpager);
-        addTabButton = findViewById(R.id.add_new_tab);
-
-        addTabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adapter.addTab("about:newTab");
-                adapter.notifyDataSetChanged();
-            }
-        });
-
         adapter = new BrowserTabAdapter(getSupportFragmentManager());
         adapter.addTab("about:newTab");
         viewPager.setAdapter(adapter);
+        viewPager.setCanScroll(false);
+
+        tabRecyclerView = findViewById(R.id.tab_list_recyclerview);
+        tabRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        tabQuickViewAdapter = new TabQuickViewAdapter(this);
+        tabQuickViewAdapter.attachToBrwoserTabAdapter(adapter);
+        tabQuickViewAdapter.setListener(new TabQuickViewAdapter.OnTabClickListener() {
+            @Override
+            public void onTabClick(int position) {
+                viewPager.setCurrentItem(position);
+            }
+        });
+        tabRecyclerView.setAdapter(tabQuickViewAdapter);
+
+
+        addTabButton = findViewById(R.id.add_new_tab);
+        addTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.addTab("tabNo " + count);
+                count++;
+                tabQuickViewAdapter.notifyTabDataSetChanged();
+                viewPager.setCurrentItem(adapter.getTabList().size() - 1);
+            }
+        });
+
+        showTabsButton = findViewById(R.id.show_all_tabs);
+        showTabsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tabRecyclerView.getVisibility() == View.VISIBLE) {
+                    tabRecyclerView.setVisibility(View.GONE);
+                } else {
+                    tabRecyclerView.setVisibility(View.VISIBLE);
+                }
+
+            }
+        });
     }
 
     @Override

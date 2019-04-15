@@ -7,17 +7,39 @@
     android:layout_height="match_parent"
     tools:context=".page.browsertab.BrowserActivity">
 
-    <androidx.viewpager.widget.ViewPager
+    <ricky.easybrowser.page.browsertab.NoScrollViewPager
         android:id="@+id/web_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="48dp"/>
+        android:layout_marginBottom="48dp" />
 
-    <Button
-        android:id="@+id/add_new_tab"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom">
+
+        <Button
+            android:id="@+id/add_new_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="  +  " />
+
+        <Button
+            android:id="@+id/show_all_tabs"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="  ||| " />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tab_list_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:background="#CCEE88"
         android:layout_gravity="bottom"
-        android:text="add new tab page"/>
+        android:visibility="gone"/>
+
 
 </FrameLayout>

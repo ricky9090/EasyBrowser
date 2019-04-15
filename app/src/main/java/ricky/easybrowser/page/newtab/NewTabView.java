@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,6 +16,8 @@ public class NewTabView extends LinearLayout {
 
     private RecyclerView siteGird;
     private SiteAdapter siteAdapter;
+
+    private TextView title;
 
     public NewTabView(Context context) {
         this(context, null);
@@ -29,6 +32,8 @@ public class NewTabView extends LinearLayout {
 
         LayoutInflater.from(context).inflate(R.layout.fragment_new_tab, this);
 
+        title = findViewById(R.id.new_tab_tag);
+
         siteGird = findViewById(R.id.site_grid);
         siteGird.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
         siteAdapter = new SiteAdapter(getContext(), SiteAdapter.DEFAULT_PAGE_SIZE);
@@ -42,5 +47,8 @@ public class NewTabView extends LinearLayout {
         siteAdapter.setListener(listener);
     }
 
+    public void setTabTitle(String name) {
+        title.setText(name);
+    }
 
 }

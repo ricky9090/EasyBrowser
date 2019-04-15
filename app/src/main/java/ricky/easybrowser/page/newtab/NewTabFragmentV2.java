@@ -33,6 +33,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     private String mParam1;
     private String mParam2;
 
+    private int indexInViewPager;
+
     private FrameLayout frameLayout;
     private NewTabView newTabView;
     private WebPageView webPageView;
@@ -57,6 +59,14 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         return fragment;
     }
 
+    public int getIndexInViewPager() {
+        return indexInViewPager;
+    }
+
+    public void setIndexInViewPager(int indexInViewPager) {
+        this.indexInViewPager = indexInViewPager;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +84,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         frameLayout = rootView.findViewById(R.id.new_tab_v2_frame);
 
         newTabView = new NewTabView(getContext());
+        newTabView.setTabTitle(mParam1);
 
         newTabView.setSiteListener(new SiteAdapter.OnSiteItemClickListener() {
             @Override

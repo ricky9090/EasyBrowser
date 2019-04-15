@@ -3,17 +3,24 @@ package ricky.easybrowser.page.browsertab;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
+import ricky.easybrowser.utils.EasyLog;
 
 public class BrowserTabAdapter extends FragmentStatePagerAdapter {
 
+    private static final String TAG = "TabAdapter";
+
     private final List<String> fragmentList = new ArrayList<>();
+
+    private int firstRemoedItem;
 
     public BrowserTabAdapter(FragmentManager fm) {
         super(fm);
+        firstRemoedItem = -1;
     }
 
     @Override
@@ -22,12 +29,32 @@ public class BrowserTabAdapter extends FragmentStatePagerAdapter {
         if (position >= fragmentList.size()) {
             return null;
         }
-        return NewTabFragmentV2.newInstance();
+        NewTabFragmentV2 fragmentV2 = NewTabFragmentV2.newInstance(fragmentList.get(position), null);
+        fragmentV2.setIndexInViewPager(position);
+        return fragmentV2;
     }
 
     @Override
     public int getCount() {
         return fragmentList.size();
+    }
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        /**
+         * 当有项目移除后，需要根据页面原Index值，判断位置是否发生改变
+         */
+        EasyLog.d(TAG, "getItemPosition called");
+        if (firstRemoedItem != -1 && object instanceof NewTabFragmentV2) {
+            NewTabFragmentV2 tab = (NewTabFragmentV2) object;
+            EasyLog.d(TAG, "getItemPosition: " + tab.getIndexInViewPager());
+            if (tab.getIndexInViewPager() >= firstRemoedItem) {
+                tab.setIndexInViewPager(firstRemoedItem - 1);
+                return POSITION_NONE;
+            }
+            return POSITION_UNCHANGED;
+        }
+        return POSITION_UNCHANGED;
     }
 
     public List<String> getTabList() {
@@ -40,5 +67,14 @@ public class BrowserTabAdapter extends FragmentStatePagerAdapter {
 
     public void clearTabs() {
         fragmentList.clear();
+    }
+
+    public void removeTabAt(int position) {
+        if (fragmentList.size() <= position) {
+            return;
+        }
+        fragmentList.remove(position);
+        firstRemoedItem = position;
+
     }
 }
