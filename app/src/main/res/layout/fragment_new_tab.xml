@@ -10,14 +10,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
+        android:text="@string/new_tab_welcome" />
 
-    <Button
+    <!--<Button
         android:id="@+id/add_tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
-        android:text="add new tab"/>
+        android:text="add new tab"/>-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/site_grid"

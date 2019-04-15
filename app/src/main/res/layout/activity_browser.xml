@@ -7,4 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".page.browsertab.BrowserActivity">
 
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/web_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="48dp"/>
+
+    <Button
+        android:id="@+id/add_new_tab"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:text="add new tab page"/>
+
 </FrameLayout>

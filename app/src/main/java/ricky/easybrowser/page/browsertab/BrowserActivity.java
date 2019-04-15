@@ -3,12 +3,17 @@ package ricky.easybrowser.page.browsertab;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 import ricky.easybrowser.R;
-import ricky.easybrowser.page.newtab.NewTabFragment;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 import ricky.easybrowser.page.webpage.WebPageFragment;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
@@ -16,24 +21,36 @@ import ricky.easybrowser.utils.FragmentBackHandleHelper;
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener,
         WebPageFragment.OnWebInteractionListener {
 
-    String newTabFragmentTag;
+    ViewPager viewPager;
+    Button addTabButton;
+    List<Fragment> fragments = new ArrayList<>();
+    BrowserTabAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
-        if (savedInstanceState == null) {
-            newTabFragmentTag = "newtab" + System.currentTimeMillis();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.page_frame, NewTabFragmentV2.newInstance(), newTabFragmentTag)
-                    .commit();
-        }
+
+        viewPager = findViewById(R.id.web_viewpager);
+        addTabButton = findViewById(R.id.add_new_tab);
+
+        addTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.addTab("about:newTab");
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        adapter = new BrowserTabAdapter(getSupportFragmentManager());
+        adapter.addTab("about:newTab");
+        viewPager.setAdapter(adapter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        newTabFragmentTag = null;
+
     }
 
     /*@Override
@@ -65,23 +82,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             return;
         }
         // FIXME
-        Fragment current = getSupportFragmentManager().findFragmentById(R.id.page_frame);
-        if (current != null && current instanceof WebPageFragment) {
-            Fragment cacheFragment = getSupportFragmentManager().findFragmentByTag(newTabFragmentTag);
-            if (cacheFragment != null) {
-                Log.d("test", "restore cached fragment !!!");
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.page_frame, cacheFragment, newTabFragmentTag)
-                        .commit();
-            } else {
-                newTabFragmentTag = "newtab" + System.currentTimeMillis();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.page_frame, NewTabFragmentV2.newInstance(), newTabFragmentTag)
-                        .commit();
-            }
-            return;
-        }
-        super.onBackPressed();
+
     }
 
 
