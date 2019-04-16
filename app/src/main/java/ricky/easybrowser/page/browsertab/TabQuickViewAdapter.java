@@ -10,11 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ricky.easybrowser.R;
+import ricky.easybrowser.utils.StringUtils;
 
 public class TabQuickViewAdapter extends RecyclerView.Adapter<TabQuickViewAdapter.TabQuickViewHolder> {
 
     private Context context;
-    private BrowserTabAdapter attachedAdapter;
+    private BrowserTabLruCache tabLruCache;
     private OnTabClickListener listener;
 
     public TabQuickViewAdapter(Context context) {
@@ -31,21 +32,23 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<TabQuickViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull TabQuickViewHolder holder, final int position) {
-        if (attachedAdapter == null || attachedAdapter.getTabList() == null) {
+        if (tabLruCache == null || tabLruCache.getTagList() == null) {
             return ;
         }
-        String url = attachedAdapter.getTabList().get(position);
+        final String tag = tabLruCache.getTagList().get(position);
 
-        holder.siteTitle.setText(url);
+        holder.siteTitle.setText(tag);
         holder.closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (attachedAdapter == null || attachedAdapter.getTabList() == null) {
+                if (tabLruCache == null || tabLruCache.getTagList() == null) {
                     return;
                 }
+                if (!StringUtils.isEmpty(tag) && listener != null) {
+                    listener.onTabClose(tag);
+                    notifyDataSetChanged();
+                }
 
-                attachedAdapter.removeTabAt(position);
-                notifyTabDataSetChanged();
             }
         });
 
@@ -53,29 +56,22 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<TabQuickViewAdapte
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onTabClick(position);
+                    listener.onTabClick(tag);
                 }
             }
         });
     }
 
-    public void attachToBrwoserTabAdapter(BrowserTabAdapter target) {
-        attachedAdapter = target;
-    }
-
-    public void notifyTabDataSetChanged() {
-        notifyDataSetChanged();
-        if (attachedAdapter != null) {
-            attachedAdapter.notifyDataSetChanged();
-        }
+    public void attachToBrwoserTabs(BrowserTabLruCache target) {
+        tabLruCache = target;
     }
 
     @Override
     public int getItemCount() {
-        if (attachedAdapter == null || attachedAdapter.getTabList() == null) {
+        if (tabLruCache == null || tabLruCache.getTagList() == null) {
             return 0;
         }
-        return attachedAdapter.getTabList().size();
+        return tabLruCache.getTagList().size();
     }
 
     public OnTabClickListener getListener() {
@@ -100,6 +96,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<TabQuickViewAdapte
     }
 
     interface OnTabClickListener {
-        void onTabClick(int position);
+        void onTabClick(String tag);
+        void onTabClose(String tag);
     }
 }
