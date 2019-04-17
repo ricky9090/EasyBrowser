@@ -13,7 +13,7 @@ import ricky.easybrowser.utils.StringUtils;
 /**
  * LRU实现的标签页缓存。负责标签页的缓存及切换显示逻辑。
  */
-public class BrowserTabLruCache {
+public class TabCacheManager {
 
     private final FragmentManager fm;
     private int browserLayoutId;
@@ -21,7 +21,7 @@ public class BrowserTabLruCache {
     private LruCache<String, Fragment> lruCache;
     private final List<String> tagList = new ArrayList<>();
 
-    public BrowserTabLruCache(FragmentManager manager, int maxSize, int layoutId) {
+    public TabCacheManager(FragmentManager manager, int maxSize, int layoutId) {
         this.fm = manager;
         this.browserLayoutId = layoutId;
         lruCache = new LruCache<String, Fragment>(maxSize) {
@@ -158,6 +158,7 @@ public class BrowserTabLruCache {
 
     /**
      * 在当前的FragmentManager中寻找可见页面
+     *
      * @param fm
      * @return
      */

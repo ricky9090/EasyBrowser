@@ -4,8 +4,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,50 +19,43 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         WebPageFragment.OnWebInteractionListener {
 
     FrameLayout webContentFrame;
-    Button addTabButton;
-    Button showTabsButton;
+    ImageView showTabsButton;
 
     RecyclerView tabRecyclerView;
     TabQuickViewAdapter tabQuickViewAdapter;
 
-    BrowserTabLruCache fragmentLruCache;
+    TabCacheManager tabCacheManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
-        fragmentLruCache = new BrowserTabLruCache(getSupportFragmentManager(), 3, R.id.web_content_frame);
+        tabCacheManager = new TabCacheManager(getSupportFragmentManager(), 3, R.id.web_content_frame);
 
         webContentFrame = findViewById(R.id.web_content_frame);
-
         tabRecyclerView = findViewById(R.id.tab_list_recyclerview);
         tabRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         tabQuickViewAdapter = new TabQuickViewAdapter(this);
-        tabQuickViewAdapter.attachToBrwoserTabs(fragmentLruCache);
+        tabQuickViewAdapter.attachToBrwoserTabs(tabCacheManager);
         tabQuickViewAdapter.setListener(new TabQuickViewAdapter.OnTabClickListener() {
             @Override
             public void onTabClick(String tag) {
-                fragmentLruCache.switchToTab(tag);
+                tabCacheManager.switchToTab(tag);
             }
 
             @Override
             public void onTabClose(String tag) {
-                fragmentLruCache.closeTab(tag);
+                tabCacheManager.closeTab(tag);
             }
-        });
-        tabRecyclerView.setAdapter(tabQuickViewAdapter);
 
-
-        addTabButton = findViewById(R.id.add_new_tab);
-        addTabButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-
-                fragmentLruCache.addNewTab();
+            public void onAddTab() {
+                tabCacheManager.addNewTab();
                 tabQuickViewAdapter.notifyDataSetChanged();
             }
         });
+        tabRecyclerView.setAdapter(tabQuickViewAdapter);
 
         showTabsButton = findViewById(R.id.show_all_tabs);
         showTabsButton.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +93,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             return;
         }
         // FIXME
-
     }
 
 
