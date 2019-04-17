@@ -146,8 +146,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             webPageView.getWebView().goBack();
             return true;
         } else {
-            frameLayout.removeAllViews();
             destroyWebView();
+            frameLayout.removeAllViews();
             frameLayout.addView(newTabView);
             return true;
         }
@@ -156,14 +156,24 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     private void destroyWebView() {
         if (webPageView != null && webPageView.getWebView() != null) {
             WebView target = webPageView.getWebView();
+            target.stopLoading();
+            target.getSettings().setJavaScriptEnabled(false);
             target.clearHistory();
             target.clearCache(true);
-            target.loadUrl("about:blank");
+            target.loadUrl("about:blank");  // replace target.clearView();
             target.pauseTimers();
+            target.removeAllViews();
             target.destroy();
             target = null;
             webPageView = null;
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        destroyWebView();
+        frameLayout.removeAllViews();
     }
 
     public interface OnFragmentInteractionListener {
