@@ -3,7 +3,8 @@
     android:layout_width="90dp"
     android:layout_height="160dp"
     android:layout_margin="10dp"
-    android:background="#CCCCCC">
+    android:background="#CCCCCC"
+    android:elevation="2dp">
 
     <TextView
         android:id="@+id/item_title"

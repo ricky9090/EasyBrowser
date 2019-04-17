@@ -11,7 +11,14 @@
         android:id="@+id/web_content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="48dp" />
+        android:layout_marginBottom="49dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#999999"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="48dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,7 +42,8 @@
         android:layout_marginBottom="48dp"
         android:background="#CCEE88"
         android:minHeight="180dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:elevation="2dp"/>
 
 
 </FrameLayout>
