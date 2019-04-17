@@ -36,6 +36,7 @@
         android:id="@+id/tab_list_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="180dp"
         android:layout_marginBottom="48dp"
         android:background="#CCEE88"
         android:layout_gravity="bottom"
