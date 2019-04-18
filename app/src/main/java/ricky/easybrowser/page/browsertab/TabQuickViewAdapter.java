@@ -43,7 +43,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        if (tabLruCache == null || tabLruCache.getTagList() == null) {
+        if (tabLruCache == null || tabLruCache.getInfoList() == null) {
             return;
         }
 
@@ -72,16 +72,16 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void bindQuickView(TabQuickViewHolder holder, final int position) {
-        final String tag = tabLruCache.getTagList().get(position);
-        holder.siteTitle.setText(tag);
+        final TabCacheManager.TabInfo info = tabLruCache.getInfoList().get(position);
+        holder.siteTitle.setText(info.getTitle());
         holder.closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tabLruCache == null || tabLruCache.getTagList() == null) {
+                if (tabLruCache == null || tabLruCache.getInfoList() == null) {
                     return;
                 }
-                if (!StringUtils.isEmpty(tag) && listener != null) {
-                    listener.onTabClose(tag);
+                if (!StringUtils.isEmpty(info.getTag()) && listener != null) {
+                    listener.onTabClose(info);
                     notifyDataSetChanged();
                 }
 
@@ -92,7 +92,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onTabClick(tag);
+                    listener.onTabClick(info);
                 }
             }
         });
@@ -104,10 +104,10 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        if (tabLruCache == null || tabLruCache.getTagList() == null) {
+        if (tabLruCache == null || tabLruCache.getInfoList() == null) {
             return 1;
         }
-        return tabLruCache.getTagList().size() + 1;
+        return tabLruCache.getInfoList().size() + 1;
     }
 
     @Override
@@ -156,9 +156,9 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     interface OnTabClickListener {
-        void onTabClick(String tag);
+        void onTabClick(TabCacheManager.TabInfo tag);
 
-        void onTabClose(String tag);
+        void onTabClose(TabCacheManager.TabInfo tag);
 
         void onAddTab();
     }

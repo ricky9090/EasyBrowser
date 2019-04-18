@@ -3,20 +3,18 @@ package ricky.easybrowser.page.browsertab;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
-import ricky.easybrowser.page.webpage.WebPageFragment;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
-public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener,
-        WebPageFragment.OnWebInteractionListener {
+public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
 
     FrameLayout webContentFrame;
     ImageView showTabsButton;
@@ -40,18 +38,18 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         tabQuickViewAdapter.attachToBrwoserTabs(tabCacheManager);
         tabQuickViewAdapter.setListener(new TabQuickViewAdapter.OnTabClickListener() {
             @Override
-            public void onTabClick(String tag) {
-                tabCacheManager.switchToTab(tag);
+            public void onTabClick(TabCacheManager.TabInfo info) {
+                tabCacheManager.switchToTab(info);
             }
 
             @Override
-            public void onTabClose(String tag) {
-                tabCacheManager.closeTab(tag);
+            public void onTabClose(TabCacheManager.TabInfo info) {
+                tabCacheManager.closeTab(info);
             }
 
             @Override
             public void onAddTab() {
-                tabCacheManager.addNewTab();
+                tabCacheManager.addNewTab(getString(R.string.new_tab_welcome));
                 tabQuickViewAdapter.notifyDataSetChanged();
             }
         });
@@ -83,8 +81,9 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
     }
 
     @Override
-    public void onWebInteraction(WebView webview) {
-
+    public void onTabTitleChanged(String title) {
+        tabCacheManager.updateTabTitle();
+        tabQuickViewAdapter.notifyDataSetChanged();
     }
 
     @Override

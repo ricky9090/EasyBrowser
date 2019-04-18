@@ -26,6 +26,8 @@ public class WebPageView extends LinearLayout {
     private ImageView goButton;
     private EditText webAddress;
 
+    private OnWebPageChangeListener onWebPageChangeListener;
+
     public static WebPageView newInstance(Context context) {
         WebPageView view = new WebPageView(context);
         return view;
@@ -61,6 +63,9 @@ public class WebPageView extends LinearLayout {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 webAddress.setText(url);
+                if (onWebPageChangeListener != null) {
+                    onWebPageChangeListener.onPageTitleChange(view.getTitle());
+                }
             }
         });
 
@@ -114,5 +119,17 @@ public class WebPageView extends LinearLayout {
 
     public EasyWebView getWebView() {
         return webView;
+    }
+
+    public OnWebPageChangeListener getOnWebPageChangeListener() {
+        return onWebPageChangeListener;
+    }
+
+    public void setOnWebPageChangeListener(OnWebPageChangeListener onWebPageChangeListener) {
+        this.onWebPageChangeListener = onWebPageChangeListener;
+    }
+
+    public interface OnWebPageChangeListener {
+        void onPageTitleChange(String newTitle);
     }
 }

@@ -25,13 +25,12 @@ import ricky.easybrowser.utils.OnBackInteractionListener;
  * create an instance of this fragment.
  */
 public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1;
-    private String mParam2;
+    public static final String ARG_TITLE = "param_title";
+    public static final String ARG_TAG = "param_tag";
+
+    private String mTitle;
+    private String mTag;
 
     private int indexInViewPager;
 
@@ -50,41 +49,40 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         return fragment;
     }
 
-    public static NewTabFragmentV2 newInstance(String param1, String param2) {
+    public static NewTabFragmentV2 newInstance(String title) {
         NewTabFragmentV2 fragment = new NewTabFragmentV2();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_TITLE, title);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public int getIndexInViewPager() {
-        return indexInViewPager;
-    }
-
-    public void setIndexInViewPager(int indexInViewPager) {
-        this.indexInViewPager = indexInViewPager;
+    public static NewTabFragmentV2 newInstance(String title, String tag) {
+        NewTabFragmentV2 fragment = new NewTabFragmentV2();
+        Bundle args = new Bundle();
+        args.putString(ARG_TITLE, title);
+        args.putString(ARG_TAG, tag);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mTitle = getArguments().getString(ARG_TITLE);
+            mTag = getArguments().getString(ARG_TAG);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_new_tab_fragment_v2, container, false);
         frameLayout = rootView.findViewById(R.id.new_tab_v2_frame);
 
         newTabView = new NewTabView(getContext());
-        newTabView.setTabTitle(mParam1);
+        newTabView.setTabTitle(mTitle);
 
         newTabView.setSiteListener(new SiteAdapter.OnSiteItemClickListener() {
             @Override
@@ -96,6 +94,16 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
                 frameLayout.removeAllViews();
                 webPageView = new WebPageView(getContext());
+                webPageView.setOnWebPageChangeListener(new WebPageView.OnWebPageChangeListener() {
+                    @Override
+                    public void onPageTitleChange(String newTitle) {
+                        mTitle = newTitle;
+                        getArguments().putString(ARG_TITLE, mTitle);
+                        if (mListener != null) {
+                            mListener.onTabTitleChanged(mTitle);
+                        }
+                    }
+                });
                 frameLayout.addView(webPageView);
                 webPageView.loadUrl(uri.getScheme() + uri.getHost());
             }
@@ -146,8 +154,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             webPageView.getWebView().goBack();
             return true;
         } else {
-            destroyWebView();
             frameLayout.removeAllViews();
+            destroyWebView();
             frameLayout.addView(newTabView);
             return true;
         }
@@ -178,5 +186,6 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     public interface OnFragmentInteractionListener {
         void onTabtInteraction(Uri uri);
+        void onTabTitleChanged(String title);
     }
 }

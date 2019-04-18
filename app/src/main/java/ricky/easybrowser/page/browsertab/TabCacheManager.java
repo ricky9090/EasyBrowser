@@ -5,10 +5,10 @@ import android.util.LruCache;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
-import ricky.easybrowser.utils.StringUtils;
 
 /**
  * LRU实现的标签页缓存。负责标签页的缓存及切换显示逻辑。
@@ -18,19 +18,19 @@ public class TabCacheManager {
     private final FragmentManager fm;
     private int browserLayoutId;
 
-    private LruCache<String, Fragment> lruCache;
-    private final List<String> tagList = new ArrayList<>();
+    private LruCache<TabInfo, Fragment> lruCache;
+    private final List<TabInfo> infoList = new ArrayList<>();
 
     public TabCacheManager(FragmentManager manager, int maxSize, int layoutId) {
         this.fm = manager;
         this.browserLayoutId = layoutId;
-        lruCache = new LruCache<String, Fragment>(maxSize) {
+        lruCache = new LruCache<TabInfo, Fragment>(maxSize) {
             @Override
-            protected void entryRemoved(boolean evicted, String key, Fragment oldValue, Fragment newValue) {
+            protected void entryRemoved(boolean evicted, TabInfo key, Fragment oldValue, Fragment newValue) {
                 /**
                  * Tab页面被移除或替换后，进行remove操作
                  */
-                if (fm == null || StringUtils.isEmpty(key)) {
+                if (fm == null || key == null) {
                     return;
                 }
 
@@ -41,36 +41,36 @@ public class TabCacheManager {
         };
     }
 
-    public List<String> getTagList() {
-        return tagList;
+    public List<TabInfo> getInfoList() {
+        return infoList;
     }
 
-    public void put(String tag, Fragment fragment) {
-        lruCache.put(tag, fragment);  // throw error when tag is null
+    public void put(TabInfo info, Fragment fragment) {
+        lruCache.put(info, fragment);  // throw error when tag is null
 
         boolean needAdd = true;
-        for (int i = 0; i < tagList.size(); i++) {
-            if (tag.equals(tagList.get(i))) {
+        for (int i = 0; i < infoList.size(); i++) {
+            if (info.equals(infoList.get(i))) {
                 needAdd = false;
                 break;
             }
         }
         if (needAdd) {
-            tagList.add(tag);
+            infoList.add(info);
         }
     }
 
-    public Fragment get(String tag) {
-        return lruCache.get(tag);
+    public Fragment get(TabInfo info) {
+        return lruCache.get(info);
     }
 
-    public void remove(String tag) {
-        lruCache.remove(tag);  // throw error when tag is null
+    public void remove(TabInfo info) {
+        lruCache.remove(info);  // throw error when tag is null
 
         // 只有用户主动操作，才从recyclerview使用的列表中移除tag
-        for (int i = 0; i < tagList.size(); i++) {
-            if (tag.equals(tagList.get(i))) {
-                tagList.remove(i);
+        for (int i = 0; i < infoList.size(); i++) {
+            if (info.equals(infoList.get(i))) {
+                infoList.remove(i);
                 break;
             }
         }
@@ -79,11 +79,11 @@ public class TabCacheManager {
     /**
      * 用户点击标签页后，切换到目标页面
      *
-     * @param tag
+     * @param info
      */
-    public void switchToTab(String tag) {
+    public void switchToTab(TabInfo info) {
         Fragment current = findVisibleFragment(fm);
-        Fragment target = get(tag);
+        Fragment target = get(info);
 
         if (current == null) {
             // 当前没有显示任何Fragment，直接show，对应某一页面被关闭的情况
@@ -97,9 +97,9 @@ public class TabCacheManager {
         } else {
             // 没有缓存页，原页面被回收。重新创建Fragment，复用tag并放至缓存中
             NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance();
-            String fragmentTag = tag;
-            fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd, fragmentTag).commit();
-            put(fragmentTag, fragmentToAdd);
+            TabInfo fragmentInfo = info;
+            fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd, info.tag).commit();
+            put(fragmentInfo, fragmentToAdd);
         }
     }
 
@@ -107,15 +107,29 @@ public class TabCacheManager {
      * 新建标签页
      */
     public void addNewTab() {
+        addNewTab("");
+    }
+
+    /**
+     * 新建标签页
+     * @param title 标题
+     */
+    public void addNewTab(String title) {
+        if (fm == null) {
+            return;
+        }
         Fragment current = findVisibleFragment(fm);
-        NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance();
         String fragmentTag = System.currentTimeMillis() + "";
+        NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance(title, fragmentTag);
+        TabInfo info = new TabInfo();
+        info.tag = fragmentTag;
+        info.title = title;
         if (current != null) {
-            fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd, fragmentTag).commit();
-            put(fragmentTag, fragmentToAdd);
+            fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd).commit();
+            put(info, fragmentToAdd);
         } else {
-            fm.beginTransaction().add(browserLayoutId, fragmentToAdd, fragmentTag).commit();
-            put(fragmentTag, fragmentToAdd);
+            fm.beginTransaction().add(browserLayoutId, fragmentToAdd).commit();
+            put(info, fragmentToAdd);
         }
     }
 
@@ -127,28 +141,39 @@ public class TabCacheManager {
      * <li>如果关闭中间位置得标签页，显示前一位置的标签页</li>
      * </ul>
      *
-     * @param tag
+     * @param info
      */
-    public void closeTab(String tag) {
-        int orgIndex = findTabIndex(tag);
-        remove(tag);
+    public void closeTab(TabInfo info) {
+        int orgIndex = findTabIndex(info);
+        remove(info);
 
-        if (tagList.size() <= 0) {
+        if (infoList.size() <= 0) {
             addNewTab();
             return;
         }
 
         if (orgIndex <= 0) {
-            switchToTab(tagList.get(0));
+            switchToTab(infoList.get(0));
         } else {
-            switchToTab(tagList.get(orgIndex - 1));
+            switchToTab(infoList.get(orgIndex - 1));
         }
     }
 
-    private int findTabIndex(String tag) {
+    private int findTabIndex(TabInfo info) {
         int index = -1;
-        for (int i = 0; i < tagList.size(); i++) {
-            if (tag.equals(tagList.get(i))) {
+        for (int i = 0; i < infoList.size(); i++) {
+            if (info.equals(infoList.get(i))) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+    private int findTabByTag(String tag) {
+        int index = -1;
+        for (int i = 0; i < infoList.size(); i++) {
+            if (tag.equals(infoList.get(i).tag)) {
                 index = i;
                 break;
             }
@@ -174,5 +199,54 @@ public class TabCacheManager {
             }
         }
         return current;
+    }
+
+    public void updateTabTitle() {
+        Fragment target = findVisibleFragment(fm);
+        if (!(target instanceof NewTabFragmentV2)) {
+            return;
+        }
+        String tag = ((NewTabFragmentV2) target).getArguments().getString(NewTabFragmentV2.ARG_TAG);
+        String newTitle = ((NewTabFragmentV2) target).getArguments().getString(NewTabFragmentV2.ARG_TITLE);
+        int i = findTabByTag(tag);
+        try {
+            infoList.get(i).title = newTitle;
+        } catch (Exception e) {
+
+        }
+    }
+
+    public static class TabInfo {
+        private String tag;
+        private String title;
+
+        public String getTag() {
+            return tag;
+        }
+
+        public void setTag(String tag) {
+            this.tag = tag;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (tag == null || obj == null) {
+                return false;
+            }
+            if (obj instanceof TabInfo) {
+                TabInfo target = (TabInfo) obj;
+                return tag.equals(target.tag);
+            } else {
+                return false;
+            }
+        }
     }
 }
