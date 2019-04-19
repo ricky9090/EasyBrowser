@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browsertab;
+package ricky.easybrowser.page.browser;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,10 +9,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import ricky.easybrowser.R;
 import ricky.easybrowser.utils.StringUtils;
 
-public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements QuickViewUpdateContract.Observer {
 
     private static final int VIEW_ADD = 100;
     private static final int VIEW_TAB = 101;
@@ -100,6 +101,12 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void attachToBrwoserTabs(TabCacheManager target) {
         tabLruCache = target;
+        tabLruCache.attach(this);
+    }
+
+    @Override
+    public void updateQuickView() {
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -155,7 +162,8 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    interface OnTabClickListener {
+    public interface OnTabClickListener {
+
         void onTabClick(TabCacheManager.TabInfo tag);
 
         void onTabClose(TabCacheManager.TabInfo tag);

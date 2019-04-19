@@ -5,7 +5,7 @@
     android:id="@+id/page_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".page.browsertab.BrowserActivity">
+    tools:context=".page.browser.BrowserActivity">
 
     <FrameLayout
         android:id="@+id/web_content_frame"

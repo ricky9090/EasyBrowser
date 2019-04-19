@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browsertab;
+package ricky.easybrowser.page.browser;
 
 import android.util.LruCache;
 
@@ -8,15 +8,17 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import ricky.easybrowser.page.newtab.NewTabFragmentV2;
+import ricky.easybrowser.page.browser.newtab.NewTabFragmentV2;
 
 /**
  * LRU实现的标签页缓存。负责标签页的缓存及切换显示逻辑。
  */
-public class TabCacheManager {
+public class TabCacheManager implements QuickViewUpdateContract.Subject {
 
     private final FragmentManager fm;
     private int browserLayoutId;
+
+    private QuickViewUpdateContract.Observer observer;
 
     private LruCache<TabInfo, Fragment> lruCache;
     private final List<TabInfo> infoList = new ArrayList<>();
@@ -206,14 +208,23 @@ public class TabCacheManager {
         if (!(target instanceof NewTabFragmentV2)) {
             return;
         }
-        String tag = ((NewTabFragmentV2) target).getArguments().getString(NewTabFragmentV2.ARG_TAG);
-        String newTitle = ((NewTabFragmentV2) target).getArguments().getString(NewTabFragmentV2.ARG_TITLE);
-        int i = findTabByTag(tag);
+        String nTag = target.getArguments().getString(NewTabFragmentV2.ARG_TAG);
+        String nTitle = target.getArguments().getString(NewTabFragmentV2.ARG_TITLE);
+        int i = findTabByTag(nTag);
         try {
-            infoList.get(i).title = newTitle;
+            infoList.get(i).title = nTitle;
         } catch (Exception e) {
 
         }
+
+        if (observer != null) {
+            observer.updateQuickView();
+        }
+    }
+
+    @Override
+    public void attach(QuickViewUpdateContract.Observer observer) {
+        this.observer = observer;
     }
 
     public static class TabInfo {

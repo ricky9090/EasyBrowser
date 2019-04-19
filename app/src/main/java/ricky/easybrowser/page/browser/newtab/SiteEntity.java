@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.newtab;
+package ricky.easybrowser.page.browser.newtab;
 
 public class SiteEntity {
 

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import ricky.easybrowser.page.browsertab.BrowserActivity;
+import ricky.easybrowser.page.browser.BrowserActivity;
 
 public class MainActivity extends AppCompatActivity {
 

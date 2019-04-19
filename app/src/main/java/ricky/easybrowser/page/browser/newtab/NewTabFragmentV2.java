@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.newtab;
+package ricky.easybrowser.page.browser.newtab;
 
 import android.content.Context;
 import android.net.Uri;
@@ -31,8 +31,6 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     private String mTitle;
     private String mTag;
-
-    private int indexInViewPager;
 
     private FrameLayout frameLayout;
     private NewTabView newTabView;

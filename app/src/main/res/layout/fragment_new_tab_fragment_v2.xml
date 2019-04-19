@@ -4,6 +4,6 @@
     android:id="@+id/new_tab_v2_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".page.newtab.NewTabFragmentV2">
+    tools:context=".page.browser.newtab.NewTabFragmentV2">
 
 </FrameLayout>

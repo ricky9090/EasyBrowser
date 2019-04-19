@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browsertab;
+package ricky.easybrowser.page.browser;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.page.newtab.NewTabFragmentV2;
+import ricky.easybrowser.page.browser.newtab.NewTabFragmentV2;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
@@ -83,7 +83,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
     @Override
     public void onTabTitleChanged(String title) {
         tabCacheManager.updateTabTitle();
-        tabQuickViewAdapter.notifyDataSetChanged();
     }
 
     @Override
