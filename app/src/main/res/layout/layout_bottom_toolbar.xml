@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nav_bar_linear"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="horizontal"
+    android:weightSum="5">
+
+    <ImageView
+        android:id="@+id/nav_back"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_arrow_back_black_36dp" />
+
+    <ImageView
+        android:id="@+id/nav_foward"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_arrow_forward_black_36dp" />
+
+    <ImageView
+        android:id="@+id/nav_home"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_home_black_36dp" />
+
+    <ImageView
+        android:id="@+id/nav_show_tabs"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_tab_black_36dp" />
+
+    <ImageView
+        android:id="@+id/nav_setting"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_margin="8dp"
+        android:layout_weight="1"
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_menu_black_36dp" />
+</LinearLayout>

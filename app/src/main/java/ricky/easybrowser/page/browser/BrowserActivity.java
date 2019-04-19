@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,8 +16,7 @@ import ricky.easybrowser.utils.FragmentBackHandleHelper;
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
 
     FrameLayout webContentFrame;
-    ImageView showTabsButton;
-
+    BrowserNavBar navBar;
     RecyclerView tabRecyclerView;
     TabQuickViewAdapter tabQuickViewAdapter;
 
@@ -55,16 +53,18 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         });
         tabRecyclerView.setAdapter(tabQuickViewAdapter);
 
-        showTabsButton = findViewById(R.id.show_all_tabs);
-        showTabsButton.setOnClickListener(new View.OnClickListener() {
+        navBar = findViewById(R.id.nav_bar);
+        navBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
             @Override
-            public void onClick(View v) {
-                if (tabRecyclerView.getVisibility() == View.VISIBLE) {
-                    tabRecyclerView.setVisibility(View.GONE);
-                } else {
-                    tabRecyclerView.setVisibility(View.VISIBLE);
+            public void onItemClick(View itemView) {
+                int id = itemView.getId();
+                if (id == R.id.nav_show_tabs) {
+                    if (tabRecyclerView.getVisibility() == View.VISIBLE) {
+                        tabRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        tabRecyclerView.setVisibility(View.VISIBLE);
+                    }
                 }
-
             }
         });
     }

@@ -20,19 +20,11 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="48dp"/>
 
-    <LinearLayout
+    <ricky.easybrowser.page.browser.BrowserNavBar
+        android:id="@+id/nav_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/show_all_tabs"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="8dp"
-            android:src="@mipmap/browser_tab" />
-    </LinearLayout>
+        android:layout_gravity="bottom"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tab_list_recyclerview"
