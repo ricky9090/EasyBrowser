@@ -23,4 +23,11 @@
         android:textAllCaps="false"
         android:text="to new tab"/>
 
+    <Button
+        android:id="@+id/demo2_activity_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="to demo2 page" />
+
 </LinearLayout>

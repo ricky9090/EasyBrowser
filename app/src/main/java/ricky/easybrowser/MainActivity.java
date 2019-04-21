@@ -7,10 +7,12 @@ import android.view.View;
 import android.widget.Button;
 
 import ricky.easybrowser.page.browser.BrowserActivity;
+import ricky.easybrowser.page.demo2.DemoActivityV2;
 
 public class MainActivity extends AppCompatActivity {
 
     Button tabButton;
+    Button demo2PageButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +25,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, BrowserActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        demo2PageButton = findViewById(R.id.demo2_activity_button);
+        demo2PageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, DemoActivityV2.class);
                 startActivity(intent);
             }
         });
