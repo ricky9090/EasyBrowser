@@ -50,8 +50,6 @@ public class WebPageViewGecko extends LinearLayout {
 
         webView = findViewById(R.id.page_webview);
         session = new GeckoSession();
-
-        // FIXME 火狐内核需要全局唯一的GeckoRuntime，重复初始化会导致崩溃
         runtime = GeckoRuntime.create(context);
 
         session.open(runtime);
