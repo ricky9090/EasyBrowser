@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.webpage.WebPageView;
+import ricky.easybrowser.page.webpagegecko.WebPageViewGecko;
 import ricky.easybrowser.utils.OnBackInteractionListener;
 
 /**
@@ -34,7 +35,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     private FrameLayout frameLayout;
     private NewTabView newTabView;
-    private WebPageView webPageView;
+    private WebPageViewGecko webPageView;
+    private WebPageViewGecko webPageViewGecko;
 
     private OnFragmentInteractionListener mListener;
 
@@ -91,7 +93,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
                         .build();
 
                 frameLayout.removeAllViews();
-                webPageView = new WebPageView(getContext());
+                /*webPageView = new WebPageView(getContext());
                 webPageView.setOnWebPageChangeListener(new WebPageView.OnWebPageChangeListener() {
                     @Override
                     public void onPageTitleChange(String newTitle) {
@@ -101,7 +103,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
                             mListener.onTabTitleChanged(mTitle);
                         }
                     }
-                });
+                });*/
+                webPageView = new WebPageViewGecko(getContext());
                 frameLayout.addView(webPageView);
                 webPageView.loadUrl(uri.getScheme() + uri.getHost());
             }
@@ -149,7 +152,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             return false;
         }
         if (webPageView.canGoBack()) {
-            webPageView.getWebView().goBack();
+            webPageView.goBack();
             return true;
         } else {
             frameLayout.removeAllViews();
@@ -160,7 +163,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     }
 
     private void destroyWebView() {
-        if (webPageView != null && webPageView.getWebView() != null) {
+        /*if (webPageView != null && webPageView.getWebView() != null) {
             WebView target = webPageView.getWebView();
             target.stopLoading();
             target.getSettings().setJavaScriptEnabled(false);
@@ -172,6 +175,10 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             target.destroy();
             target = null;
             webPageView = null;
+        }*/
+
+        if (webPageView != null && webPageView.getWebView() != null) {
+            webPageView.getWebView().getSession().close();
         }
     }
 
