@@ -149,8 +149,8 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         int orgIndex = findTabIndex(info);
         remove(info);
 
-        if (infoList.size() <= 0) {
-            addNewTab();
+        if (infoList.size() <= 0 && observer != null) {
+            observer.addNewTab();
             return;
         }
 

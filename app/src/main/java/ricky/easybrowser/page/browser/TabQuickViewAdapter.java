@@ -110,6 +110,13 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
+    public void addNewTab() {
+        if (listener != null) {
+            listener.onAddTab();
+        }
+    }
+
+    @Override
     public int getItemCount() {
         if (tabLruCache == null || tabLruCache.getInfoList() == null) {
             return 1;

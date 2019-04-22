@@ -8,5 +8,6 @@ public interface QuickViewUpdateContract {
 
     interface Observer {
         void updateQuickView();
+        void addNewTab();
     }
 }

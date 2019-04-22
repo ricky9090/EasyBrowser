@@ -64,9 +64,15 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                     } else {
                         tabRecyclerView.setVisibility(View.VISIBLE);
                     }
+                } else if (id == R.id.nav_back) {
+                    onBackPressed();
                 }
             }
         });
+
+        // 默认添加一个新标签页
+        tabCacheManager.addNewTab(getString(R.string.new_tab_welcome));
+        tabQuickViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -91,6 +97,11 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             return;
         }
         // FIXME
+        if (tabRecyclerView.getVisibility() == View.VISIBLE) {
+            tabRecyclerView.setVisibility(View.GONE);
+            return;
+        }
+        super.onBackPressed();
     }
 
 
