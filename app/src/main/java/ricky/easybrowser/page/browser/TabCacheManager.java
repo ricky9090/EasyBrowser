@@ -37,7 +37,7 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
                 }
 
                 if (oldValue != null) {
-                    fm.beginTransaction().remove(oldValue).commit();
+                    fm.beginTransaction().remove(oldValue).commitAllowingStateLoss();
                 }
             }
         };
@@ -76,6 +76,11 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
                 break;
             }
         }
+    }
+
+    public void clearCache() {
+        lruCache.evictAll();
+        infoList.clear();
     }
 
     /**

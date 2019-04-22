@@ -3,18 +3,17 @@ package ricky.easybrowser.page.browser.newtab;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
+import androidx.fragment.app.Fragment;
+
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.webpage.WebPageView;
-import ricky.easybrowser.page.webpagegecko.WebPageViewGecko;
+import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.OnBackInteractionListener;
 
 /**
@@ -35,8 +34,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     private FrameLayout frameLayout;
     private NewTabView newTabView;
-    private WebPageViewGecko webPageView;
-    private WebPageViewGecko webPageViewGecko;
+    private WebPageView webPageView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -72,6 +70,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         if (getArguments() != null) {
             mTitle = getArguments().getString(ARG_TITLE);
             mTag = getArguments().getString(ARG_TAG);
+            EasyLog.i("test", "title: " + mTitle);
+            EasyLog.i("test", "tag: " + mTag);
         }
     }
 
@@ -93,7 +93,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
                         .build();
 
                 frameLayout.removeAllViews();
-                /*webPageView = new WebPageView(getContext());
+                webPageView = new WebPageView(getContext());
                 webPageView.setOnWebPageChangeListener(new WebPageView.OnWebPageChangeListener() {
                     @Override
                     public void onPageTitleChange(String newTitle) {
@@ -103,21 +103,13 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
                             mListener.onTabTitleChanged(mTitle);
                         }
                     }
-                });*/
-                webPageView = new WebPageViewGecko(getContext());
+                });
                 frameLayout.addView(webPageView);
                 webPageView.loadUrl(uri.getScheme() + uri.getHost());
             }
         });
         frameLayout.addView(newTabView);
         return rootView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onTabtInteraction(uri);
-        }
     }
 
     @Override
@@ -152,7 +144,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             return false;
         }
         if (webPageView.canGoBack()) {
-            webPageView.goBack();
+            webPageView.getWebView().goBack();
             return true;
         } else {
             frameLayout.removeAllViews();
@@ -163,7 +155,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     }
 
     private void destroyWebView() {
-        /*if (webPageView != null && webPageView.getWebView() != null) {
+        if (webPageView != null && webPageView.getWebView() != null) {
             WebView target = webPageView.getWebView();
             target.stopLoading();
             target.getSettings().setJavaScriptEnabled(false);
@@ -175,10 +167,6 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             target.destroy();
             target = null;
             webPageView = null;
-        }*/
-
-        if (webPageView != null && webPageView.getWebView() != null) {
-            webPageView.getWebView().getSession().close();
         }
     }
 
@@ -187,6 +175,11 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         super.onDestroyView();
         destroyWebView();
         frameLayout.removeAllViews();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     public interface OnFragmentInteractionListener {
