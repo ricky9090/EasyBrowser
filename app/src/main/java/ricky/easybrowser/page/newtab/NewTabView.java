@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browser.newtab;
+package ricky.easybrowser.page.newtab;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browser.newtab;
+package ricky.easybrowser.page.newtab;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -161,7 +161,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder
         }
     }
 
-    interface OnSiteItemClickListener {
+    public interface OnSiteItemClickListener {
         void onSiteItemClick(SiteEntity siteEntity);
     }
 

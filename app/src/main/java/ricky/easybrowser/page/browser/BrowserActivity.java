@@ -6,13 +6,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.page.browser.newtab.NewTabFragmentV2;
-import ricky.easybrowser.utils.EasyLog;
+import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
@@ -29,9 +27,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
-        if (tabCacheManager == null) {
-            tabCacheManager = new TabCacheManager(getSupportFragmentManager(), 3, R.id.web_content_frame);
-        }
+        tabCacheManager = new TabCacheManager(getSupportFragmentManager(), 3, R.id.web_content_frame);
 
         webContentFrame = findViewById(R.id.web_content_frame);
         tabRecyclerView = findViewById(R.id.tab_list_recyclerview);
@@ -70,41 +66,21 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                     }
                 } else if (id == R.id.nav_back) {
                     onBackPressed();
+                } else if (id == R.id.nav_home) {
+                    tabCacheManager.gotoHome();
                 }
             }
         });
 
-
-        if (savedInstanceState == null) {
-            // 默认添加一个新标签页
-            tabCacheManager.addNewTab(getString(R.string.new_tab_welcome));
-        } else {
-            // 当横竖屏切换后，将复原的Fragment重新推入cache
-            Fragment restoredFragment = getSupportFragmentManager().findFragmentById(R.id.web_content_frame);
-            if (restoredFragment != null && restoredFragment.getArguments() != null) {
-                TabCacheManager.TabInfo info = new TabCacheManager.TabInfo();
-                info.setTitle(restoredFragment.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
-                info.setTag(restoredFragment.getArguments().getString(NewTabFragmentV2.ARG_TAG));
-                tabCacheManager.put(info, restoredFragment);
-            }
-        }
+        // 默认添加一个新标签页
+        tabCacheManager.addNewTab(getString(R.string.new_tab_welcome));
         tabQuickViewAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        tabCacheManager.clearCache();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     @Override
