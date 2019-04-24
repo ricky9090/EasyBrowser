@@ -8,7 +8,7 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import ricky.easybrowser.page.browser.newtab.NewTabFragmentV2;
+import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 
 /**
  * LRU实现的标签页缓存。负责标签页的缓存及切换显示逻辑。
@@ -222,11 +222,25 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         }
     }
 
+    public void gotoHome() {
+        Fragment target = findVisibleFragment(fm);
+        if (target == null) {
+            return;
+        }
+
+        if (target instanceof NewTabFragmentV2) {
+            ((NewTabFragmentV2) target).gotoHomePage();
+        }
+    }
+
     @Override
     public void attach(QuickViewUpdateContract.Observer observer) {
         this.observer = observer;
     }
 
+    /**
+     * 缓存中对应的页面信息
+     */
     public static class TabInfo {
         private String tag;
         private String title;

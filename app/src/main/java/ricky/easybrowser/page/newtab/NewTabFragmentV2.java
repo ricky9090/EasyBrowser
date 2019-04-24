@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browser.newtab;
+package ricky.easybrowser.page.newtab;
 
 import android.content.Context;
 import android.net.Uri;
@@ -17,12 +17,7 @@ import ricky.easybrowser.page.webpage.WebPageView;
 import ricky.easybrowser.utils.OnBackInteractionListener;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link NewTabFragmentV2.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link NewTabFragmentV2#newInstance} factory method to
- * create an instance of this fragment.
+ * 新标签页Fragment。显示收藏站点快捷按钮
  */
 public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListener {
 
@@ -55,6 +50,12 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         return fragment;
     }
 
+    /**
+     * 创建新标签页，并指定标题与Tag
+     * @param title 页面标题，在快捷列表中显示
+     * @param tag 页面tag，用于缓存
+     * @return
+     */
     public static NewTabFragmentV2 newInstance(String title, String tag) {
         NewTabFragmentV2 fragment = new NewTabFragmentV2();
         Bundle args = new Bundle();
@@ -95,11 +96,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
                 webPageView.setOnWebPageChangeListener(new WebPageView.OnWebPageChangeListener() {
                     @Override
                     public void onPageTitleChange(String newTitle) {
-                        mTitle = newTitle;
-                        getArguments().putString(ARG_TITLE, mTitle);
-                        if (mListener != null) {
-                            mListener.onTabTitleChanged(mTitle);
-                        }
+                        updateTitle(newTitle);
                     }
                 });
                 frameLayout.addView(webPageView);
@@ -108,13 +105,6 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         });
         frameLayout.addView(newTabView);
         return rootView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onTabtInteraction(uri);
-        }
     }
 
     @Override
@@ -155,8 +145,44 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             frameLayout.removeAllViews();
             destroyWebView();
             frameLayout.addView(newTabView);
+            try {
+                String newTitle = getContext().getString(R.string.new_tab_welcome);
+                updateTitle(newTitle);
+            } catch (Exception e) {
+
+            }
             return true;
         }
+    }
+
+    public void gotoHomePage() {
+        if (frameLayout.getChildCount() <= 0) {
+            return;
+        }
+
+        View view = frameLayout.getChildAt(0);
+        if (view instanceof NewTabView) {
+            return;
+        }
+
+        if (view instanceof WebPageView) {
+            frameLayout.removeAllViews();
+            destroyWebView();
+            frameLayout.addView(newTabView);
+            try {
+                String newTitle = getContext().getString(R.string.new_tab_welcome);
+                updateTitle(newTitle);
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        destroyWebView();
+        frameLayout.removeAllViews();
     }
 
     private void destroyWebView() {
@@ -175,11 +201,12 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        destroyWebView();
-        frameLayout.removeAllViews();
+    private void updateTitle(String title) {
+        mTitle = title;
+        getArguments().putString(ARG_TITLE, mTitle);
+        if (mListener != null) {
+            mListener.onTabTitleChanged(mTitle);
+        }
     }
 
     public interface OnFragmentInteractionListener {

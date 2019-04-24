@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.page.browser.newtab.NewTabFragmentV2;
+import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
@@ -66,6 +66,8 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                     }
                 } else if (id == R.id.nav_back) {
                     onBackPressed();
+                } else if (id == R.id.nav_home) {
+                    tabCacheManager.gotoHome();
                 }
             }
         });
