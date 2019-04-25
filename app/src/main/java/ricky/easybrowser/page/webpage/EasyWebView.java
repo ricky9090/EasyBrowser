@@ -16,7 +16,9 @@ public class EasyWebView extends WebView {
     }
 
     public EasyWebView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+
+        initSettings();
     }
 
     public EasyWebView(Context context, AttributeSet attrs, int defStyleAttr) {
