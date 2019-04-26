@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.webpage;
+package ricky.easybrowser.web.webkit;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,29 +19,30 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import ricky.easybrowser.R;
+import ricky.easybrowser.web.IWebView;
 
-public class WebPageView extends LinearLayout {
+public class PageWebView extends LinearLayout implements IWebView {
 
     private EasyWebView webView;
     private ImageView goButton;
     private EditText webAddress;
 
-    private OnWebPageChangeListener onWebPageChangeListener;
+    private OnWebInteractListener onWebInteractListener;
 
-    public static WebPageView newInstance(Context context) {
-        WebPageView view = new WebPageView(context);
+    public static PageWebView newInstance(Context context) {
+        PageWebView view = new PageWebView(context);
         return view;
     }
 
-    public WebPageView(Context context) {
+    public PageWebView(Context context) {
         this(context, null);
     }
 
-    public WebPageView(Context context, @Nullable AttributeSet attrs) {
+    public PageWebView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public WebPageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PageWebView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         LayoutInflater.from(context).inflate(R.layout.fragment_web_page, this);
@@ -63,8 +64,8 @@ public class WebPageView extends LinearLayout {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 webAddress.setText(url);
-                if (onWebPageChangeListener != null) {
-                    onWebPageChangeListener.onPageTitleChange(view.getTitle());
+                if (onWebInteractListener != null) {
+                    onWebInteractListener.onPageTitleChange(view.getTitle());
                 }
             }
         });
@@ -105,31 +106,45 @@ public class WebPageView extends LinearLayout {
         }
     }
 
+    @Override
     public void loadUrl(String url) {
         webView.loadUrl(url);
     }
 
+    @Override
     public boolean canGoBack() {
         return webView.canGoBack();
     }
 
+    @Override
     public void goBack() {
         webView.goBack();
     }
 
-    public EasyWebView getWebView() {
+    @Override
+    public void setOnWebInteractListener(OnWebInteractListener listener) {
+        this.onWebInteractListener = listener;
+    }
+
+    @Override
+    public void releaseSession() {
+        // donothing, for geckoView
+    }
+
+    @Override
+    public void onDestroy() {
+        webView.stopLoading();
+        webView.getSettings().setJavaScriptEnabled(false);
+        webView.clearHistory();
+        webView.clearCache(true);
+        webView.loadUrl("about:blank");
+        webView.pauseTimers();
+        webView.removeAllViews();
+        webView.destroy();
+        webView = null;
+    }
+
+    /*public EasyWebView getWebView() {
         return webView;
-    }
-
-    public OnWebPageChangeListener getOnWebPageChangeListener() {
-        return onWebPageChangeListener;
-    }
-
-    public void setOnWebPageChangeListener(OnWebPageChangeListener onWebPageChangeListener) {
-        this.onWebPageChangeListener = onWebPageChangeListener;
-    }
-
-    public interface OnWebPageChangeListener {
-        void onPageTitleChange(String newTitle);
-    }
+    }*/
 }

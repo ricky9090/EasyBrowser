@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.webpage;
+package ricky.easybrowser.web.webkit;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -18,16 +18,16 @@ public class EasyWebView extends WebView {
     public EasyWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        initSettings();
+        initDefaultSettings();
     }
 
     public EasyWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        initSettings();
+        initDefaultSettings();
     }
 
-    private void initSettings() {
+    private void initDefaultSettings() {
         EasyLog.d(TAG, "EasyWebView init");
         WebSettings settings = getSettings();
         settings.setJavaScriptEnabled(true);
