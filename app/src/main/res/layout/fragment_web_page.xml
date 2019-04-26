@@ -14,24 +14,26 @@
             android:id="@+id/goto_button"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@mipmap/ic_arrow_forward_black_36dp"/>
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:contentDescription="TODO"
+            android:src="@mipmap/ic_arrow_forward_black_36dp" />
 
         <EditText
             android:id="@+id/page_url_edittext"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:singleLine="true"
-            android:layout_toLeftOf="@id/goto_button"/>
+            android:layout_toLeftOf="@id/goto_button"
+            android:inputType=""
+            android:singleLine="true" />
 
     </RelativeLayout>
 
     <ricky.easybrowser.web.webkit.EasyWebView
         android:id="@+id/page_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

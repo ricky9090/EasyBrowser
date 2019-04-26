@@ -1,6 +1,5 @@
 package ricky.easybrowser.page.browser;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -84,11 +83,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
     }
 
     @Override
-    public void onTabtInteraction(Uri uri) {
-
-    }
-
-    @Override
     public void onTabTitleChanged(String title) {
         tabCacheManager.updateTabTitle();
     }
@@ -98,11 +92,12 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         if (FragmentBackHandleHelper.isFragmentBackHandled(getSupportFragmentManager())) {
             return;
         }
-        // FIXME
+
         if (tabRecyclerView.getVisibility() == View.VISIBLE) {
             tabRecyclerView.setVisibility(View.GONE);
             return;
         }
+
         super.onBackPressed();
     }
 
