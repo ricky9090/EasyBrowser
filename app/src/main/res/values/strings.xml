@@ -4,4 +4,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="new_tab_welcome">新标签页</string>
+
+    <string name="history">历史记录</string>
+    <string name="settings">设置</string>
+    <string name="quit">退出</string>
+
 </resources>
