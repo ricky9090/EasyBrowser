@@ -209,8 +209,6 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     }
 
     public interface OnFragmentInteractionListener {
-        void onTabtInteraction(Uri uri);
-
         void onTabTitleChanged(String title);
     }
 }

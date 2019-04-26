@@ -18,7 +18,8 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="top|right"
-        android:src="@mipmap/ic_cancel_black_36dp"
-        android:scaleType="centerInside"/>
+        android:contentDescription="TODO"
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_cancel_black_36dp" />
 
 </FrameLayout>
