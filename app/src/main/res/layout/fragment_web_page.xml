@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".page.webpage.WebPageFragment">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -30,7 +29,7 @@
 
     </RelativeLayout>
 
-    <ricky.easybrowser.page.webpage.EasyWebView
+    <ricky.easybrowser.web.webkit.EasyWebView
         android:id="@+id/page_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

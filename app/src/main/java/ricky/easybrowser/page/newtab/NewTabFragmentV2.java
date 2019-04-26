@@ -6,15 +6,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.page.webpage.WebPageView;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.OnBackInteractionListener;
+import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.web.webkit.PageWebView;
 
 /**
  * 新标签页Fragment。显示收藏站点快捷按钮
@@ -29,7 +29,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     private FrameLayout frameLayout;
     private NewTabView newTabView;
-    private WebPageView webPageView;
+    private IWebView pageWebView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -52,8 +52,9 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     /**
      * 创建新标签页，并指定标题与Tag
+     *
      * @param title 页面标题，在快捷列表中显示
-     * @param tag 页面tag，用于缓存
+     * @param tag   页面tag，用于缓存
      * @return
      */
     public static NewTabFragmentV2 newInstance(String title, String tag) {
@@ -94,15 +95,15 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
                         .build();
 
                 frameLayout.removeAllViews();
-                webPageView = new WebPageView(getContext());
-                webPageView.setOnWebPageChangeListener(new WebPageView.OnWebPageChangeListener() {
+                pageWebView = new PageWebView(getContext());
+                pageWebView.setOnWebInteractListener(new IWebView.OnWebInteractListener() {
                     @Override
                     public void onPageTitleChange(String newTitle) {
                         updateTitle(newTitle);
                     }
                 });
-                frameLayout.addView(webPageView);
-                webPageView.loadUrl(uri.getScheme() + uri.getHost());
+                frameLayout.addView((View) pageWebView);
+                pageWebView.loadUrl(uri.getScheme() + uri.getHost());
             }
         });
         frameLayout.addView(newTabView);
@@ -137,11 +138,11 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             return false;
         }
 
-        if (!(view instanceof WebPageView)) {
+        if (!(view instanceof PageWebView)) {
             return false;
         }
-        if (webPageView.canGoBack()) {
-            webPageView.getWebView().goBack();
+        if (pageWebView.canGoBack()) {
+            pageWebView.goBack();
             return true;
         } else {
             frameLayout.removeAllViews();
@@ -167,7 +168,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             return;
         }
 
-        if (view instanceof WebPageView) {
+        if (view instanceof PageWebView) {
             frameLayout.removeAllViews();
             destroyWebView();
             frameLayout.addView(newTabView);
@@ -188,18 +189,9 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     }
 
     private void destroyWebView() {
-        if (webPageView != null && webPageView.getWebView() != null) {
-            WebView target = webPageView.getWebView();
-            target.stopLoading();
-            target.getSettings().setJavaScriptEnabled(false);
-            target.clearHistory();
-            target.clearCache(true);
-            target.loadUrl("about:blank");  // replace target.clearView();
-            target.pauseTimers();
-            target.removeAllViews();
-            target.destroy();
-            target = null;
-            webPageView = null;
+        if (pageWebView != null) {
+            pageWebView.onDestroy();
+            pageWebView = null;
         }
     }
 
@@ -218,6 +210,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     public interface OnFragmentInteractionListener {
         void onTabtInteraction(Uri uri);
+
         void onTabTitleChanged(String title);
     }
 }
