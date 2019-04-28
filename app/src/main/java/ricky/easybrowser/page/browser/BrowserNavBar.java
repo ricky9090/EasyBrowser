@@ -27,7 +27,7 @@ public class BrowserNavBar extends LinearLayout {
 
     public BrowserNavBar(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
-        LayoutInflater.from(context).inflate(R.layout.layout_bottom_toolbar, this);
+        LayoutInflater.from(context).inflate(R.layout.layout_bottom_navbar, this);
 
 
         OnClickListener clickListener = new OnClickListener() {
