@@ -1,6 +1,7 @@
 package ricky.easybrowser.web.webkit;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -37,5 +38,9 @@ public class EasyWebView extends WebView {
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setLoadWithOverviewMode(true);
         settings.setDomStorageEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            settings.setSafeBrowsingEnabled(false);
+        }
+
     }
 }

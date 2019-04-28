@@ -2,6 +2,7 @@ package ricky.easybrowser.web.webkit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -18,7 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+
+import java.io.InputStream;
+
 import ricky.easybrowser.R;
+import ricky.easybrowser.utils.SharedPrefenceUtils;
+import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
 
 public class PageWebView extends LinearLayout implements IWebView {
@@ -28,6 +35,11 @@ public class PageWebView extends LinearLayout implements IWebView {
     private EditText webAddress;
 
     private OnWebInteractListener onWebInteractListener;
+
+    //private InputStream placeHolderIS = null;
+    private Context mContext;
+
+    private boolean noPicMode;
 
     public static PageWebView newInstance(Context context) {
         PageWebView view = new PageWebView(context);
@@ -44,7 +56,7 @@ public class PageWebView extends LinearLayout implements IWebView {
 
     public PageWebView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        mContext = context;
         LayoutInflater.from(context).inflate(R.layout.fragment_web_page, this);
 
         webView = findViewById(R.id.page_webview);
@@ -67,6 +79,35 @@ public class PageWebView extends LinearLayout implements IWebView {
                 if (onWebInteractListener != null) {
                     onWebInteractListener.onPageTitleChange(view.getTitle());
                 }
+            }
+
+            @Nullable
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                try {
+                    String targetPath = request.getUrl().getPath();
+                    if (StringUtils.isEmpty(targetPath)) {
+                        return super.shouldInterceptRequest(view, request);
+                    }
+                    if (noPicMode && isPicResources(targetPath)) {
+                        InputStream placeHolderIS = mContext.getAssets().open("emptyplaceholder.png");
+                        return new WebResourceResponse("image/png", "UTF-8", placeHolderIS);
+                    }
+                } catch (Exception e) {
+
+                }
+
+                return super.shouldInterceptRequest(view, request);
+            }
+
+            private boolean isPicResources(String path) {
+                if (path.endsWith(".jpg")
+                        || path.endsWith(".jpeg")
+                        || path.endsWith(".png")
+                        || path.endsWith(".gif")) {
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -102,12 +143,16 @@ public class PageWebView extends LinearLayout implements IWebView {
     private void loadInputUrl() {
         if (webAddress.getText() != null) {
             String url = webAddress.getText().toString();
-            webView.loadUrl(url);
+            this.loadUrl(url);
         }
     }
 
     @Override
     public void loadUrl(String url) {
+        SharedPreferences sp = SharedPrefenceUtils.getSettingSP(getContext());
+        if (sp != null) {
+            noPicMode = sp.getBoolean(SharedPrefenceUtils.KEY_NO_PIC_MODE, false);
+        }
         webView.loadUrl(url);
     }
 
