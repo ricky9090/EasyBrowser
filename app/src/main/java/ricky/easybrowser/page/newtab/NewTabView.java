@@ -37,7 +37,7 @@ public class NewTabView extends LinearLayout {
         siteGird = findViewById(R.id.site_grid);
         siteGird.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
         siteAdapter = new SiteAdapter(getContext(), SiteAdapter.DEFAULT_PAGE_SIZE);
-        siteAdapter.appendDataList(SiteAdapter.getTestDataList());
+        siteAdapter.appendDataList(SiteAdapter.getTestDataList(context));
         siteGird.setAdapter(siteAdapter);
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(siteGird);

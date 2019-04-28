@@ -9,12 +9,16 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
+import ricky.easybrowser.entity.DaoSession;
+import ricky.easybrowser.entity.SiteEntity;
 
 public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder> {
 
@@ -165,55 +169,18 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder
         void onSiteItemClick(SiteEntity siteEntity);
     }
 
-    public static List<SiteEntity> getTestDataList() {
+    public static List<SiteEntity> getTestDataList(Context context) {
+        if (context == null || context.getApplicationContext() == null) {
+            return new ArrayList<>();
+        }
+        final EasyApplication application = (EasyApplication) context.getApplicationContext();
+        DaoSession daoSession = application.getDaoSession();
+        List<SiteEntity> dbList = daoSession.getSiteEntityDao().loadAll();
+        if (dbList == null || dbList.size() <= 0) {
+            return new ArrayList<>();
+        }
         List<SiteEntity> list = new ArrayList<>();
-
-        /*for (int i = 0; i < 28; i ++) {
-            SiteEntity entity = new SiteEntity();
-            entity.setSiteName(i + ".Google");
-            entity.setSiteUrl("www.google.com");
-            list.add(entity);
-        }*/
-        SiteEntity entity1 = new SiteEntity();
-        entity1.setSiteName("1.Baidu");
-        entity1.setSiteUrl("www.baidu.com");
-
-        SiteEntity entity2 = new SiteEntity();
-        entity2.setSiteName("2.Google");
-        entity2.setSiteUrl("www.google.com");
-
-        SiteEntity entity3 = new SiteEntity();
-        entity3.setSiteName("3.掘金");
-        entity3.setSiteUrl("juejin.im");
-
-        SiteEntity entity4 = new SiteEntity();
-        entity4.setSiteName("4.V2ex");
-        entity4.setSiteUrl("v2ex.com");
-
-        SiteEntity entity5 = new SiteEntity();
-        entity5.setSiteName("5.Twitter");
-        entity5.setSiteUrl("www.twitter.com");
-
-        SiteEntity entity6 = new SiteEntity();
-        entity6.setSiteName("6.网易");
-        entity6.setSiteUrl("www.163.com");
-
-        SiteEntity entity7 = new SiteEntity();
-        entity7.setSiteName("7.QQ");
-        entity7.setSiteUrl("www.qq.com");
-
-        SiteEntity entity8 = new SiteEntity();
-        entity8.setSiteName("8.微博");
-        entity8.setSiteUrl("weibo.com");
-
-        list.add(entity1);
-        list.add(entity2);
-        list.add(entity3);
-        list.add(entity4);
-        list.add(entity5);
-        list.add(entity6);
-        list.add(entity7);
-        list.add(entity8);
+        list.addAll(dbList);
 
         return list;
     }

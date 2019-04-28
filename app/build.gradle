@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao' // apply plugin for greendao
 
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "ricky.easybrowser"
-        minSdkVersion 24
+        minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -16,29 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    flavorDimensions "abi"
-
-    productFlavors {
-        x86     { dimension "abi" }
-        x86_64  { dimension "abi" }
-        arm     { dimension "abi" }
-        aarch64 { dimension "abi" }
-    }
-}
-
-ext {
-    geckoviewChannel = "nightly"
-    geckoviewVersion = "66.0.20190322021635"
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // google, androidx
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -46,16 +29,10 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha04'
     implementation 'com.google.android.material:material:1.1.0-alpha05'
 
-    //x86Implementation     "org.mozilla.geckoview:geckoview-${geckoviewChannel}-x86:${geckoviewVersion}"
-    //x86_64Implementation  "org.mozilla.geckoview:geckoview-${geckoviewChannel}-x86_64:${geckoviewVersion}"
-    //armImplementation     "org.mozilla.geckoview:geckoview-${geckoviewChannel}-armeabi-v7a:${geckoviewVersion}"
-    //aarch64Implementation "org.mozilla.geckoview:geckoview-${geckoviewChannel}-arm64-v8a:${geckoviewVersion}"
+    // 3rd party
+    implementation 'org.greenrobot:greendao:3.2.2' // add library
 
-    x86Implementation     "org.mozilla.geckoview:geckoview-x86:${geckoviewVersion}"
-    x86_64Implementation  "org.mozilla.geckoview:geckoview-x86_64:${geckoviewVersion}"
-    armImplementation     "org.mozilla.geckoview:geckoview-armeabi-v7a:${geckoviewVersion}"
-    aarch64Implementation "org.mozilla.geckoview:geckoview-arm64-v8a:${geckoviewVersion}"
-
+    // testing
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
