@@ -4,11 +4,20 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <CheckBox
+        android:id="@+id/no_picture_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:text="@string/no_picture_mode" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="5dp"
+        android:padding="10dp"
         android:text="@string/history"
         android:textSize="18sp" />
 
@@ -16,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="5dp"
+        android:padding="10dp"
         android:text="@string/settings"
         android:textSize="18sp" />
 
@@ -24,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="5dp"
+        android:padding="10dp"
         android:text="@string/quit"
         android:textSize="18sp" />
 
