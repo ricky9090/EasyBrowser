@@ -1,31 +1,23 @@
 package ricky.easybrowser.page.browser;
 
-import android.app.Dialog;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
+import ricky.easybrowser.page.setting.SettingDialog;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
+
+    private static final String SETTING_DIALOG_TAG = "setting_dialog";
 
     FrameLayout webContentFrame;
     BrowserNavBar navBar;
@@ -83,16 +75,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                 } else if (id == R.id.nav_home) {
                     tabCacheManager.gotoHome();
                 } else if (id == R.id.nav_setting) {
-                    // TODO implement setting dialog
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-                    if (prev != null) {
-                        ((TestDialog) prev).dismiss();
-                        return;
-                    }
-
-                    TestDialog dialog = new TestDialog();
-                    dialog.show(ft, "dialog");
+                    showSettingDialog();
                 }
             }
         });
@@ -150,29 +133,15 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         super.onBackPressed();
     }
 
-
-    public static class TestDialog extends DialogFragment {
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setStyle(DialogFragment.STYLE_NO_TITLE, R.style.FullScreenDialog);
+    private void showSettingDialog() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag(SETTING_DIALOG_TAG);
+        if (prev != null) {
+            ((SettingDialog) prev).dismiss();
+            return;
         }
 
-        @Nullable
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            View dialogView = inflater.inflate(R.layout.layout_setting_dialog, container, false);
-            return dialogView;
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            WindowManager.LayoutParams param = getDialog().getWindow().getAttributes();
-            param.gravity = Gravity.BOTTOM;
-            getDialog().getWindow().setAttributes(param);
-        }
+        SettingDialog dialog = new SettingDialog();
+        dialog.show(ft, SETTING_DIALOG_TAG);
     }
-
 }
