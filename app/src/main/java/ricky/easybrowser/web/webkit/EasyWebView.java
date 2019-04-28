@@ -38,9 +38,9 @@ public class EasyWebView extends WebView {
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setLoadWithOverviewMode(true);
         settings.setDomStorageEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             settings.setSafeBrowsingEnabled(false);
-        }
+        }*/
 
     }
 }
