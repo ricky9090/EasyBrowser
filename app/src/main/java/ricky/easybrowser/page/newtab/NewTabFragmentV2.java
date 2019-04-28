@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import androidx.fragment.app.Fragment;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.entity.SiteEntity;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.OnBackInteractionListener;
 import ricky.easybrowser.web.IWebView;
