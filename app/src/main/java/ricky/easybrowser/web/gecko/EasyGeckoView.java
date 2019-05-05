@@ -1,6 +1,17 @@
 package ricky.easybrowser.web.gecko;
 
-public class EasyGeckoView {
+import android.content.Context;
+import android.util.AttributeSet;
 
-    // TODO implement this class
+import org.mozilla.geckoview.GeckoView;
+
+public class EasyGeckoView extends GeckoView {
+
+    public EasyGeckoView(Context context) {
+        super(context);
+    }
+
+    public EasyGeckoView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 }

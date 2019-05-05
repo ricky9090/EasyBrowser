@@ -1,7 +1,6 @@
 package ricky.easybrowser.web.webkit;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;

@@ -4,6 +4,7 @@ import android.app.Application;
 
 
 import org.greenrobot.greendao.database.Database;
+import org.mozilla.geckoview.GeckoRuntime;
 
 import ricky.easybrowser.entity.DaoMaster;
 import ricky.easybrowser.entity.DaoSession;
@@ -12,6 +13,7 @@ import ricky.easybrowser.entity.SiteEntity;
 public class EasyApplication extends Application {
 
     DaoSession daoSession;
+    GeckoRuntime geckoRuntime;
 
     @Override
     public void onCreate() {
@@ -52,7 +54,18 @@ public class EasyApplication extends Application {
         }
     }
 
+    private void initGeckoRuntime() {
+        geckoRuntime = GeckoRuntime.create(getApplicationContext());
+    }
+
     public DaoSession getDaoSession() {
         return daoSession;
+    }
+
+    public GeckoRuntime getGeckoRuntime() {
+        if (geckoRuntime == null) {
+            initGeckoRuntime();
+        }
+        return geckoRuntime;
     }
 }
