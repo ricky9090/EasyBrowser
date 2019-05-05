@@ -34,6 +34,7 @@ public class EasyWebView extends WebView {
         settings.setJavaScriptEnabled(true);
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
         settings.setUseWideViewPort(true);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setLoadWithOverviewMode(true);
