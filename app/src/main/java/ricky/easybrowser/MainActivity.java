@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, BrowserActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 

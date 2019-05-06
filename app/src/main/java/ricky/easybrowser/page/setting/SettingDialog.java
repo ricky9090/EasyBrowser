@@ -2,6 +2,7 @@ package ricky.easybrowser.page.setting;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Process;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +23,7 @@ import ricky.easybrowser.utils.SharedPrefenceUtils;
 public class SettingDialog extends DialogFragment {
 
     private CheckBox noPictureMode;
+    private TextView exitApp;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +68,14 @@ public class SettingDialog extends DialogFragment {
                     editor.putBoolean(SharedPrefenceUtils.KEY_NO_PIC_MODE, false);
                 }
                 editor.apply();
+            }
+        });
+
+        exitApp = dialogView.findViewById(R.id.exit_app);
+        exitApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Process.killProcess(Process.myPid());
             }
         });
         return dialogView;

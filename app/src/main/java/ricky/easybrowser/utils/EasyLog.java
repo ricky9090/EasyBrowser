@@ -31,4 +31,10 @@ public class EasyLog {
             Log.v(tag, msg);
         }
     }
+
+    public static void w(String tag, String msg) {
+        if (BuildConfig.DEBUG) {
+            Log.w(tag, msg);
+        }
+    }
 }
