@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import ricky.easybrowser.R;
@@ -24,6 +25,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     public static final String ARG_TITLE = "param_title";
     public static final String ARG_TAG = "param_tag";
+    public static final String ARG_URI = "param_uri";
 
     private String mTitle;
     private String mTag;
@@ -31,6 +33,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     private FrameLayout frameLayout;
     private NewTabView newTabView;
     private IWebView pageWebView;
+
+    private Uri loadUri;
 
     private OnFragmentInteractionListener mListener;
 
@@ -70,12 +74,21 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (savedInstanceState != null) {
+            mTitle = savedInstanceState.getString(ARG_TITLE);
+            mTag = savedInstanceState.getString(ARG_TAG);
+            getArguments().putString(ARG_TITLE, mTitle);
+            getArguments().putString(ARG_TAG, mTag);
+
+            loadUri = savedInstanceState.getParcelable(ARG_URI);
+        } else if (getArguments() != null) {
             mTitle = getArguments().getString(ARG_TITLE);
             mTag = getArguments().getString(ARG_TAG);
-            EasyLog.i("test", "title: " + mTitle);
-            EasyLog.i("test", "tag: " + mTag);
+            loadUri = null;
         }
+
+        EasyLog.i("test", "title: " + mTitle);
+        EasyLog.i("test", "tag: " + mTag);
     }
 
     @Override
@@ -94,21 +107,31 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
                         .scheme("http://")
                         .authority(siteEntity.getSiteUrl())
                         .build();
+                loadUri = uri;
 
-                frameLayout.removeAllViews();
-                pageWebView = new PageWebView(getContext());
-                pageWebView.setOnWebInteractListener(new IWebView.OnWebInteractListener() {
-                    @Override
-                    public void onPageTitleChange(String newTitle) {
-                        updateTitle(newTitle);
-                    }
-                });
-                frameLayout.addView((View) pageWebView);
-                pageWebView.loadUrl(uri.getScheme() + uri.getHost());
+                addWebView(loadUri);
             }
         });
-        frameLayout.addView(newTabView);
+        if (savedInstanceState == null || loadUri == null) {
+            frameLayout.addView(newTabView);
+        } else {
+            addWebView(loadUri);
+        }
+
         return rootView;
+    }
+
+    private void addWebView(Uri uri) {
+        frameLayout.removeAllViews();
+        pageWebView = new PageWebView(getContext());
+        pageWebView.setOnWebInteractListener(new IWebView.OnWebInteractListener() {
+            @Override
+            public void onPageTitleChange(String newTitle) {
+                updateTitle(newTitle);
+            }
+        });
+        frameLayout.addView((View) pageWebView);
+        pageWebView.loadUrl(uri.getScheme() + uri.getHost());
     }
 
     @Override
@@ -152,6 +175,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             try {
                 String newTitle = getContext().getString(R.string.new_tab_welcome);
                 updateTitle(newTitle);
+                loadUri = null;
             } catch (Exception e) {
 
             }
@@ -176,6 +200,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             try {
                 String newTitle = getContext().getString(R.string.new_tab_welcome);
                 updateTitle(newTitle);
+                loadUri = null;
             } catch (Exception e) {
 
             }
@@ -207,6 +232,14 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ARG_TITLE, mTitle);
+        outState.putString(ARG_TAG, mTag);
+        outState.putParcelable(ARG_URI, loadUri);
     }
 
     public interface OnFragmentInteractionListener {
