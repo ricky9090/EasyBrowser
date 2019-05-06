@@ -10,6 +10,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 import ricky.easybrowser.page.setting.SettingDialog;
@@ -86,12 +88,17 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             tabCacheManager.addNewTab(getString(R.string.new_tab_welcome));
         } else {
             // 当横竖屏切换后，将复原的Fragment重新推入cache
-            Fragment restoredFragment = getSupportFragmentManager().findFragmentById(R.id.web_content_frame);
-            if (restoredFragment != null && restoredFragment.getArguments() != null) {
-                TabCacheManager.TabInfo info = new TabCacheManager.TabInfo();
-                info.setTitle(restoredFragment.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
-                info.setTag(restoredFragment.getArguments().getString(NewTabFragmentV2.ARG_TAG));
-                tabCacheManager.put(info, restoredFragment);
+            List<Fragment> restoredFragmentList = getSupportFragmentManager().getFragments();
+            if (restoredFragmentList != null && restoredFragmentList.size() > 0) {
+                for(Fragment target : restoredFragmentList) {
+                    if (target instanceof NewTabFragmentV2 && target.getArguments() != null) {
+                        TabCacheManager.TabInfo info = new TabCacheManager.TabInfo();
+                        info.setTitle(target.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
+                        info.setTag(target.getArguments().getString(NewTabFragmentV2.ARG_TAG));
+                        // TODO 检查去掉clearCache后，是否重复put，TabInfo已经重写equals方法
+                        tabCacheManager.put(info, target);
+                    }
+                }
             }
         }
         tabQuickViewAdapter.notifyDataSetChanged();
@@ -100,7 +107,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        tabCacheManager.clearCache();
+        //tabCacheManager.clearCache();
     }
 
     @Override

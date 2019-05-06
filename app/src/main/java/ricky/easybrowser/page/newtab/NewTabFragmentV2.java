@@ -240,6 +240,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         outState.putString(ARG_TITLE, mTitle);
         outState.putString(ARG_TAG, mTag);
         outState.putParcelable(ARG_URI, loadUri);
+        EasyLog.i("test", "newtabfragment onsaveinstancestate: " + this.hashCode());
     }
 
     public interface OnFragmentInteractionListener {
