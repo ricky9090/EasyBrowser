@@ -1,5 +1,6 @@
 package ricky.easybrowser.page.browser;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -138,6 +139,20 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
 
 
         super.onBackPressed();
+    }
+
+    public void addNewTab(String uriStr, boolean backstage) {
+        Uri uri = null;
+        try {
+            uri = Uri.parse(uriStr);
+        } catch (Exception e) {
+
+        }
+        if (uri == null) {
+            return;
+        }
+        tabCacheManager.addNewTab(uri, backstage);
+        tabQuickViewAdapter.notifyDataSetChanged();
     }
 
     private void showSettingDialog() {

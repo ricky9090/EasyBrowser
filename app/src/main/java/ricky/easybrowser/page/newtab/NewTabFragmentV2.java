@@ -71,6 +71,16 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         return fragment;
     }
 
+    public static NewTabFragmentV2 newInstance(String title, String tag, Uri uri) {
+        NewTabFragmentV2 fragment = new NewTabFragmentV2();
+        Bundle args = new Bundle();
+        args.putString(ARG_TITLE, title);
+        args.putString(ARG_TAG, tag);
+        args.putParcelable(ARG_URI, uri);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +94,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         } else if (getArguments() != null) {
             mTitle = getArguments().getString(ARG_TITLE);
             mTag = getArguments().getString(ARG_TAG);
-            loadUri = null;
+            loadUri = getArguments().getParcelable(ARG_URI);
         }
 
         EasyLog.i("test", "title: " + mTitle);
@@ -104,7 +114,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             @Override
             public void onSiteItemClick(SiteEntity siteEntity) {
                 Uri uri = new Uri.Builder()
-                        .scheme("http://")
+                        .scheme("http")
                         .authority(siteEntity.getSiteUrl())
                         .build();
                 loadUri = uri;
@@ -112,7 +122,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
                 addWebView(loadUri);
             }
         });
-        if (savedInstanceState == null || loadUri == null) {
+        if (loadUri == null) {
             frameLayout.addView(newTabView);
         } else {
             addWebView(loadUri);
@@ -131,7 +141,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             }
         });
         frameLayout.addView((View) pageWebView);
-        pageWebView.loadUrl(uri.getScheme() + uri.getHost());
+        pageWebView.loadUrl(uri.toString());
     }
 
     @Override

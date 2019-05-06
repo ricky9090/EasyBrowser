@@ -2,6 +2,7 @@ package ricky.easybrowser.web.webkit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
@@ -20,10 +21,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import java.io.InputStream;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.page.browser.BrowserActivity;
+import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPrefenceUtils;
 import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
@@ -58,7 +62,10 @@ public class PageWebView extends LinearLayout implements IWebView {
         super(context, attrs, defStyleAttr);
         mContext = context;
         LayoutInflater.from(context).inflate(R.layout.fragment_web_page, this);
+        initViews();
+    }
 
+    private void initViews() {
         webView = findViewById(R.id.page_webview);
 
         webView.setWebViewClient(new WebViewClient() {
@@ -108,6 +115,67 @@ public class PageWebView extends LinearLayout implements IWebView {
                     return true;
                 }
                 return false;
+            }
+        });
+        webView.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                final WebView.HitTestResult result = ((WebView) v).getHitTestResult();
+                if (result == null) {
+                    return false;
+                }
+                final int type = result.getType();
+                final String extra = result.getExtra();
+                switch (type) {
+                    case WebView.HitTestResult.IMAGE_TYPE:
+                    case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
+                        EasyLog.i("test", "press image: " + extra);
+                        AlertDialog.Builder imageDialogbuilder = new AlertDialog.Builder(mContext);
+                        imageDialogbuilder.setItems(R.array.image_actions, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                BrowserActivity activity = null;
+                                if (mContext instanceof BrowserActivity) {
+                                    activity = (BrowserActivity) mContext;
+                                }
+                                if (activity == null) {
+                                    return;
+                                }
+                                if (which == 0) {  // backstage
+                                    activity.addNewTab(extra, true);
+                                } else if (which == 1) {
+                                    activity.addNewTab(extra, false);
+                                }
+                            }
+                        });
+                        imageDialogbuilder.create().show();
+                        break;
+                    case WebView.HitTestResult.SRC_ANCHOR_TYPE:
+                        EasyLog.i("test", "press url: " + extra);
+                        AlertDialog.Builder urlDialogbuilder = new AlertDialog.Builder(mContext);
+                        urlDialogbuilder.setItems(R.array.url_actions, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                BrowserActivity activity = null;
+                                if (mContext instanceof BrowserActivity) {
+                                    activity = (BrowserActivity) mContext;
+                                }
+                                if (activity == null) {
+                                    return;
+                                }
+                                if (which == 0) {  // backstage
+                                    activity.addNewTab(extra, true);
+                                } else if (which == 1) {
+                                    activity.addNewTab(extra, false);
+                                }
+                            }
+                        });
+                        urlDialogbuilder.create().show();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
 

@@ -1,5 +1,6 @@
 package ricky.easybrowser.page.browser;
 
+import android.net.Uri;
 import android.util.LruCache;
 
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.List;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 
 /**
@@ -133,11 +136,32 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         info.title = title;
         if (current != null) {
             fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd).commit();
-            put(info, fragmentToAdd);
         } else {
             fm.beginTransaction().add(browserLayoutId, fragmentToAdd).commit();
-            put(info, fragmentToAdd);
         }
+
+        put(info, fragmentToAdd);
+    }
+
+    public void addNewTab(Uri uri, boolean backstage) {
+        if (fm == null) {
+            return;
+        }
+        Fragment current = findVisibleFragment(fm);
+        String fragmentTag = System.currentTimeMillis() + "";
+        NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance("newTab", fragmentTag, uri);
+        TabInfo info = new TabInfo();
+        info.tag = fragmentTag;
+        info.title = "newTab";
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.add(browserLayoutId, fragmentToAdd);
+        if (current != null && !backstage) {
+            transaction.hide(current);
+        } else {
+            transaction.hide(fragmentToAdd);
+        }
+        transaction.commit();
+        put(info, fragmentToAdd);
     }
 
     /**
