@@ -38,8 +38,8 @@ public class SettingDialog extends DialogFragment {
         View dialogView = inflater.inflate(R.layout.layout_setting_dialog, container, false);
         ImageView back = dialogView.findViewById(R.id.nav_back);
         back.setVisibility(View.INVISIBLE);
-        ImageView foward = dialogView.findViewById(R.id.nav_foward);
-        foward.setVisibility(View.INVISIBLE);
+        ImageView forward = dialogView.findViewById(R.id.nav_forward);
+        forward.setVisibility(View.INVISIBLE);
         ImageView home = dialogView.findViewById(R.id.nav_home);
         home.setVisibility(View.INVISIBLE);
         ImageView tab = dialogView.findViewById(R.id.nav_show_tabs);

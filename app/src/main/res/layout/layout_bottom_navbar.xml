@@ -18,7 +18,7 @@
         android:src="@mipmap/ic_arrow_back_black_36dp" />
 
     <ImageView
-        android:id="@+id/nav_foward"
+        android:id="@+id/nav_forward"
         android:layout_width="0dp"
         android:layout_height="32dp"
         android:layout_margin="8dp"

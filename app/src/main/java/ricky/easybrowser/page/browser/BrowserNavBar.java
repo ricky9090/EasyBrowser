@@ -14,7 +14,7 @@ import ricky.easybrowser.R;
 public class BrowserNavBar extends LinearLayout {
 
     ImageView navBack;
-    ImageView navFoward;
+    ImageView navForward;
     ImageView navHome;
     ImageView navTab;
     ImageView navSetting;
@@ -40,8 +40,8 @@ public class BrowserNavBar extends LinearLayout {
         };
         navBack = findViewById(R.id.nav_back);
         navBack.setOnClickListener(clickListener);
-        navFoward = findViewById(R.id.nav_foward);
-        navFoward.setOnClickListener(clickListener);
+        navForward = findViewById(R.id.nav_forward);
+        navForward.setOnClickListener(clickListener);
         navHome = findViewById(R.id.nav_home);
         navHome.setOnClickListener(clickListener);
         navTab = findViewById(R.id.nav_show_tabs);
