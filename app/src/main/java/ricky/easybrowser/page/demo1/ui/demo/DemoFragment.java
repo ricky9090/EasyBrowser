@@ -30,7 +30,6 @@ public class DemoFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(DemoViewModel.class);
-        // TODO: Use the ViewModel
     }
 
 }

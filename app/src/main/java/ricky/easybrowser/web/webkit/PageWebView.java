@@ -40,10 +40,12 @@ public class PageWebView extends LinearLayout implements IWebView {
 
     private OnWebInteractListener onWebInteractListener;
 
-    //private InputStream placeHolderIS = null;
     private Context mContext;
 
     private boolean noPicMode;
+
+    private AlertDialog imageActionsDialog = null;
+    private AlertDialog urlActionsDialog = null;
 
     public static PageWebView newInstance(Context context) {
         PageWebView view = new PageWebView(context);
@@ -128,49 +130,16 @@ public class PageWebView extends LinearLayout implements IWebView {
                 final String extra = result.getExtra();
                 switch (type) {
                     case WebView.HitTestResult.IMAGE_TYPE:
-                    case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
                         EasyLog.i("test", "press image: " + extra);
-                        AlertDialog.Builder imageDialogbuilder = new AlertDialog.Builder(mContext);
-                        imageDialogbuilder.setItems(R.array.image_actions, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                BrowserActivity activity = null;
-                                if (mContext instanceof BrowserActivity) {
-                                    activity = (BrowserActivity) mContext;
-                                }
-                                if (activity == null) {
-                                    return;
-                                }
-                                if (which == 0) {  // backstage
-                                    activity.addNewTab(extra, true);
-                                } else if (which == 1) {
-                                    activity.addNewTab(extra, false);
-                                }
-                            }
-                        });
-                        imageDialogbuilder.create().show();
+                        showImageActionsDialog(extra);
+                        break;
+                    case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
+                        EasyLog.i("test", "press image anchor: " + extra);
+                        // TODO 实现image anchor类型弹窗，需要获取图片url及父节点<a>标签的url
                         break;
                     case WebView.HitTestResult.SRC_ANCHOR_TYPE:
                         EasyLog.i("test", "press url: " + extra);
-                        AlertDialog.Builder urlDialogbuilder = new AlertDialog.Builder(mContext);
-                        urlDialogbuilder.setItems(R.array.url_actions, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                BrowserActivity activity = null;
-                                if (mContext instanceof BrowserActivity) {
-                                    activity = (BrowserActivity) mContext;
-                                }
-                                if (activity == null) {
-                                    return;
-                                }
-                                if (which == 0) {  // backstage
-                                    activity.addNewTab(extra, true);
-                                } else if (which == 1) {
-                                    activity.addNewTab(extra, false);
-                                }
-                            }
-                        });
-                        urlDialogbuilder.create().show();
+                        showUrlActionsDialog(extra);
                         break;
                     default:
                         break;
@@ -257,7 +226,65 @@ public class PageWebView extends LinearLayout implements IWebView {
         webView = null;
     }
 
-    /*public EasyWebView getWebView() {
-        return webView;
-    }*/
+    /**
+     * 点击图片弹窗
+     * @param extra
+     */
+    private void showImageActionsDialog(final String extra) {
+        if (imageActionsDialog != null) {
+            imageActionsDialog.show();
+            return;
+        }
+        AlertDialog.Builder imageDialogbuilder = new AlertDialog.Builder(mContext);
+        imageDialogbuilder.setItems(R.array.image_actions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                BrowserActivity activity = null;
+                if (mContext instanceof BrowserActivity) {
+                    activity = (BrowserActivity) mContext;
+                }
+                if (activity == null) {
+                    return;
+                }
+                if (which == 0) {  // backstage
+                    activity.addNewTab(extra, true);
+                } else if (which == 1) {
+                    activity.addNewTab(extra, false);
+                }
+            }
+        });
+        imageActionsDialog = imageDialogbuilder.create();
+        imageActionsDialog.show();
+    }
+
+    /**
+     * 点击网页链接弹窗
+     * @param extra
+     */
+    private void showUrlActionsDialog(final String extra) {
+        if (urlActionsDialog != null) {
+            urlActionsDialog.show();
+            return;
+        }
+        AlertDialog.Builder urlDialogbuilder = new AlertDialog.Builder(mContext);
+        urlDialogbuilder.setItems(R.array.url_actions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                BrowserActivity activity = null;
+                if (mContext instanceof BrowserActivity) {
+                    activity = (BrowserActivity) mContext;
+                }
+                if (activity == null) {
+                    return;
+                }
+                if (which == 0) {  // backstage
+                    activity.addNewTab(extra, true);
+                } else if (which == 1) {
+                    activity.addNewTab(extra, false);
+                }
+            }
+        });
+        urlActionsDialog = urlDialogbuilder.create();
+        urlActionsDialog.show();
+    }
 }
