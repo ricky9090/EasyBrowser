@@ -28,7 +28,7 @@ import java.io.InputStream;
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.browser.BrowserActivity;
 import ricky.easybrowser.utils.EasyLog;
-import ricky.easybrowser.utils.SharedPrefenceUtils;
+import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
 
@@ -186,9 +186,9 @@ public class PageWebView extends LinearLayout implements IWebView {
 
     @Override
     public void loadUrl(String url) {
-        SharedPreferences sp = SharedPrefenceUtils.getSettingSP(getContext());
+        SharedPreferences sp = SharedPreferencesUtils.getSettingSP(getContext());
         if (sp != null) {
-            noPicMode = sp.getBoolean(SharedPrefenceUtils.KEY_NO_PIC_MODE, false);
+            noPicMode = sp.getBoolean(SharedPreferencesUtils.KEY_NO_PIC_MODE, false);
         }
         webView.loadUrl(url);
     }

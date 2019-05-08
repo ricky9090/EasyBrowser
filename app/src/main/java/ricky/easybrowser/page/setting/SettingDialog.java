@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.utils.SharedPrefenceUtils;
+import ricky.easybrowser.utils.SharedPreferencesUtils;
 
 public class SettingDialog extends DialogFragment {
 
@@ -57,15 +57,15 @@ public class SettingDialog extends DialogFragment {
         noPictureMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences sp = SharedPrefenceUtils.getSettingSP(getContext());
+                SharedPreferences sp = SharedPreferencesUtils.getSettingSP(getContext());
                 if (sp == null) {
                     return;
                 }
                 SharedPreferences.Editor editor = sp.edit();
                 if (isChecked) {
-                    editor.putBoolean(SharedPrefenceUtils.KEY_NO_PIC_MODE, true);
+                    editor.putBoolean(SharedPreferencesUtils.KEY_NO_PIC_MODE, true);
                 } else {
-                    editor.putBoolean(SharedPrefenceUtils.KEY_NO_PIC_MODE, false);
+                    editor.putBoolean(SharedPreferencesUtils.KEY_NO_PIC_MODE, false);
                 }
                 editor.apply();
             }
@@ -89,8 +89,8 @@ public class SettingDialog extends DialogFragment {
         param.gravity = Gravity.BOTTOM;
         getDialog().getWindow().setAttributes(param);
 
-        SharedPreferences sp = SharedPrefenceUtils.getSettingSP(getContext());
-        if (sp.getBoolean(SharedPrefenceUtils.KEY_NO_PIC_MODE, false)) {
+        SharedPreferences sp = SharedPreferencesUtils.getSettingSP(getContext());
+        if (sp.getBoolean(SharedPreferencesUtils.KEY_NO_PIC_MODE, false)) {
             noPictureMode.setChecked(true);
         } else {
             noPictureMode.setChecked(false);

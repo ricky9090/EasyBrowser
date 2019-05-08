@@ -15,7 +15,7 @@ import java.util.List;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
-import ricky.easybrowser.page.setting.SettingDialog;
+import ricky.easybrowser.page.setting.SettingDialogKt;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
@@ -90,8 +90,8 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         } else {
             // 当横竖屏切换后，将复原的Fragment重新推入cache
             List<Fragment> restoredFragmentList = getSupportFragmentManager().getFragments();
-            if (restoredFragmentList != null && restoredFragmentList.size() > 0) {
-                for(Fragment target : restoredFragmentList) {
+            if (restoredFragmentList.size() > 0) {
+                for (Fragment target : restoredFragmentList) {
                     if (target instanceof NewTabFragmentV2 && target.getArguments() != null) {
                         TabCacheManager.TabInfo info = new TabCacheManager.TabInfo();
                         info.setTitle(target.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
@@ -159,11 +159,11 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag(SETTING_DIALOG_TAG);
         if (prev != null) {
-            ((SettingDialog) prev).dismiss();
+            ((SettingDialogKt) prev).dismiss();
             return;
         }
 
-        SettingDialog dialog = new SettingDialog();
+        SettingDialogKt dialog = new SettingDialogKt();
         dialog.show(ft, SETTING_DIALOG_TAG);
     }
 }
