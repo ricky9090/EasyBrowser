@@ -110,7 +110,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         newTabView = new NewTabView(getContext());
         newTabView.setTabTitle(mTitle);
 
-        newTabView.setSiteListener(new SiteAdapter.OnSiteItemClickListener() {
+        newTabView.setSiteListener(new SiteAdapterV2.OnSiteItemClickListener() {
             @Override
             public void onSiteItemClick(SiteEntity siteEntity) {
                 Uri uri = new Uri.Builder()

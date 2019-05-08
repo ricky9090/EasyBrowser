@@ -7,15 +7,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
 import ricky.easybrowser.R;
 
 public class NewTabView extends LinearLayout {
 
     private RecyclerView siteGird;
-    private SiteAdapter siteAdapter;
+    private SiteAdapterV2 siteAdapter;
 
     private TextView title;
 
@@ -35,15 +36,15 @@ public class NewTabView extends LinearLayout {
         title = findViewById(R.id.new_tab_tag);
 
         siteGird = findViewById(R.id.site_grid);
-        siteGird.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-        siteAdapter = new SiteAdapter(getContext(), SiteAdapter.DEFAULT_PAGE_SIZE);
+        siteGird.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        siteAdapter = new SiteAdapterV2(getContext());
         siteAdapter.appendDataList(SiteAdapter.getTestDataList(context));
         siteGird.setAdapter(siteAdapter);
-        PagerSnapHelper snapHelper = new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(siteGird);
+        //PagerSnapHelper snapHelper = new PagerSnapHelper();
+        //snapHelper.attachToRecyclerView(siteGird);
     }
 
-    public void setSiteListener(SiteAdapter.OnSiteItemClickListener listener) {
+    public void setSiteListener(SiteAdapterV2.OnSiteItemClickListener listener) {
         siteAdapter.setListener(listener);
     }
 
