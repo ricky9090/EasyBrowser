@@ -1,5 +1,6 @@
 package ricky.easybrowser.page.browser;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.LruCache;
 
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 
 /**
@@ -18,6 +20,7 @@ import ricky.easybrowser.page.newtab.NewTabFragmentV2;
  */
 public class TabCacheManager implements QuickViewUpdateContract.Subject {
 
+    private final Context mContext;
     private final FragmentManager fm;
     private int browserLayoutId;
 
@@ -26,7 +29,8 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
     private LruCache<TabInfo, Fragment> lruCache;
     private final List<TabInfo> infoList = new ArrayList<>();
 
-    public TabCacheManager(FragmentManager manager, int maxSize, int layoutId) {
+    public TabCacheManager(Context context, FragmentManager manager, int maxSize, int layoutId) {
+        this.mContext = context;
         this.fm = manager;
         this.browserLayoutId = layoutId;
         lruCache = new LruCache<TabInfo, Fragment>(maxSize) {
@@ -46,13 +50,7 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         };
     }
 
-    public List<TabInfo> getInfoList() {
-        return infoList;
-    }
-
-    public void put(TabInfo info, Fragment fragment) {
-        lruCache.put(info, fragment);  // throw error when tag is null
-
+    public void restoreTabCache(TabInfo info, Fragment fragment) {
         boolean needAdd = true;
         for (int i = 0; i < infoList.size(); i++) {
             if (info.equals(infoList.get(i))) {
@@ -62,14 +60,29 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         }
         if (needAdd) {
             infoList.add(info);
+            lruCache.put(info, fragment);
         }
     }
 
-    public Fragment get(TabInfo info) {
+    private void put(TabInfo info, Fragment fragment) {
+        boolean needAdd = true;
+        for (int i = 0; i < infoList.size(); i++) {
+            if (info.equals(infoList.get(i))) {
+                needAdd = false;
+                break;
+            }
+        }
+        if (needAdd) {
+            infoList.add(info);
+            lruCache.put(info, fragment);  // throw error when tag is null
+        }
+    }
+
+    private Fragment get(TabInfo info) {
         return lruCache.get(info);
     }
 
-    public void remove(TabInfo info) {
+    private void remove(TabInfo info) {
         lruCache.remove(info);  // throw error when tag is null
 
         // 只有用户主动操作，才从recyclerview使用的列表中移除tag
@@ -81,7 +94,7 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         }
     }
 
-    public void clearCache() {
+    public void closeAllTabs() {
         lruCache.evictAll();
         infoList.clear();
     }
@@ -141,6 +154,9 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         }
 
         put(info, fragmentToAdd);
+        if (observer != null) {
+            observer.updateQuickView();
+        }
     }
 
     public void addNewTab(Uri uri, boolean backstage) {
@@ -162,6 +178,9 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         }
         transaction.commit();
         put(info, fragmentToAdd);
+        if (observer != null) {
+            observer.updateQuickView();
+        }
     }
 
     /**
@@ -177,9 +196,12 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
     public void closeTab(TabInfo info) {
         int orgIndex = findTabIndex(info);
         remove(info);
+        if (observer != null) {
+            observer.updateQuickView();
+        }
 
         if (infoList.size() <= 0 && observer != null) {
-            observer.addNewTab();
+            addNewTab(mContext.getString(R.string.new_tab_welcome));
             return;
         }
 
@@ -225,7 +247,8 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         Fragment current = null;
         List<Fragment> fragments = fm.getFragments();
         for (int i = 0; i < fragments.size(); i++) {
-            if (!fragments.get(i).isHidden()) {
+            final Fragment tmp = fragments.get(i);
+            if ((!tmp.isHidden()) && (tmp instanceof NewTabFragmentV2)) {
                 current = fragments.get(i);
             }
         }
@@ -265,6 +288,11 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
     @Override
     public void attach(QuickViewUpdateContract.Observer observer) {
         this.observer = observer;
+    }
+
+    @Override
+    public List<TabInfo> provideInfoList() {
+        return this.infoList;
     }
 
     /**

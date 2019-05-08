@@ -19,7 +19,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int VIEW_TAB = 101;
 
     private Context context;
-    private TabCacheManager tabLruCache;
+    private QuickViewUpdateContract.Subject tabLruCache;
     private OnTabClickListener listener;
 
     public TabQuickViewAdapter(Context context) {
@@ -44,7 +44,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        if (tabLruCache == null || tabLruCache.getInfoList() == null) {
+        if (tabLruCache == null || tabLruCache.provideInfoList() == null) {
             return;
         }
 
@@ -73,17 +73,16 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void bindQuickView(TabQuickViewHolder holder, final int position) {
-        final TabCacheManager.TabInfo info = tabLruCache.getInfoList().get(position);
+        final TabCacheManager.TabInfo info = tabLruCache.provideInfoList().get(position);
         holder.siteTitle.setText(info.getTitle());
         holder.closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tabLruCache == null || tabLruCache.getInfoList() == null) {
+                if (tabLruCache == null || tabLruCache.provideInfoList() == null) {
                     return;
                 }
                 if (!StringUtils.isEmpty(info.getTag()) && listener != null) {
                     listener.onTabClose(info);
-                    notifyDataSetChanged();
                 }
 
             }
@@ -110,18 +109,11 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
-    public void addNewTab() {
-        if (listener != null) {
-            listener.onAddTab();
-        }
-    }
-
-    @Override
     public int getItemCount() {
-        if (tabLruCache == null || tabLruCache.getInfoList() == null) {
+        if (tabLruCache == null || tabLruCache.provideInfoList() == null) {
             return 1;
         }
-        return tabLruCache.getInfoList().size() + 1;
+        return tabLruCache.provideInfoList().size() + 1;
     }
 
     @Override

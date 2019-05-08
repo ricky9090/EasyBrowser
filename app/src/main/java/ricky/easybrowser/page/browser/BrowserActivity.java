@@ -21,13 +21,16 @@ import ricky.easybrowser.utils.FragmentBackHandleHelper;
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
 
     private static final String SETTING_DIALOG_TAG = "setting_dialog";
+    private static final String TAB_DIALOG_TAG = "tab_dialog";
 
     FrameLayout webContentFrame;
     BrowserNavBar navBar;
-    RecyclerView tabRecyclerView;
-    TabQuickViewAdapter tabQuickViewAdapter;
+    //RecyclerView tabRecyclerView;
+    //TabQuickViewAdapter tabQuickViewAdapter;
 
     TabCacheManager tabCacheManager;
+    TabDialogKt tabDialog;
+    SettingDialogKt settingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +38,11 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         setContentView(R.layout.activity_browser);
 
         if (tabCacheManager == null) {
-            tabCacheManager = new TabCacheManager(getSupportFragmentManager(), 3, R.id.web_content_frame);
+            tabCacheManager = new TabCacheManager(this, getSupportFragmentManager(), 3, R.id.web_content_frame);
         }
 
         webContentFrame = findViewById(R.id.web_content_frame);
-        tabRecyclerView = findViewById(R.id.tab_list_recyclerview);
+        /*tabRecyclerView = findViewById(R.id.tab_list_recyclerview);
         tabRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         tabQuickViewAdapter = new TabQuickViewAdapter(this);
         tabQuickViewAdapter.attachToBrwoserTabs(tabCacheManager);
@@ -60,7 +63,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                 tabQuickViewAdapter.notifyDataSetChanged();
             }
         });
-        tabRecyclerView.setAdapter(tabQuickViewAdapter);
+        tabRecyclerView.setAdapter(tabQuickViewAdapter);*/
 
         navBar = findViewById(R.id.nav_bar);
         navBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
@@ -68,11 +71,12 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             public void onItemClick(View itemView) {
                 int id = itemView.getId();
                 if (id == R.id.nav_show_tabs) {
-                    if (tabRecyclerView.getVisibility() == View.VISIBLE) {
+                    /*if (tabRecyclerView.getVisibility() == View.VISIBLE) {
                         tabRecyclerView.setVisibility(View.GONE);
                     } else {
                         tabRecyclerView.setVisibility(View.VISIBLE);
-                    }
+                    }*/
+                    showTabDialog();
                 } else if (id == R.id.nav_back) {
                     onBackPressed();
                 } else if (id == R.id.nav_home) {
@@ -97,18 +101,21 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                         info.setTitle(target.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
                         info.setTag(target.getArguments().getString(NewTabFragmentV2.ARG_TAG));
                         // TODO 检查去掉clearCache后，是否重复put，TabInfo已经重写equals方法
-                        tabCacheManager.put(info, target);
+                        tabCacheManager.restoreTabCache(info, target);
                     }
                 }
             }
+            Fragment prev = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
+            if (prev instanceof TabDialogKt) {
+                ((TabDialogKt) prev).setTabCacheManager(tabCacheManager);
+            }
         }
-        tabQuickViewAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //tabCacheManager.clearCache();
+        tabCacheManager.closeAllTabs();
     }
 
     @Override
@@ -132,10 +139,10 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             return;
         }
 
-        if (tabRecyclerView.getVisibility() == View.VISIBLE) {
+        /*if (tabRecyclerView.getVisibility() == View.VISIBLE) {
             tabRecyclerView.setVisibility(View.GONE);
             return;
-        }
+        }*/
 
 
         super.onBackPressed();
@@ -152,18 +159,34 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             return;
         }
         tabCacheManager.addNewTab(uri, backstage);
-        tabQuickViewAdapter.notifyDataSetChanged();
+    }
+
+    private void showTabDialog() {
+        Fragment prev = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
+        if (prev != null) {
+            ((TabDialogKt) prev).dismiss();
+            return;
+        }
+        if (tabDialog == null) {
+            tabDialog = new TabDialogKt();
+            tabDialog.setTabCacheManager(tabCacheManager);
+            tabDialog.setCancelable(false);
+        }
+        tabDialog.show(getSupportFragmentManager(), TAB_DIALOG_TAG);
     }
 
     private void showSettingDialog() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment prev = getSupportFragmentManager().findFragmentByTag(SETTING_DIALOG_TAG);
         if (prev != null) {
             ((SettingDialogKt) prev).dismiss();
             return;
         }
 
-        SettingDialogKt dialog = new SettingDialogKt();
-        dialog.show(ft, SETTING_DIALOG_TAG);
+        if (settingDialog == null) {
+            settingDialog = new SettingDialogKt();
+            settingDialog.setCancelable(false);
+        }
+
+        settingDialog.show(getSupportFragmentManager(), SETTING_DIALOG_TAG);
     }
 }
