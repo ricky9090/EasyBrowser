@@ -1,45 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/goto_button"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:contentDescription="TODO"
-            android:src="@mipmap/ic_arrow_forward_black_36dp" />
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/page_url_edittext"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:layout_scrollFlags="scroll|enterAlways">
+
+                <ImageView
+                    android:id="@+id/goto_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:contentDescription="TODO"
+                    android:src="@mipmap/ic_arrow_forward_black_36dp" />
+
+                <EditText
+                    android:id="@+id/page_url_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@id/goto_button"
+                    android:inputType=""
+                    android:singleLine="true"/>
+
+            </RelativeLayout>
+
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/web_loading_progress_bar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                tools:progress="50"/>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@id/goto_button"
-            android:inputType=""
-            android:singleLine="true" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.core.widget.ContentLoadingProgressBar
-            android:id="@+id/web_loading_progress_bar"
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_alignParentBottom="true"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+            <ricky.easybrowser.web.webkit.EasyWebView
+                android:id="@+id/page_webview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-    </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
 
-    <ricky.easybrowser.web.webkit.EasyWebView
-        android:id="@+id/page_webview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-</LinearLayout>
+
+</FrameLayout>

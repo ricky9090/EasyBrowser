@@ -1,7 +1,6 @@
 package ricky.easybrowser.web.webkit;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -19,12 +18,18 @@ public class EasyWebView extends WebView {
     public EasyWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        if (isInEditMode()) {
+            return;
+        }
         initDefaultSettings();
     }
 
     public EasyWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        if (isInEditMode()) {
+            return;
+        }
         initDefaultSettings();
     }
 
