@@ -30,7 +30,7 @@ public class NewTabView extends LinearLayout {
     public NewTabView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        LayoutInflater.from(context).inflate(R.layout.fragment_new_tab, this);
+        LayoutInflater.from(context).inflate(R.layout.layout_new_tab, this);
 
         title = findViewById(R.id.new_tab_tag);
 

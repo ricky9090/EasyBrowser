@@ -14,10 +14,6 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
 
-        <activity android:name=".page.demo2.DemoActivityV2" />
-        <activity android:name=".page.demo1.DemoActivity" />
-        <activity android:name=".page.browser.BrowserActivity" />
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".page.browser.BrowserActivity" />
     </application>
 
 </manifest>
