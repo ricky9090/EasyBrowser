@@ -46,6 +46,7 @@ public class PageWebView extends LinearLayout implements IWebView {
 
     private AlertDialog imageActionsDialog = null;
     private AlertDialog urlActionsDialog = null;
+    private String hitResultExtra = null;
 
     public static PageWebView newInstance(Context context) {
         PageWebView view = new PageWebView(context);
@@ -128,10 +129,11 @@ public class PageWebView extends LinearLayout implements IWebView {
                 }
                 final int type = result.getType();
                 final String extra = result.getExtra();
+                hitResultExtra = result.getExtra();
                 switch (type) {
                     case WebView.HitTestResult.IMAGE_TYPE:
                         EasyLog.i("test", "press image: " + extra);
-                        showImageActionsDialog(extra);
+                        showImageActionsDialog();
                         break;
                     case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
                         EasyLog.i("test", "press image anchor: " + extra);
@@ -139,7 +141,7 @@ public class PageWebView extends LinearLayout implements IWebView {
                         break;
                     case WebView.HitTestResult.SRC_ANCHOR_TYPE:
                         EasyLog.i("test", "press url: " + extra);
-                        showUrlActionsDialog(extra);
+                        showUrlActionsDialog();
                         break;
                     default:
                         break;
@@ -228,9 +230,8 @@ public class PageWebView extends LinearLayout implements IWebView {
 
     /**
      * 点击图片弹窗
-     * @param extra
      */
-    private void showImageActionsDialog(final String extra) {
+    private void showImageActionsDialog() {
         if (imageActionsDialog != null) {
             imageActionsDialog.show();
             return;
@@ -239,17 +240,10 @@ public class PageWebView extends LinearLayout implements IWebView {
         imageDialogbuilder.setItems(R.array.image_actions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                BrowserActivity activity = null;
-                if (mContext instanceof BrowserActivity) {
-                    activity = (BrowserActivity) mContext;
-                }
-                if (activity == null) {
-                    return;
-                }
                 if (which == 0) {  // backstage
-                    activity.addNewTab(extra, true);
+                    notifyAddNewTab(true);
                 } else if (which == 1) {
-                    activity.addNewTab(extra, false);
+                    notifyAddNewTab(false);
                 }
             }
         });
@@ -259,9 +253,8 @@ public class PageWebView extends LinearLayout implements IWebView {
 
     /**
      * 点击网页链接弹窗
-     * @param extra
      */
-    private void showUrlActionsDialog(final String extra) {
+    private void showUrlActionsDialog() {
         if (urlActionsDialog != null) {
             urlActionsDialog.show();
             return;
@@ -270,21 +263,28 @@ public class PageWebView extends LinearLayout implements IWebView {
         urlDialogbuilder.setItems(R.array.url_actions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                BrowserActivity activity = null;
-                if (mContext instanceof BrowserActivity) {
-                    activity = (BrowserActivity) mContext;
-                }
-                if (activity == null) {
-                    return;
-                }
                 if (which == 0) {  // backstage
-                    activity.addNewTab(extra, true);
+                    notifyAddNewTab(true);
                 } else if (which == 1) {
-                    activity.addNewTab(extra, false);
+                    notifyAddNewTab(false);
                 }
             }
         });
         urlActionsDialog = urlDialogbuilder.create();
         urlActionsDialog.show();
+    }
+
+    private void notifyAddNewTab(boolean backStage) {
+        BrowserActivity activity = null;
+        if (mContext instanceof BrowserActivity) {
+            activity = (BrowserActivity) mContext;
+        }
+        if (activity == null) {
+            return;
+        }
+        if (StringUtils.isEmpty(hitResultExtra)) {
+            return;
+        }
+        activity.addNewTab(hitResultExtra, backStage);
     }
 }
