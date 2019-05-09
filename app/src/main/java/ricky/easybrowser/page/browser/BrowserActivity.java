@@ -7,9 +7,6 @@ import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -25,8 +22,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
 
     FrameLayout webContentFrame;
     BrowserNavBar navBar;
-    //RecyclerView tabRecyclerView;
-    //TabQuickViewAdapter tabQuickViewAdapter;
 
     TabCacheManager tabCacheManager;
     TabDialogKt tabDialog;
@@ -42,28 +37,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         }
 
         webContentFrame = findViewById(R.id.web_content_frame);
-        /*tabRecyclerView = findViewById(R.id.tab_list_recyclerview);
-        tabRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        tabQuickViewAdapter = new TabQuickViewAdapter(this);
-        tabQuickViewAdapter.attachToBrwoserTabs(tabCacheManager);
-        tabQuickViewAdapter.setListener(new TabQuickViewAdapter.OnTabClickListener() {
-            @Override
-            public void onTabClick(TabCacheManager.TabInfo info) {
-                tabCacheManager.switchToTab(info);
-            }
-
-            @Override
-            public void onTabClose(TabCacheManager.TabInfo info) {
-                tabCacheManager.closeTab(info);
-            }
-
-            @Override
-            public void onAddTab() {
-                tabCacheManager.addNewTab(getString(R.string.new_tab_welcome));
-                tabQuickViewAdapter.notifyDataSetChanged();
-            }
-        });
-        tabRecyclerView.setAdapter(tabQuickViewAdapter);*/
 
         navBar = findViewById(R.id.nav_bar);
         navBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
@@ -71,11 +44,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             public void onItemClick(View itemView) {
                 int id = itemView.getId();
                 if (id == R.id.nav_show_tabs) {
-                    /*if (tabRecyclerView.getVisibility() == View.VISIBLE) {
-                        tabRecyclerView.setVisibility(View.GONE);
-                    } else {
-                        tabRecyclerView.setVisibility(View.VISIBLE);
-                    }*/
                     showTabDialog();
                 } else if (id == R.id.nav_back) {
                     onBackPressed();
@@ -138,12 +106,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         if (FragmentBackHandleHelper.isFragmentBackHandled(getSupportFragmentManager())) {
             return;
         }
-
-        /*if (tabRecyclerView.getVisibility() == View.VISIBLE) {
-            tabRecyclerView.setVisibility(View.GONE);
-            return;
-        }*/
-
 
         super.onBackPressed();
     }

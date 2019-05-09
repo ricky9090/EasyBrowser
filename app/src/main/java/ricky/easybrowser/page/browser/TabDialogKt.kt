@@ -1,6 +1,5 @@
 package ricky.easybrowser.page.browser
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -35,8 +34,8 @@ class TabDialogKt : DialogFragment() {
         val setting: ImageView = dialogView.findViewById(R.id.nav_setting)
         setting.visibility = View.INVISIBLE
 
-        val tab: ImageView = dialogView.findViewById(R.id.nav_show_tabs)
-        tab.setOnClickListener {
+        val linearLayout: LinearLayout = dialogView.findViewById(R.id.nav_bar_linear)
+        linearLayout.setOnClickListener {
             dismiss()
         }
 

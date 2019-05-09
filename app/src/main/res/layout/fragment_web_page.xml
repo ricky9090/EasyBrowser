@@ -7,8 +7,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:orientation="horizontal">
+        android:layout_height="48dp">
 
         <ImageView
             android:id="@+id/goto_button"
@@ -28,6 +27,13 @@
             android:layout_toLeftOf="@id/goto_button"
             android:inputType=""
             android:singleLine="true" />
+
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/web_loading_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_alignParentBottom="true"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
     </RelativeLayout>
 

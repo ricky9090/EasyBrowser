@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.ContentLoadingProgressBar;
 
 import java.io.InputStream;
 
@@ -37,6 +39,7 @@ public class PageWebView extends LinearLayout implements IWebView {
     private EasyWebView webView;
     private ImageView goButton;
     private EditText webAddress;
+    private ContentLoadingProgressBar progressBar;
 
     private OnWebInteractListener onWebInteractListener;
 
@@ -71,6 +74,23 @@ public class PageWebView extends LinearLayout implements IWebView {
     private void initViews() {
         webView = findViewById(R.id.page_webview);
 
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100) {
+                    progressBar.setProgress(0);
+                    progressBar.hide();
+                    return;
+                }
+
+                if((newProgress > 0) && (progressBar.getVisibility() == View.INVISIBLE
+                        || progressBar.getVisibility() == View.GONE)) {
+                    progressBar.show();
+                }
+                progressBar.setProgress(newProgress);
+
+            }
+        });
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -177,6 +197,7 @@ public class PageWebView extends LinearLayout implements IWebView {
                 return false;
             }
         });
+        progressBar = findViewById(R.id.web_loading_progress_bar);
     }
 
     private void loadInputUrl() {

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import ricky.easybrowser.R
@@ -33,8 +34,8 @@ class SettingDialogKt : DialogFragment() {
         val tab: ImageView = dialogView.findViewById(R.id.nav_show_tabs)
         tab.visibility = View.INVISIBLE
 
-        val settingBtn: ImageView = dialogView.findViewById(R.id.nav_setting)
-        settingBtn.setOnClickListener {
+        val linearLayout: LinearLayout = dialogView.findViewById(R.id.nav_bar_linear)
+        linearLayout.setOnClickListener {
             dismiss()
         }
 
