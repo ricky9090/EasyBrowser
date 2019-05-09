@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ricky.easybrowser.R;
@@ -38,7 +37,7 @@ public class NewTabView extends LinearLayout {
         siteGird = findViewById(R.id.site_grid);
         siteGird.setLayoutManager(new GridLayoutManager(getContext(), 3));
         siteAdapter = new SiteAdapterV2(getContext());
-        siteAdapter.appendDataList(SiteAdapter.getTestDataList(context));
+        siteAdapter.appendDataList(SiteAdapterV2.getTestDataList(context));
         siteGird.setAdapter(siteAdapter);
         //PagerSnapHelper snapHelper = new PagerSnapHelper();
         //snapHelper.attachToRecyclerView(siteGird);
