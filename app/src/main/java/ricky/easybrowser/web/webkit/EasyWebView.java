@@ -3,30 +3,30 @@ package ricky.easybrowser.web.webkit;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
+import android.view.ViewConfiguration;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import androidx.core.view.NestedScrollingChild;
-import androidx.core.view.NestedScrollingChildHelper;
-import androidx.core.view.ViewCompat;
-
 import ricky.easybrowser.utils.EasyLog;
 
-/**
- * Based on:
- * https://github.com/mozilla-mobile/focus-android/
- * NestedWebView.java
- */
-public class EasyWebView extends WebView implements NestedScrollingChild {
+public class EasyWebView extends WebView {
 
     public static final String TAG = "EasyWebView";
 
-    private int mLastY;
-    private final int[] mScrollOffset = new int[2];
-    private final int[] mScrollConsumed = new int[2];
-    private int mNestedOffsetY;
-    private NestedScrollingChildHelper mChildHelper;
+    public static final int SCROLL_UP = 1;
+    public static final int SCROLL_DOWN = 2;
+
+    private int lastScrollType = 0;
+
+    private boolean animating = false;
+
+    private float initTouchY;
+    private float touchUpY;
+
+    private ViewConfiguration vc;
+    private int mTouchSlop;
+
+    private WebViewScrollListener webViewScrollListener;
 
     public EasyWebView(Context context) {
         this(context, null);
@@ -39,9 +39,8 @@ public class EasyWebView extends WebView implements NestedScrollingChild {
             return;
         }
         initDefaultSettings();
-        mChildHelper = new NestedScrollingChildHelper(this);
-        setNestedScrollingEnabled(true);
-        setOverScrollMode(View.OVER_SCROLL_NEVER);
+        vc = ViewConfiguration.get(getContext());
+        mTouchSlop = vc.getScaledTouchSlop();
     }
 
     public EasyWebView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -51,9 +50,8 @@ public class EasyWebView extends WebView implements NestedScrollingChild {
             return;
         }
         initDefaultSettings();
-        mChildHelper = new NestedScrollingChildHelper(this);
-        setNestedScrollingEnabled(true);
-        setOverScrollMode(View.OVER_SCROLL_NEVER);
+        vc = ViewConfiguration.get(getContext());
+        mTouchSlop = vc.getScaledTouchSlop();
     }
 
     private void initDefaultSettings() {
@@ -70,107 +68,55 @@ public class EasyWebView extends WebView implements NestedScrollingChild {
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             settings.setSafeBrowsingEnabled(false);
         }*/
-
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (animating) {
+            return false;
+        }
+
         final MotionEvent trackEvent = MotionEvent.obtain(event);
         final int action = event.getActionMasked();
 
         if (action == MotionEvent.ACTION_DOWN) {
-            mNestedOffsetY = 0;
+            initTouchY = trackEvent.getY();
         }
 
-        final int eventY = (int) trackEvent.getY();
-        trackEvent.offsetLocation(0, mNestedOffsetY);
-
-        switch (action) {
-            case MotionEvent.ACTION_MOVE:
-                int deltaY = mLastY - eventY;
-
-                if (dispatchNestedPreScroll(0, deltaY, mScrollConsumed, mScrollOffset)) {
-                    deltaY -= mScrollConsumed[1];
-                    trackEvent.offsetLocation(0, -mScrollOffset[1]);
-                    mNestedOffsetY += mScrollOffset[1];
+        if (action == MotionEvent.ACTION_UP) {
+            touchUpY = trackEvent.getY();
+            float deltaY = touchUpY - initTouchY;
+            EasyLog.i(TAG, "initTouchY: " + initTouchY + ", touchUpY: " + touchUpY + ", deltaY: " + deltaY);
+            if (touchUpY > initTouchY && Math.abs(deltaY) > mTouchSlop) {
+                if (webViewScrollListener != null && lastScrollType != SCROLL_DOWN) {
+                    webViewScrollListener.onScrollDown();
+                    lastScrollType = SCROLL_DOWN;
                 }
-
-                mLastY = eventY - mScrollOffset[1];
-
-                if (dispatchNestedScroll(0, mScrollOffset[1], 0, deltaY, mScrollOffset)) {
-                    mLastY -= mScrollOffset[1];
-                    trackEvent.offsetLocation(0, mScrollOffset[1]);
-                    mNestedOffsetY += mScrollOffset[1];
+            } else if (touchUpY < initTouchY && Math.abs(deltaY) > mTouchSlop) {
+                if (webViewScrollListener != null && lastScrollType != SCROLL_UP) {
+                    webViewScrollListener.onScrollUp();
+                    lastScrollType = SCROLL_UP;
                 }
-                break;
-
-            case MotionEvent.ACTION_DOWN:
-                mLastY = eventY;
-                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
-                break;
-
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                stopNestedScroll();
-                break;
-
-            default:
-                // We don't care about other touch events
+            }
         }
-
-        // Execute event handler from parent class in all cases
-        boolean eventHandled = super.onTouchEvent(trackEvent);
-
-        // Recycle previously obtained event
         trackEvent.recycle();
-
-        return eventHandled;
+        return super.onTouchEvent(event);
     }
 
-    @Override
-    public void setNestedScrollingEnabled(boolean enabled) {
-        mChildHelper.setNestedScrollingEnabled(enabled);
+    public void setWebViewScrollListener(WebViewScrollListener webViewScrollListener) {
+        this.webViewScrollListener = webViewScrollListener;
     }
 
-    @Override
-    public boolean isNestedScrollingEnabled() {
-        return mChildHelper.isNestedScrollingEnabled();
+    public boolean isAnimating() {
+        return animating;
     }
 
-    @Override
-    public boolean startNestedScroll(int axes) {
-        return mChildHelper.startNestedScroll(axes);
+    public void setAnimating(boolean animating) {
+        this.animating = animating;
     }
 
-    @Override
-    public void stopNestedScroll() {
-        mChildHelper.stopNestedScroll();
+    interface WebViewScrollListener {
+        void onScrollUp();
+        void onScrollDown();
     }
-
-    @Override
-    public boolean hasNestedScrollingParent() {
-        return mChildHelper.hasNestedScrollingParent();
-    }
-
-    @Override
-    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int[] offsetInWindow) {
-        return mChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
-    }
-
-    @Override
-    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
-        return mChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
-    }
-
-    @Override
-    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
-        return mChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
-    }
-
-    @Override
-    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
-        return mChildHelper.dispatchNestedPreFling(velocityX, velocityY);
-    }
-
-
 }

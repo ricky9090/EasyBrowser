@@ -1,5 +1,7 @@
 package ricky.easybrowser.web.webkit;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
@@ -34,9 +37,14 @@ import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
 
+import static ricky.easybrowser.web.webkit.EasyWebView.TAG;
+
 public class PageWebView extends LinearLayout implements IWebView {
 
     private EasyWebView webView;
+
+    private AddressBar addressBar;
+    //private View addressBarPlaceholder;
     private ImageView goButton;
     private EditText webAddress;
     private ContentLoadingProgressBar progressBar;
@@ -47,6 +55,7 @@ public class PageWebView extends LinearLayout implements IWebView {
 
     private boolean noPicMode;
 
+    private int orgAddressBarHeight;
     private AlertDialog imageActionsDialog = null;
     private AlertDialog urlActionsDialog = null;
     private String hitResultExtra = null;
@@ -67,13 +76,48 @@ public class PageWebView extends LinearLayout implements IWebView {
     public PageWebView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        LayoutInflater.from(context).inflate(R.layout.fragment_web_page, this);
+        LayoutInflater.from(context).inflate(R.layout.fragment_web_page_v1, this);
         initViews();
     }
 
     private void initViews() {
-        webView = findViewById(R.id.page_webview);
+        configureWebView();
 
+        addressBar = findViewById(R.id.web_address_bar);
+        orgAddressBarHeight = addressBar.getLayoutParams().height;
+
+        goButton = findViewById(R.id.goto_button);
+        goButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadInputUrl();
+            }
+        });
+
+        webAddress = findViewById(R.id.page_url_edittext);
+        webAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
+                        || actionId == EditorInfo.IME_ACTION_SEND
+                        || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    webAddress.clearFocus();
+                    if (getContext() instanceof Activity) {
+                        Activity activity = (Activity) getContext();
+                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
+                    }
+
+                    loadInputUrl();
+                }
+                return false;
+            }
+        });
+        progressBar = findViewById(R.id.web_loading_progress_bar);
+    }
+
+    private void configureWebView() {
+        webView = findViewById(R.id.page_webview);
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -83,7 +127,7 @@ public class PageWebView extends LinearLayout implements IWebView {
                     return;
                 }
 
-                if((newProgress > 0) && (progressBar.getVisibility() == View.INVISIBLE
+                if ((newProgress > 0) && (progressBar.getVisibility() == View.INVISIBLE
                         || progressBar.getVisibility() == View.GONE)) {
                     progressBar.show();
                 }
@@ -169,35 +213,67 @@ public class PageWebView extends LinearLayout implements IWebView {
                 return true;
             }
         });
-
-        goButton = findViewById(R.id.goto_button);
-        goButton.setOnClickListener(new View.OnClickListener() {
+        webView.setWebViewScrollListener(new EasyWebView.WebViewScrollListener() {
             @Override
-            public void onClick(View v) {
-                loadInputUrl();
-            }
-        });
-
-        webAddress = findViewById(R.id.page_url_edittext);
-        webAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
-                        || actionId == EditorInfo.IME_ACTION_SEND
-                        || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    webAddress.clearFocus();
-                    if (getContext() instanceof Activity) {
-                        Activity activity = (Activity) getContext();
-                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
+            public void onScrollUp() {
+                ObjectAnimator animator = ObjectAnimator.ofInt(addressBar, "addressBarHeight", orgAddressBarHeight, 0);
+                animator.setDuration(300);
+                animator.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        webView.setAnimating(true);
                     }
 
-                    loadInputUrl();
-                }
-                return false;
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        webView.setAnimating(false);
+                        addressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        webView.setAnimating(false);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+                animator.start();
+                //addressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onScrollDown() {
+                ObjectAnimator animator = ObjectAnimator.ofInt(addressBar, "addressBarHeight", 0, orgAddressBarHeight);
+                animator.setDuration(300);
+                animator.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        webView.setAnimating(true);
+                        addressBar.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        webView.setAnimating(false);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        webView.setAnimating(false);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+                animator.start();
+                //addressBar.setVisibility(View.VISIBLE);
             }
         });
-        progressBar = findViewById(R.id.web_loading_progress_bar);
     }
 
     private void loadInputUrl() {

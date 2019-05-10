@@ -26,16 +26,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tab_list_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="48dp"
-        android:background="#CCEE88"
-        android:minHeight="180dp"
-        android:visibility="gone"
-        android:elevation="2dp"/>
-
 
 </FrameLayout>

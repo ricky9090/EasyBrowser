@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -50,7 +49,7 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <ricky.easybrowser.web.webkit.EasyWebView
+        <ricky.easybrowser.web.webkit.EasyNestedWebView
             android:id="@+id/page_webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
