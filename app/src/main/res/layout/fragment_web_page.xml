@@ -50,17 +50,11 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <ricky.easybrowser.web.webkit.EasyWebView
+            android:id="@+id/page_webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <ricky.easybrowser.web.webkit.EasyWebView
-                android:id="@+id/page_webview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </androidx.core.widget.NestedScrollView>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
