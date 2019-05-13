@@ -16,6 +16,7 @@ import ricky.easybrowser.entity.SiteEntity;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.OnBackInteractionListener;
 import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.web.webkit.PageNestedWebView;
 import ricky.easybrowser.web.webkit.PageWebView;
 
 /**
@@ -133,7 +134,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     private void addWebView(Uri uri) {
         frameLayout.removeAllViews();
-        pageWebView = new PageWebView(getContext());
+        pageWebView = new PageNestedWebView(getContext());
         pageWebView.setOnWebInteractListener(new IWebView.OnWebInteractListener() {
             @Override
             public void onPageTitleChange(String newTitle) {
