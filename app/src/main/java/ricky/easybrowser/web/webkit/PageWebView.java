@@ -43,7 +43,7 @@ public class PageWebView extends LinearLayout implements IWebView {
     private LinearLayout webLinear;
 
     private AddressBar addressBar;
-    private View addressBarPlaceholder;
+    private PlaceholderView addressBarPlaceholder;
     private ImageView goButton;
     private EditText webAddress;
     private ContentLoadingProgressBar progressBar;
@@ -85,8 +85,15 @@ public class PageWebView extends LinearLayout implements IWebView {
         addressBar = findViewById(R.id.web_address_bar);
         orgAddressBarHeight = addressBar.getLayoutParams().height;
         addressBarPlaceholder = findViewById(R.id.address_bar_placeholder);
+        addressBarPlaceholder.setVisibility(View.GONE);  // 使用translationY动画，隐藏占位
 
         webLinear = findViewById(R.id.web_linear);
+        webLinear.post(new Runnable() {
+            @Override
+            public void run() {
+                webLinear.setTranslationY(orgAddressBarHeight);
+            }
+        });
 
         goButton = findViewById(R.id.goto_button);
         goButton.setOnClickListener(new View.OnClickListener() {
@@ -337,6 +344,10 @@ public class PageWebView extends LinearLayout implements IWebView {
         activity.addNewTab(hitResultExtra, backStage);
     }
 
+    /**
+     * translation动画较流畅，需要优化下拉手势判断，避免网页底部经常不可见
+     * 动态调整LayoutParam方式频繁调用requestLayout，性能稍差
+     */
     private void hideAddressBar() {
         ObjectAnimator animatorWebView = ObjectAnimator.ofFloat(webLinear, "translationY", orgAddressBarHeight, 0);
         animatorWebView.setDuration(300);
@@ -344,7 +355,6 @@ public class PageWebView extends LinearLayout implements IWebView {
             @Override
             public void onAnimationStart(Animator animation) {
                 webView.setAnimating(true);
-                addressBarPlaceholder.setVisibility(View.GONE);
             }
 
             @Override
@@ -373,7 +383,7 @@ public class PageWebView extends LinearLayout implements IWebView {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                addressBar.setVisibility(View.GONE);
+                //addressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -405,8 +415,6 @@ public class PageWebView extends LinearLayout implements IWebView {
             @Override
             public void onAnimationEnd(Animator animation) {
                 webView.setAnimating(false);
-                webLinear.setTranslationY(0);
-                addressBarPlaceholder.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -425,7 +433,7 @@ public class PageWebView extends LinearLayout implements IWebView {
         animatorAddressBar.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-                addressBar.setVisibility(View.VISIBLE);
+                //addressBar.setVisibility(View.VISIBLE);
             }
 
             @Override

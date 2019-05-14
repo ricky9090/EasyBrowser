@@ -134,7 +134,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     private void addWebView(Uri uri) {
         frameLayout.removeAllViews();
-        pageWebView = new PageNestedWebView(getContext());
+        pageWebView = new PageWebView(getContext());
         pageWebView.setOnWebInteractListener(new IWebView.OnWebInteractListener() {
             @Override
             public void onPageTitleChange(String newTitle) {
