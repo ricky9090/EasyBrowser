@@ -33,7 +33,8 @@
     <ricky.easybrowser.web.webkit.AddressBar
         android:id="@+id/web_address_bar"
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="48dp"
+        android:background="@android:color/white">
 
         <ImageView
             android:id="@+id/goto_button"

@@ -85,15 +85,15 @@ public class PageWebView extends LinearLayout implements IWebView {
         addressBar = findViewById(R.id.web_address_bar);
         orgAddressBarHeight = addressBar.getLayoutParams().height;
         addressBarPlaceholder = findViewById(R.id.address_bar_placeholder);
-        addressBarPlaceholder.setVisibility(View.GONE);  // 使用translationY动画，隐藏占位
+        //addressBarPlaceholder.setVisibility(View.GONE);  // 使用translationY动画，隐藏占位
 
         webLinear = findViewById(R.id.web_linear);
-        webLinear.post(new Runnable() {
+        /*webLinear.post(new Runnable() {
             @Override
             public void run() {
                 webLinear.setTranslationY(orgAddressBarHeight);
             }
-        });
+        });*/
 
         goButton = findViewById(R.id.goto_button);
         goButton.setOnClickListener(new View.OnClickListener() {
@@ -349,7 +349,7 @@ public class PageWebView extends LinearLayout implements IWebView {
      * 动态调整LayoutParam方式频繁调用requestLayout，性能稍差
      */
     private void hideAddressBar() {
-        ObjectAnimator animatorWebView = ObjectAnimator.ofFloat(webLinear, "translationY", orgAddressBarHeight, 0);
+        /*ObjectAnimator animatorWebView = ObjectAnimator.ofFloat(webLinear, "translationY", orgAddressBarHeight, 0);
         animatorWebView.setDuration(300);
         animatorWebView.addListener(new Animator.AnimatorListener() {
             @Override
@@ -371,19 +371,21 @@ public class PageWebView extends LinearLayout implements IWebView {
             public void onAnimationRepeat(Animator animation) {
 
             }
-        });
+        });*/
 
         ObjectAnimator animatorAddressBar = ObjectAnimator.ofFloat(addressBar, "translationY", 0, -orgAddressBarHeight);
         animatorAddressBar.setDuration(300);
         animatorAddressBar.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-
+                int scrollY = webView.getScrollY();
+                addressBarPlaceholder.setVisibility(View.GONE);
+                webView.setScrollY(scrollY - orgAddressBarHeight);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                //addressBar.setVisibility(View.GONE);
+                addressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -396,15 +398,16 @@ public class PageWebView extends LinearLayout implements IWebView {
 
             }
         });
+        animatorAddressBar.start();
 
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(animatorAddressBar, animatorWebView);
-        animatorSet.start();
+        //AnimatorSet animatorSet = new AnimatorSet();
+        //animatorSet.playTogether(animatorAddressBar, animatorWebView);
+        //animatorSet.start();
 
     }
 
     private void showAddressBar() {
-        ObjectAnimator animatorWebView = ObjectAnimator.ofFloat(webLinear, "translationY", 0, orgAddressBarHeight);
+        /*ObjectAnimator animatorWebView = ObjectAnimator.ofFloat(webLinear, "translationY", 0, orgAddressBarHeight);
         animatorWebView.setDuration(300);
         animatorWebView.addListener(new Animator.AnimatorListener() {
             @Override
@@ -426,14 +429,19 @@ public class PageWebView extends LinearLayout implements IWebView {
             public void onAnimationRepeat(Animator animation) {
 
             }
-        });
+        });*/
 
         ObjectAnimator animatorAddressBar = ObjectAnimator.ofFloat(addressBar, "translationY", -orgAddressBarHeight, 0);
         animatorAddressBar.setDuration(300);
         animatorAddressBar.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-                //addressBar.setVisibility(View.VISIBLE);
+
+                addressBar.setVisibility(View.VISIBLE);
+
+                int scrollY = webView.getScrollY();
+                addressBarPlaceholder.setVisibility(View.VISIBLE);
+                webView.setScrollY(scrollY + orgAddressBarHeight);
             }
 
             @Override
@@ -451,9 +459,10 @@ public class PageWebView extends LinearLayout implements IWebView {
 
             }
         });
+        animatorAddressBar.start();
 
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(animatorAddressBar, animatorWebView);
-        animatorSet.start();
+        //AnimatorSet animatorSet = new AnimatorSet();
+        //animatorSet.playTogether(animatorAddressBar, animatorWebView);
+        //animatorSet.start();
     }
 }
