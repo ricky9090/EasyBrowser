@@ -1,30 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/page_frame"
+    android:id="@+id/web_content_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".page.browser.BrowserActivity">
-
-    <FrameLayout
-        android:id="@+id/web_content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="49dp" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#999999"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="48dp"/>
-
-    <ricky.easybrowser.page.browser.BrowserNavBar
-        android:id="@+id/nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"/>
 
 
 </FrameLayout>

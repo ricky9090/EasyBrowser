@@ -2,7 +2,6 @@ package ricky.easybrowser.page.browser;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,13 +14,14 @@ import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 import ricky.easybrowser.page.setting.SettingDialogKt;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
-public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener {
+public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener,
+        IBrowserController {
 
     private static final String SETTING_DIALOG_TAG = "setting_dialog";
     private static final String TAB_DIALOG_TAG = "tab_dialog";
 
     FrameLayout webContentFrame;
-    BrowserNavBar navBar;
+    //BrowserNavBar navBar;
 
     TabCacheManager tabCacheManager;
     TabDialogKt tabDialog;
@@ -38,7 +38,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
 
         webContentFrame = findViewById(R.id.web_content_frame);
 
-        navBar = findViewById(R.id.nav_bar);
+        /*navBar = findViewById(R.id.nav_bar);
         navBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
             @Override
             public void onItemClick(View itemView) {
@@ -53,7 +53,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                     showSettingDialog();
                 }
             }
-        });
+        });*/
 
 
         if (savedInstanceState == null) {
@@ -150,5 +150,30 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         }
 
         settingDialog.show(getSupportFragmentManager(), SETTING_DIALOG_TAG);
+    }
+
+    @Override
+    public void goBack() {
+        onBackPressed();
+    }
+
+    @Override
+    public void goForward() {
+
+    }
+
+    @Override
+    public void goHome() {
+        tabCacheManager.gotoHome();
+    }
+
+    @Override
+    public void showTabs() {
+        showTabDialog();
+    }
+
+    @Override
+    public void showSetting() {
+        showSettingDialog();
     }
 }

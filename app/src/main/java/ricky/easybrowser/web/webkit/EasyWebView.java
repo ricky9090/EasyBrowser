@@ -87,7 +87,7 @@ public class EasyWebView extends WebView {
             touchUpY = trackEvent.getY();
             float deltaY = touchUpY - initTouchY;
             EasyLog.i(TAG, "initTouchY: " + initTouchY + ", touchUpY: " + touchUpY + ", deltaY: " + deltaY);
-            if (touchUpY > initTouchY && Math.abs(deltaY) > mTouchSlop) {
+            if (touchUpY > initTouchY && Math.abs(deltaY) > (mTouchSlop * 15)) {  // 增加滑动距离
                 if (webViewScrollListener != null && lastScrollType != SCROLL_DOWN) {
                     webViewScrollListener.onScrollDown();
                     lastScrollType = SCROLL_DOWN;
@@ -117,6 +117,7 @@ public class EasyWebView extends WebView {
 
     interface WebViewScrollListener {
         void onScrollUp();
+
         void onScrollDown();
     }
 }

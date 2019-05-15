@@ -1,17 +1,17 @@
-package ricky.easybrowser.page.browser;
+package ricky.easybrowser.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
 import ricky.easybrowser.R;
 
-public class BrowserNavBar extends LinearLayout {
+public class BrowserNavBar extends FrameLayout {
 
     ImageView navBack;
     ImageView navForward;

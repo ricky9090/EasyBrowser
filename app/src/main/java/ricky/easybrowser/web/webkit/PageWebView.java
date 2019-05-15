@@ -20,6 +20,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,12 +33,14 @@ import java.io.InputStream;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.browser.BrowserActivity;
+import ricky.easybrowser.page.browser.IBrowserController;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.widget.BrowserNavBar;
 
-public class PageWebView extends LinearLayout implements IWebView {
+public class PageWebView extends FrameLayout implements IWebView {
 
     private EasyWebView webView;
     private LinearLayout webLinear;
@@ -48,13 +51,16 @@ public class PageWebView extends LinearLayout implements IWebView {
     private EditText webAddress;
     private ContentLoadingProgressBar progressBar;
 
+    private BrowserNavBar browserNavBar;
+
     private OnWebInteractListener onWebInteractListener;
 
     private Context mContext;
 
     private boolean noPicMode;
 
-    private int orgAddressBarHeight;
+    private int orgAddressBarHeight = 0;
+    private int orgBrowserNavBarHeight = 0;
     private AlertDialog imageActionsDialog = null;
     private AlertDialog urlActionsDialog = null;
     private String hitResultExtra = null;
@@ -83,17 +89,15 @@ public class PageWebView extends LinearLayout implements IWebView {
         configureWebView();
 
         addressBar = findViewById(R.id.web_address_bar);
-        orgAddressBarHeight = addressBar.getLayoutParams().height;
-        addressBarPlaceholder = findViewById(R.id.address_bar_placeholder);
-        //addressBarPlaceholder.setVisibility(View.GONE);  // 使用translationY动画，隐藏占位
-
-        webLinear = findViewById(R.id.web_linear);
-        /*webLinear.post(new Runnable() {
+        addressBar.post(new Runnable() {
             @Override
             public void run() {
-                webLinear.setTranslationY(orgAddressBarHeight);
+                orgAddressBarHeight = addressBar.getMeasuredHeight();
             }
-        });*/
+        });
+
+        webLinear = findViewById(R.id.web_linear);
+        addressBarPlaceholder = findViewById(R.id.address_bar_placeholder);
 
         goButton = findViewById(R.id.goto_button);
         goButton.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +127,42 @@ public class PageWebView extends LinearLayout implements IWebView {
             }
         });
         progressBar = findViewById(R.id.web_loading_progress_bar);
+
+        browserNavBar = findViewById(R.id.web_nav_bar);
+        browserNavBar.post(new Runnable() {
+            @Override
+            public void run() {
+                orgBrowserNavBarHeight = browserNavBar.getMeasuredHeight();
+            }
+        });
+        browserNavBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
+            @Override
+            public void onItemClick(View itemView) {
+                boolean isBrowserController = mContext instanceof IBrowserController;
+                if (!isBrowserController) {
+                    return;
+                }
+                IBrowserController browserController = (IBrowserController) mContext;
+                int id = itemView.getId();
+                switch (id) {
+                    case R.id.nav_back:
+                        browserController.goBack();
+                        break;
+                    case R.id.nav_forward:
+                        browserController.goForward();
+                        break;
+                    case R.id.nav_home:
+                        browserController.goHome();
+                        break;
+                    case R.id.nav_show_tabs:
+                        browserController.showTabs();
+                        break;
+                    case R.id.nav_setting:
+                        browserController.showSetting();
+                        break;
+                }
+            }
+        });
     }
 
     private void configureWebView() {
@@ -349,30 +389,6 @@ public class PageWebView extends LinearLayout implements IWebView {
      * 动态调整LayoutParam方式频繁调用requestLayout，性能稍差
      */
     private void hideAddressBar() {
-        /*ObjectAnimator animatorWebView = ObjectAnimator.ofFloat(webLinear, "translationY", orgAddressBarHeight, 0);
-        animatorWebView.setDuration(300);
-        animatorWebView.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                webView.setAnimating(true);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                webView.setAnimating(false);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                webView.setAnimating(false);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });*/
-
         ObjectAnimator animatorAddressBar = ObjectAnimator.ofFloat(addressBar, "translationY", 0, -orgAddressBarHeight);
         animatorAddressBar.setDuration(300);
         animatorAddressBar.addListener(new Animator.AnimatorListener() {
@@ -388,12 +404,14 @@ public class PageWebView extends LinearLayout implements IWebView {
             public void onAnimationEnd(Animator animation) {
                 addressBar.setVisibility(View.GONE);
                 webView.setAnimating(false);
+                browserNavBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 addressBar.setVisibility(View.GONE);
                 webView.setAnimating(false);
+                browserNavBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -401,51 +419,28 @@ public class PageWebView extends LinearLayout implements IWebView {
 
             }
         });
-        animatorAddressBar.start();
 
-        //AnimatorSet animatorSet = new AnimatorSet();
-        //animatorSet.playTogether(animatorAddressBar, animatorWebView);
-        //animatorSet.start();
+        ObjectAnimator animatorNavBar = ObjectAnimator.ofFloat(browserNavBar, "translationY", 0, orgBrowserNavBarHeight);
+        animatorNavBar.setDuration(300);
 
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(animatorAddressBar, animatorNavBar);
+        animatorSet.start();
     }
 
     private void showAddressBar() {
-        /*ObjectAnimator animatorWebView = ObjectAnimator.ofFloat(webLinear, "translationY", 0, orgAddressBarHeight);
-        animatorWebView.setDuration(300);
-        animatorWebView.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                webView.setAnimating(true);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                webView.setAnimating(false);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                webView.setAnimating(false);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });*/
-
         ObjectAnimator animatorAddressBar = ObjectAnimator.ofFloat(addressBar, "translationY", -orgAddressBarHeight, 0);
         animatorAddressBar.setDuration(300);
         animatorAddressBar.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-
                 addressBar.setVisibility(View.VISIBLE);
+                browserNavBar.setVisibility(View.VISIBLE);
+                webView.setAnimating(true);
 
                 int scrollY = webView.getScrollY();
                 addressBarPlaceholder.setVisibility(View.VISIBLE);
                 webView.setScrollY(scrollY + orgAddressBarHeight);
-                webView.setAnimating(true);
             }
 
             @Override
@@ -464,10 +459,11 @@ public class PageWebView extends LinearLayout implements IWebView {
 
             }
         });
-        animatorAddressBar.start();
+        ObjectAnimator animatorNavBar = ObjectAnimator.ofFloat(browserNavBar, "translationY", orgBrowserNavBarHeight, 0);
+        animatorNavBar.setDuration(300);
 
-        //AnimatorSet animatorSet = new AnimatorSet();
-        //animatorSet.playTogether(animatorAddressBar, animatorWebView);
-        //animatorSet.start();
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(animatorAddressBar, animatorNavBar);
+        animatorSet.start();
     }
 }

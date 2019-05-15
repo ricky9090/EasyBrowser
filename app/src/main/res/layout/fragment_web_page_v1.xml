@@ -21,12 +21,12 @@
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            tools:progress="50"/>
+            tools:progress="50" />
 
         <ricky.easybrowser.web.webkit.EasyWebView
             android:id="@+id/page_webview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
@@ -53,8 +53,15 @@
             android:layout_height="match_parent"
             android:layout_toLeftOf="@id/goto_button"
             android:inputType=""
-            android:singleLine="true"/>
+            android:singleLine="true" />
 
     </ricky.easybrowser.web.webkit.AddressBar>
+
+    <ricky.easybrowser.widget.BrowserNavBar
+        android:id="@+id/web_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:background="@android:color/white" />
 
 </FrameLayout>
