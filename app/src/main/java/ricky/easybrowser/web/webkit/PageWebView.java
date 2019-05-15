@@ -381,16 +381,19 @@ public class PageWebView extends LinearLayout implements IWebView {
                 int scrollY = webView.getScrollY();
                 addressBarPlaceholder.setVisibility(View.GONE);
                 webView.setScrollY(scrollY - orgAddressBarHeight);
+                webView.setAnimating(true);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 addressBar.setVisibility(View.GONE);
+                webView.setAnimating(false);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
+                addressBar.setVisibility(View.GONE);
+                webView.setAnimating(false);
             }
 
             @Override
@@ -442,16 +445,18 @@ public class PageWebView extends LinearLayout implements IWebView {
                 int scrollY = webView.getScrollY();
                 addressBarPlaceholder.setVisibility(View.VISIBLE);
                 webView.setScrollY(scrollY + orgAddressBarHeight);
+                webView.setAnimating(true);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-
+                webView.setAnimating(false);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
+                addressBar.setTranslationY(0);
+                webView.setAnimating(false);
             }
 
             @Override
