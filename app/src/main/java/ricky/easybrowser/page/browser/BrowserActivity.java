@@ -21,7 +21,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
     private static final String TAB_DIALOG_TAG = "tab_dialog";
 
     FrameLayout webContentFrame;
-    //BrowserNavBar navBar;
 
     TabCacheManager tabCacheManager;
     TabDialogKt tabDialog;
@@ -37,24 +36,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         }
 
         webContentFrame = findViewById(R.id.web_content_frame);
-
-        /*navBar = findViewById(R.id.nav_bar);
-        navBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
-            @Override
-            public void onItemClick(View itemView) {
-                int id = itemView.getId();
-                if (id == R.id.nav_show_tabs) {
-                    showTabDialog();
-                } else if (id == R.id.nav_back) {
-                    onBackPressed();
-                } else if (id == R.id.nav_home) {
-                    tabCacheManager.gotoHome();
-                } else if (id == R.id.nav_setting) {
-                    showSettingDialog();
-                }
-            }
-        });*/
-
 
         if (savedInstanceState == null) {
             // 默认添加一个新标签页

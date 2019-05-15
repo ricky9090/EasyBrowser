@@ -24,6 +24,8 @@
         </activity>
 
         <activity android:name=".page.browser.BrowserActivity" />
+
+        <activity android:name=".page.history.HistoryActivity" />
     </application>
 
 </manifest>
