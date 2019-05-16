@@ -7,15 +7,24 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import java.util.List;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.entity.HistoryEntity;
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements HistoryContract.View {
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
+    private HistoryAdapter adapter;
 
-    Toolbar toolbar;
+    private HistoryContract.Presenter presenter;
 
     public HistoryFragment() {
     }
@@ -30,24 +39,33 @@ public class HistoryFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.layout_common_list, container, false);
-        toolbar = rootView.findViewById(R.id.toolbar);
 
-        toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_black_36dp);
-        toolbar.setTitle(R.string.history);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getContext() instanceof HistoryActivity) {
-                    ((HistoryActivity) getContext()).onBackPressed();
-                }
-            }
-        });
+        swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+        // TODO 实现分页加载
+        swipeRefreshLayout.setEnabled(false);
+        recyclerView = rootView.findViewById(R.id.content_list);
+
+        adapter = new HistoryAdapter(getContext());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+        if (getContext() != null) {
+            recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        }
+
+        presenter = new HistoryPresenterImpl(getContext(), this);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadData();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        presenter.onDestroy();
     }
 
     @Override
@@ -55,5 +73,21 @@ public class HistoryFragment extends Fragment {
         super.onDestroy();
     }
 
+    @Override
+    public void showHistory(List<HistoryEntity> result) {
+        adapter.appendDataList(result);
+        adapter.notifyDataSetChanged();
+    }
 
+    @Override
+    public void showEmptyResult() {
+
+    }
+
+    private void loadData() {
+        if (presenter == null) {
+            return;
+        }
+        presenter.getHistory();
+    }
 }

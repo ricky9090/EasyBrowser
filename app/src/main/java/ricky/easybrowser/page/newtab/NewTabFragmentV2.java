@@ -16,7 +16,6 @@ import ricky.easybrowser.entity.SiteEntity;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.OnBackInteractionListener;
 import ricky.easybrowser.web.IWebView;
-import ricky.easybrowser.web.webkit.PageNestedWebView;
 import ricky.easybrowser.web.webkit.PageWebView;
 
 /**

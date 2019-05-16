@@ -32,6 +32,7 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import java.io.InputStream;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.entity.HistoryEntity;
 import ricky.easybrowser.page.browser.BrowserActivity;
 import ricky.easybrowser.page.browser.IBrowserController;
 import ricky.easybrowser.utils.EasyLog;
@@ -202,6 +203,16 @@ public class PageWebView extends FrameLayout implements IWebView {
                 if (onWebInteractListener != null) {
                     onWebInteractListener.onPageTitleChange(view.getTitle());
                 }
+
+                boolean isBrowserController = mContext instanceof IBrowserController;
+                if (!isBrowserController) {
+                    return;
+                }
+                IBrowserController browserController = (IBrowserController) mContext;
+                HistoryEntity historyEntity = new HistoryEntity();
+                historyEntity.setTitle(view.getTitle());
+                historyEntity.setUrl(url);
+                browserController.addHistory(historyEntity);
             }
 
             @Nullable

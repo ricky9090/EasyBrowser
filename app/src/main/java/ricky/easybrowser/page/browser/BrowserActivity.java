@@ -9,7 +9,17 @@ import androidx.fragment.app.Fragment;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
+import ricky.easybrowser.entity.DaoSession;
+import ricky.easybrowser.entity.HistoryEntity;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 import ricky.easybrowser.page.setting.SettingDialogKt;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
@@ -156,5 +166,21 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
     @Override
     public void showSetting() {
         showSettingDialog();
+    }
+
+    @Override
+    public void addHistory(final HistoryEntity entity) {
+        Disposable dps = Observable.create(new ObservableOnSubscribe<Long>() {
+
+            @Override
+            public void subscribe(ObservableEmitter<Long> emitter) throws Exception {
+                final EasyApplication application = (EasyApplication) getApplicationContext();
+                DaoSession daoSession = application.getDaoSession();
+                long rowId = daoSession.getHistoryEntityDao().insertOrReplace(entity);
+                emitter.onNext(rowId);
+            }
+        }).observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 }
