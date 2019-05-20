@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.page.browser.IBrowserController;
+import ricky.easybrowser.page.browser.IBrowser;
 import ricky.easybrowser.widget.BrowserNavBar;
 
 public class NewTabView extends FrameLayout {
@@ -50,11 +50,11 @@ public class NewTabView extends FrameLayout {
         navBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
             @Override
             public void onItemClick(View itemView) {
-                boolean isBrowserController = getContext() instanceof IBrowserController;
+                boolean isBrowserController = getContext() instanceof IBrowser;
                 if (!isBrowserController) {
                     return;
                 }
-                IBrowserController browserController = (IBrowserController) getContext();
+                IBrowser browser = (IBrowser) getContext();
                 int id = itemView.getId();
                 switch (id) {
                     case R.id.nav_back:
@@ -64,10 +64,10 @@ public class NewTabView extends FrameLayout {
                     case R.id.nav_home:
                         break;
                     case R.id.nav_show_tabs:
-                        browserController.showTabs();
+                        browser.provideNavController().showTabs();
                         break;
                     case R.id.nav_setting:
-                        browserController.showSetting();
+                        browser.provideNavController().showSetting();
                         break;
                 }
             }

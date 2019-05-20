@@ -34,7 +34,7 @@ import java.io.InputStream;
 import ricky.easybrowser.R;
 import ricky.easybrowser.entity.HistoryEntity;
 import ricky.easybrowser.page.browser.BrowserActivity;
-import ricky.easybrowser.page.browser.IBrowserController;
+import ricky.easybrowser.page.browser.IBrowser;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
@@ -139,27 +139,27 @@ public class PageWebView extends FrameLayout implements IWebView {
         browserNavBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
             @Override
             public void onItemClick(View itemView) {
-                boolean isBrowserController = mContext instanceof IBrowserController;
+                boolean isBrowserController = mContext instanceof IBrowser;
                 if (!isBrowserController) {
                     return;
                 }
-                IBrowserController browserController = (IBrowserController) mContext;
+                IBrowser browser = (IBrowser) mContext;
                 int id = itemView.getId();
                 switch (id) {
                     case R.id.nav_back:
-                        browserController.goBack();
+                        browser.provideNavController().goBack();
                         break;
                     case R.id.nav_forward:
-                        browserController.goForward();
+                        browser.provideNavController().goForward();
                         break;
                     case R.id.nav_home:
-                        browserController.goHome();
+                        browser.provideNavController().goHome();
                         break;
                     case R.id.nav_show_tabs:
-                        browserController.showTabs();
+                        browser.provideNavController().showTabs();
                         break;
                     case R.id.nav_setting:
-                        browserController.showSetting();
+                        browser.provideNavController().showSetting();
                         break;
                 }
             }
@@ -204,15 +204,15 @@ public class PageWebView extends FrameLayout implements IWebView {
                     onWebInteractListener.onPageTitleChange(view.getTitle());
                 }
 
-                boolean isBrowserController = mContext instanceof IBrowserController;
+                boolean isBrowserController = mContext instanceof IBrowser;
                 if (!isBrowserController) {
                     return;
                 }
-                IBrowserController browserController = (IBrowserController) mContext;
+                IBrowser browser = (IBrowser) mContext;
                 HistoryEntity historyEntity = new HistoryEntity();
                 historyEntity.setTitle(view.getTitle());
                 historyEntity.setUrl(url);
-                browserController.addHistory(historyEntity);
+                browser.provideHistoryController().addHistory(historyEntity);
             }
 
             @Nullable

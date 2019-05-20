@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -14,7 +15,6 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
@@ -25,7 +25,7 @@ import ricky.easybrowser.page.setting.SettingDialogKt;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
 public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener,
-        IBrowserController {
+        IBrowser {
 
     private static final String SETTING_DIALOG_TAG = "setting_dialog";
     private static final String TAB_DIALOG_TAG = "tab_dialog";
@@ -35,6 +35,9 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
     TabCacheManager tabCacheManager;
     TabDialogKt tabDialog;
     SettingDialogKt settingDialog;
+
+    IBrowser.NavController navController;
+    IBrowser.HistoryController historyController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,44 +146,84 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         settingDialog.show(getSupportFragmentManager(), SETTING_DIALOG_TAG);
     }
 
+    @NonNull
     @Override
-    public void goBack() {
-        onBackPressed();
+    public NavController provideNavController() {
+        if (navController == null) {
+            navController = new EasyNavController();
+        }
+        return navController;
     }
 
+    @NonNull
     @Override
-    public void goForward() {
-
+    public HistoryController provideHistoryController() {
+        if (historyController == null) {
+            historyController = new EasyHistoryController();
+        }
+        return historyController;
     }
 
+    @NonNull
     @Override
-    public void goHome() {
-        tabCacheManager.gotoHome();
+    public DownloadController provideDownloadController() {
+        return new StubDownloadController();
     }
 
+    @NonNull
     @Override
-    public void showTabs() {
-        showTabDialog();
+    public BookmarkController provideBookmarkController() {
+        return new StubBookmarkController();
     }
 
-    @Override
-    public void showSetting() {
-        showSettingDialog();
+    class EasyNavController implements IBrowser.NavController {
+        @Override
+        public void goBack() {
+            onBackPressed();
+        }
+
+        @Override
+        public void goForward() {
+
+        }
+
+        @Override
+        public void goHome() {
+            tabCacheManager.gotoHome();
+        }
+
+        @Override
+        public void showTabs() {
+            showTabDialog();
+        }
+
+        @Override
+        public void showSetting() {
+            showSettingDialog();
+        }
     }
 
-    @Override
-    public void addHistory(final HistoryEntity entity) {
-        Disposable dps = Observable.create(new ObservableOnSubscribe<Long>() {
+    class EasyHistoryController implements IBrowser.HistoryController {
+        @Override
+        public void addHistory(final HistoryEntity entity) {
+            Disposable dps = Observable.create(new ObservableOnSubscribe<Long>() {
 
-            @Override
-            public void subscribe(ObservableEmitter<Long> emitter) throws Exception {
-                final EasyApplication application = (EasyApplication) getApplicationContext();
-                DaoSession daoSession = application.getDaoSession();
-                long rowId = daoSession.getHistoryEntityDao().insertOrReplace(entity);
-                emitter.onNext(rowId);
-            }
-        }).observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe();
+                @Override
+                public void subscribe(ObservableEmitter<Long> emitter) throws Exception {
+                    final EasyApplication application = (EasyApplication) getApplicationContext();
+                    DaoSession daoSession = application.getDaoSession();
+                    long rowId = daoSession.getHistoryEntityDao().insertOrReplace(entity);
+                    emitter.onNext(rowId);
+                }
+            }).observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe();
+        }
+    }
+
+    class StubDownloadController implements IBrowser.DownloadController {
+    }
+
+    class StubBookmarkController implements IBrowser.BookmarkController {
     }
 }
