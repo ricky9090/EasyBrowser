@@ -3,6 +3,7 @@ package ricky.easybrowser.page.browser;
 import android.content.Context;
 import android.util.LruCache;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -49,20 +50,27 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject,
         };
     }
 
-    public void restoreTabCache(TabInfo info, Fragment fragment) {
+    /**
+     * 还原Tab页缓存，使用从Fragment中还原的参数生成TabInfo对象
+     * @param infoCopy 由Fragment中的参数还原的TabInfo对象，与复原列表里的hash值不同，put时需判断
+     * @param fragment 目标Fragment
+     */
+    public void restoreTabCache(TabInfo infoCopy, @Nullable Fragment fragment) {
         int prevIndex = -1;
         for (int i = 0; i < infoList.size(); i++) {
-            if (info.equals(infoList.get(i))) {
+            if (infoCopy.equals(infoList.get(i))) {
                 prevIndex = i;
                 break;
             }
         }
         if (prevIndex >= 0) {
-            // 之前有缓存，直接put进cache，不更新列表
+            // 之前有缓存，直接put进cache，不更新列表，需要从infoList中拿到真正的TabInfo
+            TabInfo info = infoList.get(prevIndex);
             lruCache.put(info, fragment);
         } else {
-            infoList.add(info);
-            lruCache.put(info, fragment);
+            // 缓存列表里不存在此项
+            infoList.add(infoCopy);
+            lruCache.put(infoCopy, fragment);
         }
     }
 

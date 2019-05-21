@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -56,26 +57,47 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             tabInfo.setTag(System.currentTimeMillis() + "");
             tabInfo.setTitle(getString(R.string.new_tab_welcome));
             ((IBrowser.TabController) tabCacheManager).onAddNewTab(tabInfo, false);
-        } else {
-            // 当横竖屏切换后，将复原的Fragment重新推入cache
-            // FIXME 原tab列表信息未能还原，复原的tab数量为cache数量
-            // 序列化tablist用于还原操作
-            List<Fragment> restoredFragmentList = getSupportFragmentManager().getFragments();
-            if (restoredFragmentList.size() > 0) {
-                for (Fragment target : restoredFragmentList) {
-                    if (target instanceof NewTabFragmentV2 && target.getArguments() != null) {
-                        TabInfo info = new TabInfo();
-                        info.setTitle(target.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
-                        info.setTag(target.getArguments().getString(NewTabFragmentV2.ARG_TAG));
-                        tabCacheManager.restoreTabCache(info, target);
-                    }
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState == null) {
+            return;
+        }
+        ArrayList<TabInfo> restoreList = savedInstanceState.getParcelableArrayList("tablist");
+        if (restoreList == null) {
+            return;
+        }
+
+        // 当横竖屏切换后，将复原的Fragment重新推入cache
+        // 由于tablist可能超出cache的大小(即Activity销毁前Fragment数量)，这里首先还原tablist信息
+        tabCacheManager.provideInfoList().addAll(restoreList);
+        List<Fragment> restoredFragmentList = getSupportFragmentManager().getFragments();
+        if (restoredFragmentList.size() > 0) {
+            for (Fragment target : restoredFragmentList) {
+                if (target instanceof NewTabFragmentV2 && target.getArguments() != null) {
+                    // 根据Fragment参数，还原TabInfo信息用于列表中查找
+                    TabInfo info = new TabInfo();
+                    info.setTitle(target.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
+                    info.setTag(target.getArguments().getString(NewTabFragmentV2.ARG_TAG));
+                    tabCacheManager.restoreTabCache(info, target);
                 }
             }
-            Fragment prev = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
-            if (prev instanceof TabDialogKt) {
-                ((TabDialogKt) prev).setTabCacheManager(tabCacheManager);
-            }
         }
+        Fragment prevDialog = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
+        if (prevDialog instanceof TabDialogKt) {
+            ((TabDialogKt) prevDialog).setTabCacheManager(tabCacheManager);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ArrayList<TabInfo> storeList = new ArrayList<>();
+        storeList.addAll(tabCacheManager.provideInfoList());
+        outState.putParcelableArrayList("tablist", storeList);
     }
 
     @Override
