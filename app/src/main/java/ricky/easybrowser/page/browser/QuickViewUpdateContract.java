@@ -6,7 +6,8 @@ public interface QuickViewUpdateContract {
 
     interface Subject {
         void attach(Observer observer);
-        List<TabCacheManager.TabInfo> provideInfoList();
+
+        List<TabInfo> provideInfoList();
     }
 
     interface Observer {

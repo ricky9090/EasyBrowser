@@ -1,16 +1,14 @@
 package ricky.easybrowser.page.browser;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.LruCache;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
@@ -18,7 +16,8 @@ import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 /**
  * LRU实现的标签页缓存。负责标签页的缓存及切换显示逻辑。
  */
-public class TabCacheManager implements QuickViewUpdateContract.Subject {
+public class TabCacheManager implements QuickViewUpdateContract.Subject,
+        IBrowser.TabController {
 
     private final Context mContext;
     private final FragmentManager fm;
@@ -51,30 +50,36 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
     }
 
     public void restoreTabCache(TabInfo info, Fragment fragment) {
-        boolean needAdd = true;
+        int prevIndex = -1;
         for (int i = 0; i < infoList.size(); i++) {
             if (info.equals(infoList.get(i))) {
-                needAdd = false;
+                prevIndex = i;
                 break;
             }
         }
-        if (needAdd) {
+        if (prevIndex >= 0) {
+            // 之前有缓存，直接put进cache，不更新列表
+            lruCache.put(info, fragment);
+        } else {
             infoList.add(info);
             lruCache.put(info, fragment);
         }
     }
 
     private void put(TabInfo info, Fragment fragment) {
-        boolean needAdd = true;
+        int prevIndex = -1;
         for (int i = 0; i < infoList.size(); i++) {
             if (info.equals(infoList.get(i))) {
-                needAdd = false;
+                prevIndex = i;
                 break;
             }
         }
-        if (needAdd) {
+        if (prevIndex >= 0) {
+            // 之前有缓存，直接put进cache，不更新列表
+            lruCache.put(info, fragment);
+        } else {
             infoList.add(info);
-            lruCache.put(info, fragment);  // throw error when tag is null
+            lruCache.put(info, fragment);
         }
     }
 
@@ -121,7 +126,7 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
             // 没有缓存页，原页面被回收。重新创建Fragment，复用tag并放至缓存中
             NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance();
             TabInfo fragmentInfo = info;
-            fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd, info.tag).commit();
+            fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd, info.getTag()).commit();
             put(fragmentInfo, fragmentToAdd);
         }
     }
@@ -129,51 +134,25 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
     /**
      * 新建标签页
      */
-    public void addNewTab() {
-        addNewTab("");
+    private void addNewTab(String title) {
+        TabInfo tabInfo = new TabInfo();
+        tabInfo.setTitle(title);
+        tabInfo.setTag(System.currentTimeMillis() + "");
+
+        onAddNewTab(tabInfo, false);
     }
 
-    /**
-     * 新建标签页
-     * @param title 标题
-     */
-    public void addNewTab(String title) {
-        if (fm == null) {
+    private void addNewTab(TabInfo info, boolean backstage) {
+        if (fm == null || info == null) {
             return;
         }
         Fragment current = findVisibleFragment(fm);
-        String fragmentTag = System.currentTimeMillis() + "";
-        NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance(title, fragmentTag);
-        TabInfo info = new TabInfo();
-        info.tag = fragmentTag;
-        info.title = title;
-        if (current != null) {
-            fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd).commit();
-        } else {
-            fm.beginTransaction().add(browserLayoutId, fragmentToAdd).commit();
-        }
-
-        put(info, fragmentToAdd);
-        if (observer != null) {
-            observer.updateQuickView();
-        }
-    }
-
-    public void addNewTab(Uri uri, boolean backstage) {
-        if (fm == null) {
-            return;
-        }
-        Fragment current = findVisibleFragment(fm);
-        String fragmentTag = System.currentTimeMillis() + "";
-        NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance("newTab", fragmentTag, uri);
-        TabInfo info = new TabInfo();
-        info.tag = fragmentTag;
-        info.title = "newTab";
+        NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance(info.getTitle(), info.getTag(), info.getUri());
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.add(browserLayoutId, fragmentToAdd);
         if (current != null && !backstage) {
             transaction.hide(current);
-        } else {
+        } else if (current != null) {
             transaction.hide(fragmentToAdd);
         }
         transaction.commit();
@@ -226,7 +205,7 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
     private int findTabByTag(String tag) {
         int index = -1;
         for (int i = 0; i < infoList.size(); i++) {
-            if (tag.equals(infoList.get(i).tag)) {
+            if (tag.equals(infoList.get(i).getTag())) {
                 index = i;
                 break;
             }
@@ -264,7 +243,7 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         String nTitle = target.getArguments().getString(NewTabFragmentV2.ARG_TITLE);
         int i = findTabByTag(nTag);
         try {
-            infoList.get(i).title = nTitle;
+            infoList.get(i).setTitle(nTitle);
         } catch (Exception e) {
 
         }
@@ -295,40 +274,18 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject {
         return this.infoList;
     }
 
-    /**
-     * 缓存中对应的页面信息
-     */
-    public static class TabInfo {
-        private String tag;
-        private String title;
+    @Override
+    public void onTabSelected(TabInfo tabInfo) {
+        switchToTab(tabInfo);
+    }
 
-        public String getTag() {
-            return tag;
-        }
+    @Override
+    public void onTabClose(TabInfo tabInfo) {
+        closeTab(tabInfo);
+    }
 
-        public void setTag(String tag) {
-            this.tag = tag;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (tag == null || obj == null) {
-                return false;
-            }
-            if (obj instanceof TabInfo) {
-                TabInfo target = (TabInfo) obj;
-                return tag.equals(target.tag);
-            } else {
-                return false;
-            }
-        }
+    @Override
+    public void onAddNewTab(TabInfo tabInfo, boolean backstage) {
+        addNewTab(tabInfo, backstage);
     }
 }

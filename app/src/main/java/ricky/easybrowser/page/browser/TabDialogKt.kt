@@ -12,6 +12,7 @@ import ricky.easybrowser.R
 class TabDialogKt : DialogFragment() {
 
     lateinit var tabCacheManager: TabCacheManager
+    private var browser: IBrowser? = null
 
     lateinit var tabRecyclerView: RecyclerView
     lateinit var tabQuickViewAdapter: TabQuickViewAdapter
@@ -21,6 +22,10 @@ class TabDialogKt : DialogFragment() {
         super.onCreate(savedInstanceState)
         // 对话框全屏模式，去掉屏幕边界padding
         setStyle(STYLE_NO_TITLE, R.style.FullScreenDialog)
+
+        if (context is IBrowser) {
+            browser = context as IBrowser
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,18 +49,21 @@ class TabDialogKt : DialogFragment() {
         tabQuickViewAdapter = TabQuickViewAdapter(context)
         tabQuickViewAdapter.attachToBrwoserTabs(tabCacheManager)
         tabQuickViewAdapter.listener = object : TabQuickViewAdapter.OnTabClickListener {
-            override fun onTabClick(info: TabCacheManager.TabInfo) {
-                tabCacheManager.switchToTab(info)
+            override fun onTabClick(info: TabInfo) {
+                browser?.provideTabController()?.onTabSelected(info)
                 dismiss()
             }
 
-            override fun onTabClose(info: TabCacheManager.TabInfo) {
-                tabCacheManager.closeTab(info)
+            override fun onTabClose(info: TabInfo) {
+                browser?.provideTabController()?.onTabClose(info)
                 dismiss()
             }
 
             override fun onAddTab() {
-                tabCacheManager.addNewTab(getString(R.string.new_tab_welcome))
+                var info = TabInfo()
+                info.title = context?.resources?.getString(R.string.new_tab_welcome)
+                info.tag = "" +  System.currentTimeMillis()
+                browser?.provideTabController()?.onAddNewTab(info, false)
                 dismiss()
             }
         }

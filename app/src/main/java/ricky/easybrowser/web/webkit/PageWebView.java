@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,8 +34,8 @@ import java.io.InputStream;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.entity.HistoryEntity;
-import ricky.easybrowser.page.browser.BrowserActivity;
 import ricky.easybrowser.page.browser.IBrowser;
+import ricky.easybrowser.page.browser.TabInfo;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
@@ -382,17 +383,31 @@ public class PageWebView extends FrameLayout implements IWebView {
     }
 
     private void notifyAddNewTab(boolean backStage) {
-        BrowserActivity activity = null;
-        if (mContext instanceof BrowserActivity) {
-            activity = (BrowserActivity) mContext;
+        IBrowser browser = null;
+        if (mContext instanceof IBrowser) {
+            browser = (IBrowser) mContext;
+
         }
-        if (activity == null) {
+        if (browser == null) {
             return;
         }
         if (StringUtils.isEmpty(hitResultExtra)) {
             return;
         }
-        activity.addNewTab(hitResultExtra, backStage);
+        Uri uri = null;
+        try {
+            uri = Uri.parse(hitResultExtra);
+        } catch (Exception e) {
+            uri = null;
+        }
+        if (uri == null) {
+            return;
+        }
+        TabInfo tabInfo = new TabInfo();
+        tabInfo.setTag(System.currentTimeMillis() + "");
+        tabInfo.setTitle(mContext.getResources().getString(R.string.new_tab_welcome));
+        tabInfo.setUri(uri);
+        browser.provideTabController().onAddNewTab(tabInfo, backStage);
     }
 
     /**

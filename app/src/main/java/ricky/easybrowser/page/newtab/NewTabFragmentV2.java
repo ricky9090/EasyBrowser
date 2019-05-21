@@ -87,8 +87,10 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         if (savedInstanceState != null) {
             mTitle = savedInstanceState.getString(ARG_TITLE);
             mTag = savedInstanceState.getString(ARG_TAG);
-            getArguments().putString(ARG_TITLE, mTitle);
-            getArguments().putString(ARG_TAG, mTag);
+            Bundle resArg = new Bundle();
+            resArg.putString(ARG_TITLE, mTitle);
+            resArg.putString(ARG_TAG, mTag);
+            setArguments(resArg);
 
             loadUri = savedInstanceState.getParcelable(ARG_URI);
         } else if (getArguments() != null) {

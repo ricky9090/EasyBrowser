@@ -1,6 +1,5 @@
 package ricky.easybrowser.page.browser;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
@@ -38,6 +37,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
 
     IBrowser.NavController navController;
     IBrowser.HistoryController historyController;
+    IBrowser.TabController tabController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,17 +52,21 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
 
         if (savedInstanceState == null) {
             // 默认添加一个新标签页
-            tabCacheManager.addNewTab(getString(R.string.new_tab_welcome));
+            TabInfo tabInfo = new TabInfo();
+            tabInfo.setTag(System.currentTimeMillis() + "");
+            tabInfo.setTitle(getString(R.string.new_tab_welcome));
+            ((IBrowser.TabController) tabCacheManager).onAddNewTab(tabInfo, false);
         } else {
             // 当横竖屏切换后，将复原的Fragment重新推入cache
+            // FIXME 原tab列表信息未能还原，复原的tab数量为cache数量
+            // 序列化tablist用于还原操作
             List<Fragment> restoredFragmentList = getSupportFragmentManager().getFragments();
             if (restoredFragmentList.size() > 0) {
                 for (Fragment target : restoredFragmentList) {
                     if (target instanceof NewTabFragmentV2 && target.getArguments() != null) {
-                        TabCacheManager.TabInfo info = new TabCacheManager.TabInfo();
+                        TabInfo info = new TabInfo();
                         info.setTitle(target.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
                         info.setTag(target.getArguments().getString(NewTabFragmentV2.ARG_TAG));
-                        // TODO 检查去掉clearCache后，是否重复put，TabInfo已经重写equals方法
                         tabCacheManager.restoreTabCache(info, target);
                     }
                 }
@@ -102,19 +106,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         }
 
         super.onBackPressed();
-    }
-
-    public void addNewTab(String uriStr, boolean backstage) {
-        Uri uri = null;
-        try {
-            uri = Uri.parse(uriStr);
-        } catch (Exception e) {
-
-        }
-        if (uri == null) {
-            return;
-        }
-        tabCacheManager.addNewTab(uri, backstage);
     }
 
     private void showTabDialog() {
@@ -176,6 +167,15 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         return new StubBookmarkController();
     }
 
+    @NonNull
+    @Override
+    public TabController provideTabController() {
+        if (tabController == null) {
+            tabController = new EasyTabController(tabCacheManager);
+        }
+        return tabController;
+    }
+
     class EasyNavController implements IBrowser.NavController {
         @Override
         public void goBack() {
@@ -218,6 +218,36 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             }).observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe();
+        }
+    }
+
+    class EasyTabController implements IBrowser.TabController {
+
+        private TabController next = null;
+
+        public EasyTabController(TabController next) {
+            this.next = next;
+        }
+
+        @Override
+        public void onTabSelected(TabInfo tabInfo) {
+            if (next != null) {
+                next.onTabSelected(tabInfo);
+            }
+        }
+
+        @Override
+        public void onTabClose(TabInfo tabInfo) {
+            if (next != null) {
+                next.onTabClose(tabInfo);
+            }
+        }
+
+        @Override
+        public void onAddNewTab(TabInfo tabInfo, boolean backstage) {
+            if (next != null) {
+                next.onAddNewTab(tabInfo, backstage);
+            }
         }
     }
 

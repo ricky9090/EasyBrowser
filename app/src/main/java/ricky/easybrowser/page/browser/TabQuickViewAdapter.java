@@ -73,7 +73,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void bindQuickView(TabQuickViewHolder holder, final int position) {
-        final TabCacheManager.TabInfo info = tabLruCache.provideInfoList().get(position);
+        final TabInfo info = tabLruCache.provideInfoList().get(position);
         holder.siteTitle.setText(info.getTitle());
         holder.closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,9 +163,9 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public interface OnTabClickListener {
 
-        void onTabClick(TabCacheManager.TabInfo tag);
+        void onTabClick(TabInfo tag);
 
-        void onTabClose(TabCacheManager.TabInfo tag);
+        void onTabClose(TabInfo tag);
 
         void onAddTab();
     }
