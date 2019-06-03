@@ -3,10 +3,7 @@ package ricky.easybrowser.utils;
 public class StringUtils {
 
     public static boolean isEmpty(String str) {
-        if (str == null || str.isEmpty()) {
-            return true;
-        }
-        return false;
+        return str == null || str.isEmpty();
     }
 
     public static boolean isNotEmpty(String str) {

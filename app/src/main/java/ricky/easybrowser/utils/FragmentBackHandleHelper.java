@@ -9,7 +9,7 @@ public class FragmentBackHandleHelper {
 
     public static boolean isFragmentBackHandled(FragmentManager fragmentManager) {
         List<Fragment> fragments = fragmentManager.getFragments();
-        if (fragments == null) {
+        if (CollectionUtils.isEmpty(fragments)) {
             return false;
         }
 

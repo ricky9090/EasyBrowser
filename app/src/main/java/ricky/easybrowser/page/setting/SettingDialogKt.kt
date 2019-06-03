@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import ricky.easybrowser.R
@@ -28,17 +27,8 @@ class SettingDialogKt : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val dialogView: View = inflater.inflate(R.layout.layout_setting_dialog, container, false)
 
-        val back: ImageView = dialogView.findViewById(R.id.nav_back)
-        back.visibility = View.INVISIBLE
-        val forward: ImageView = dialogView.findViewById(R.id.nav_forward)
-        forward.visibility = View.INVISIBLE
-        val home: ImageView = dialogView.findViewById(R.id.nav_home)
-        home.visibility = View.INVISIBLE
-        val tab: ImageView = dialogView.findViewById(R.id.nav_show_tabs)
-        tab.visibility = View.INVISIBLE
-
-        val linearLayout: LinearLayout = dialogView.findViewById(R.id.nav_bar_linear)
-        linearLayout.setOnClickListener {
+        val foldButton: ImageView = dialogView.findViewById(R.id.nav_fold)
+        foldButton.setOnClickListener {
             dismiss()
         }
 

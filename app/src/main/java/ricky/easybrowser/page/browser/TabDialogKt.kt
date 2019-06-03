@@ -3,7 +3,6 @@ package ricky.easybrowser.page.browser
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,17 +29,9 @@ class TabDialogKt : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val dialogView: View = inflater.inflate(R.layout.layout_tab_dialog, container, false)
-        val back: ImageView = dialogView.findViewById(R.id.nav_back)
-        back.visibility = View.INVISIBLE
-        val forward: ImageView = dialogView.findViewById(R.id.nav_forward)
-        forward.visibility = View.INVISIBLE
-        val home: ImageView = dialogView.findViewById(R.id.nav_home)
-        home.visibility = View.INVISIBLE
-        val setting: ImageView = dialogView.findViewById(R.id.nav_setting)
-        setting.visibility = View.INVISIBLE
 
-        val linearLayout: LinearLayout = dialogView.findViewById(R.id.nav_bar_linear)
-        linearLayout.setOnClickListener {
+        val foldButton: ImageView = dialogView.findViewById(R.id.nav_fold)
+        foldButton.setOnClickListener {
             dismiss()
         }
 
@@ -62,7 +53,7 @@ class TabDialogKt : DialogFragment() {
             override fun onAddTab() {
                 var info = TabInfo()
                 info.title = context?.resources?.getString(R.string.new_tab_welcome)
-                info.tag = "" +  System.currentTimeMillis()
+                info.tag = "" + System.currentTimeMillis()
                 browser?.provideTabController()?.onAddNewTab(info, false)
                 dismiss()
             }
