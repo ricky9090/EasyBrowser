@@ -21,6 +21,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     private Context mContext;
     private final List<HistoryEntity> dataList = new ArrayList<>();
 
+    private OnHistoryItemClickListener itemClickListener;
+
     public HistoryAdapter(Context context) {
         this.mContext = context;
     }
@@ -38,12 +40,21 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         if (dataList.size() <= position) {
             return;
         }
-        HistoryEntity entity = dataList.get(position);
+        final HistoryEntity entity = dataList.get(position);
         if (entity == null) {
             return;
         }
         holder.title.setText(entity.getTitle());
         holder.url.setText(entity.getUrl());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemClickListener != null) {
+                    itemClickListener.onHistoryItemClick(entity);
+                }
+            }
+        });
     }
 
     @Override
@@ -59,6 +70,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         dataList.addAll(list);
     }
 
+    public void setItemClickListener(OnHistoryItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
@@ -70,5 +85,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             title = itemView.findViewById(R.id.history_title);
             url = itemView.findViewById(R.id.history_url);
         }
+    }
+
+    interface OnHistoryItemClickListener {
+        void onHistoryItemClick(HistoryEntity entity);
     }
 }

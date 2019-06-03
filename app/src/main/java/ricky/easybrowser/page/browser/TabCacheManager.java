@@ -117,7 +117,7 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject,
      *
      * @param info
      */
-    public void switchToTab(TabInfo info) {
+    private void switchToTab(TabInfo info) {
         Fragment current = findVisibleFragment(fm);
         Fragment target = get(info);
 
@@ -180,7 +180,7 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject,
      *
      * @param info
      */
-    public void closeTab(TabInfo info) {
+    private void closeTab(TabInfo info) {
         int orgIndex = findTabIndex(info);
         remove(info);
         if (observer != null) {

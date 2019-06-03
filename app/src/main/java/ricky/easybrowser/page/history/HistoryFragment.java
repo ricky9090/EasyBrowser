@@ -1,5 +1,8 @@
 package ricky.easybrowser.page.history;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +19,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.List;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.Const;
 import ricky.easybrowser.entity.HistoryEntity;
+import ricky.easybrowser.page.browser.TabInfo;
 
 public class HistoryFragment extends Fragment implements HistoryContract.View {
 
@@ -46,6 +51,31 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
         recyclerView = rootView.findViewById(R.id.content_list);
 
         adapter = new HistoryAdapter(getContext());
+        adapter.setItemClickListener(new HistoryAdapter.OnHistoryItemClickListener() {
+            @Override
+            public void onHistoryItemClick(HistoryEntity entity) {
+                Uri uri = null;
+                try {
+                    uri = Uri.parse(entity.getUrl());
+                } catch (Exception e) {
+                    uri = null;
+                }
+                if (uri == null) {
+                    return;
+                }
+                TabInfo info = new TabInfo();
+                info.setTitle(entity.getTitle());
+                info.setUri(uri);
+                info.setTag(System.currentTimeMillis() + "");
+                Intent resultData = new Intent();
+                resultData.putExtra(Const.Key.TAB_INFO, info);
+
+                if (getActivity() != null) {
+                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().finish();
+                }
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
         if (getContext() != null) {

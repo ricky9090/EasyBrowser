@@ -1,9 +1,12 @@
 package ricky.easybrowser.page.browser;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -18,8 +21,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.Const;
 import ricky.easybrowser.entity.DaoSession;
 import ricky.easybrowser.entity.HistoryEntity;
+import ricky.easybrowser.page.history.HistoryActivity;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 import ricky.easybrowser.page.setting.SettingDialogKt;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
@@ -130,6 +135,27 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         super.onBackPressed();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Const.RequestCode.SHOW_HISTORY) {
+            showHistoryResult(resultCode, data);
+        }
+    }
+
+    private void showHistoryResult(int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK || data == null) {
+            return;
+        }
+        TabInfo info = data.getParcelableExtra(Const.Key.TAB_INFO);
+        if (info == null) {
+            return;
+        }
+
+        provideTabController().onAddNewTab(info, false);
+    }
+
     private void showTabDialog() {
         Fragment prev = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
         if (prev != null) {
@@ -222,6 +248,13 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         @Override
         public void showSetting() {
             showSettingDialog();
+        }
+
+        @Override
+        public void showHistory() {
+            Intent intent = new Intent();
+            intent.setClass(BrowserActivity.this, HistoryActivity.class);
+            startActivityForResult(intent, Const.RequestCode.SHOW_HISTORY);
         }
     }
 

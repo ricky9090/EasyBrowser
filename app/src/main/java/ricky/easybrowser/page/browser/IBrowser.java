@@ -35,6 +35,8 @@ public interface IBrowser {
         void showTabs();
 
         void showSetting();
+
+        void showHistory();
     }
 
     interface HistoryController {

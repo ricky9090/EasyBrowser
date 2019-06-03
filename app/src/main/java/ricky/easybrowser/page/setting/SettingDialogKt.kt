@@ -1,6 +1,5 @@
 package ricky.easybrowser.page.setting
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
@@ -9,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import ricky.easybrowser.R
-import ricky.easybrowser.page.history.HistoryActivity
+import ricky.easybrowser.page.browser.IBrowser
 import ricky.easybrowser.utils.SharedPreferencesUtils
 
 class SettingDialogKt : DialogFragment() {
@@ -48,9 +47,9 @@ class SettingDialogKt : DialogFragment() {
 
         history = dialogView.findViewById(R.id.history)
         history.setOnClickListener {
-            var intent = Intent()
-            intent.setClass(context, HistoryActivity::class.java)
-            startActivity(intent)
+            if (context is IBrowser) {
+                (context as IBrowser).provideNavController().showHistory()
+            }
             dismiss()
         }
 
