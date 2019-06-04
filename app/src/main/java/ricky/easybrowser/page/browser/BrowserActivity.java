@@ -26,10 +26,11 @@ import ricky.easybrowser.entity.DaoSession;
 import ricky.easybrowser.entity.HistoryEntity;
 import ricky.easybrowser.page.history.HistoryActivity;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
+import ricky.easybrowser.page.newtab.OnTabInteractionListener;
 import ricky.easybrowser.page.setting.SettingDialogKt;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
-public class BrowserActivity extends AppCompatActivity implements NewTabFragmentV2.OnFragmentInteractionListener,
+public class BrowserActivity extends AppCompatActivity implements OnTabInteractionListener,
         IBrowser {
 
     private static final String SETTING_DIALOG_TAG = "setting_dialog";
@@ -62,6 +63,12 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
             tabInfo.setTag(System.currentTimeMillis() + "");
             tabInfo.setTitle(getString(R.string.new_tab_welcome));
             ((IBrowser.TabController) tabCacheManager).onAddNewTab(tabInfo, false);
+        } else {
+            Fragment prevDialog = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
+            if (prevDialog instanceof TabDialogKt) {
+                ((TabDialogKt) prevDialog).setTabCacheManager(tabCacheManager);
+                ((TabDialogKt) prevDialog).dismiss();
+            }
         }
     }
 
@@ -91,10 +98,6 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                 }
             }
         }
-        Fragment prevDialog = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
-        if (prevDialog instanceof TabDialogKt) {
-            ((TabDialogKt) prevDialog).setTabCacheManager(tabCacheManager);
-        }
     }
 
     @Override
@@ -123,7 +126,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
 
     @Override
     public void onTabTitleChanged(String title) {
-        tabCacheManager.updateTabTitle();
+        tabCacheManager.updateTabInfo();
     }
 
     @Override
@@ -164,9 +167,9 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
         }
         if (tabDialog == null) {
             tabDialog = new TabDialogKt();
-            tabDialog.setTabCacheManager(tabCacheManager);
             tabDialog.setCancelable(false);
         }
+        tabDialog.setTabCacheManager(tabCacheManager);
         tabDialog.show(getSupportFragmentManager(), TAB_DIALOG_TAG);
     }
 
@@ -237,7 +240,7 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
 
         @Override
         public void goHome() {
-            tabCacheManager.gotoHome();
+            tabController.gotoTabHome();
         }
 
         @Override
@@ -304,11 +307,18 @@ public class BrowserActivity extends AppCompatActivity implements NewTabFragment
                 next.onAddNewTab(tabInfo, backstage);
             }
         }
+
+        @Override
+        public void gotoTabHome() {
+            if (next != null) {
+                next.gotoTabHome();
+            }
+        }
     }
 
-    class StubDownloadController implements IBrowser.DownloadController {
+    private class StubDownloadController implements IBrowser.DownloadController {
     }
 
-    class StubBookmarkController implements IBrowser.BookmarkController {
+    private class StubBookmarkController implements IBrowser.BookmarkController {
     }
 }

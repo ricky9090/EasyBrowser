@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import ricky.easybrowser.R;
 import ricky.easybrowser.utils.StringUtils;
 
-public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements QuickViewUpdateContract.Observer {
+public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements TabQuickViewContract.Observer {
 
     private static final int VIEW_ADD = 100;
     private static final int VIEW_TAB = 101;
 
     private Context context;
-    private QuickViewUpdateContract.Subject tabLruCache;
+    private TabQuickViewContract.Subject tabLruCache;
     private OnTabClickListener listener;
 
     public TabQuickViewAdapter(Context context) {
@@ -98,7 +98,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         });
     }
 
-    public void attachToBrwoserTabs(TabCacheManager target) {
+    public void attachToSubject(TabQuickViewContract.Subject target) {
         tabLruCache = target;
         tabLruCache.attach(this);
     }

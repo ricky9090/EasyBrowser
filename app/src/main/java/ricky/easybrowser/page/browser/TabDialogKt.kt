@@ -38,7 +38,7 @@ class TabDialogKt : DialogFragment() {
         tabRecyclerView = dialogView.findViewById(R.id.tab_list_recyclerview)
         tabRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         tabQuickViewAdapter = TabQuickViewAdapter(context)
-        tabQuickViewAdapter.attachToBrwoserTabs(tabCacheManager)
+        tabQuickViewAdapter.attachToSubject(tabCacheManager)
         tabQuickViewAdapter.listener = object : TabQuickViewAdapter.OnTabClickListener {
             override fun onTabClick(info: TabInfo) {
                 browser?.provideTabController()?.onTabSelected(info)

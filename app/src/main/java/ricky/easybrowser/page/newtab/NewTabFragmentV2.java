@@ -36,7 +36,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     private Uri loadUri;
 
-    private OnFragmentInteractionListener mListener;
+    private OnTabInteractionListener mListener;
 
     public NewTabFragmentV2() {
         // Required empty public constructor
@@ -149,8 +149,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnTabInteractionListener) {
+            mListener = (OnTabInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -253,9 +253,5 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         outState.putString(ARG_TAG, mTag);
         outState.putParcelable(ARG_URI, loadUri);
         EasyLog.i("test", "newtabfragment onsaveinstancestate: " + this.hashCode());
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onTabTitleChanged(String title);
     }
 }

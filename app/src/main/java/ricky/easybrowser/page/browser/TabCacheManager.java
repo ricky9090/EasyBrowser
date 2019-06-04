@@ -17,14 +17,14 @@ import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 /**
  * LRU实现的标签页缓存。负责标签页的缓存及切换显示逻辑。
  */
-public class TabCacheManager implements QuickViewUpdateContract.Subject,
+public class TabCacheManager implements TabQuickViewContract.Subject,
         IBrowser.TabController {
 
     private final Context mContext;
     private final FragmentManager fm;
     private int browserLayoutId;
 
-    private QuickViewUpdateContract.Observer observer;
+    private TabQuickViewContract.Observer observer;
 
     private LruCache<TabInfo, Fragment> lruCache;
     private final List<TabInfo> infoList = new ArrayList<>();
@@ -242,44 +242,35 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject,
         return current;
     }
 
-    public void updateTabTitle() {
-        Fragment target = findVisibleFragment(fm);
-        if (!(target instanceof NewTabFragmentV2)) {
-            return;
-        }
-        String nTag = target.getArguments().getString(NewTabFragmentV2.ARG_TAG);
-        String nTitle = target.getArguments().getString(NewTabFragmentV2.ARG_TITLE);
-        int i = findTabByTag(nTag);
-        try {
-            infoList.get(i).setTitle(nTitle);
-        } catch (Exception e) {
-
-        }
-
-        if (observer != null) {
-            observer.updateQuickView();
-        }
-    }
-
-    public void gotoHome() {
-        Fragment target = findVisibleFragment(fm);
-        if (target == null) {
-            return;
-        }
-
-        if (target instanceof NewTabFragmentV2) {
-            ((NewTabFragmentV2) target).gotoHomePage();
-        }
-    }
-
     @Override
-    public void attach(QuickViewUpdateContract.Observer observer) {
+    public void attach(TabQuickViewContract.Observer observer) {
         this.observer = observer;
     }
 
     @Override
     public List<TabInfo> provideInfoList() {
         return this.infoList;
+    }
+
+    @Override
+    public void updateTabInfo() {
+        Fragment target = findVisibleFragment(fm);
+        if (!(target instanceof NewTabFragmentV2)) {
+            return;
+        }
+        try {
+            String nTag = target.getArguments().getString(NewTabFragmentV2.ARG_TAG);
+            String nTitle = target.getArguments().getString(NewTabFragmentV2.ARG_TITLE);
+
+            int i = findTabByTag(nTag);
+            infoList.get(i).setTitle(nTitle);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (observer != null) {
+            observer.updateQuickView();
+        }
     }
 
     @Override
@@ -295,5 +286,17 @@ public class TabCacheManager implements QuickViewUpdateContract.Subject,
     @Override
     public void onAddNewTab(TabInfo tabInfo, boolean backstage) {
         addNewTab(tabInfo, backstage);
+    }
+
+    @Override
+    public void gotoTabHome() {
+        Fragment target = findVisibleFragment(fm);
+        if (target == null) {
+            return;
+        }
+
+        if (target instanceof NewTabFragmentV2) {
+            ((NewTabFragmentV2) target).gotoHomePage();
+        }
     }
 }

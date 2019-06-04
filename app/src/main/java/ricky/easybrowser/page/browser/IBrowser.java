@@ -57,5 +57,7 @@ public interface IBrowser {
         void onTabClose(TabInfo tabInfo);
 
         void onAddNewTab(TabInfo tabInfo, boolean backstage);
+
+        void gotoTabHome();
     }
 }
