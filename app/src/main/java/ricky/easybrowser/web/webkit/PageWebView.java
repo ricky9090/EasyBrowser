@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -45,10 +46,11 @@ import ricky.easybrowser.widget.BrowserNavBar;
 public class PageWebView extends FrameLayout implements IWebView {
 
     private EasyWebView webView;
-    private LinearLayout webLinear;
+    private RelativeLayout webLinear;
 
     private AddressBar addressBar;
     private PlaceholderView addressBarPlaceholder;
+    private PlaceholderView navBarPlaceholder;
     private ImageView goButton;
     private EditText webAddress;
     private ContentLoadingProgressBar progressBar;
@@ -100,6 +102,7 @@ public class PageWebView extends FrameLayout implements IWebView {
 
         webLinear = findViewById(R.id.web_linear);
         addressBarPlaceholder = findViewById(R.id.address_bar_placeholder);
+        navBarPlaceholder = findViewById(R.id.nav_bar_placeholder);
 
         goButton = findViewById(R.id.goto_button);
         goButton.setOnClickListener(new View.OnClickListener() {
@@ -422,6 +425,7 @@ public class PageWebView extends FrameLayout implements IWebView {
             public void onAnimationStart(Animator animation) {
                 int scrollY = webView.getScrollY();
                 addressBarPlaceholder.setVisibility(View.GONE);
+                navBarPlaceholder.setVisibility(View.GONE);
                 webView.setScrollY(scrollY - orgAddressBarHeight);
                 webView.setAnimating(true);
             }
@@ -466,6 +470,7 @@ public class PageWebView extends FrameLayout implements IWebView {
 
                 int scrollY = webView.getScrollY();
                 addressBarPlaceholder.setVisibility(View.VISIBLE);
+                navBarPlaceholder.setVisibility(View.VISIBLE);
                 webView.setScrollY(scrollY + orgAddressBarHeight);
             }
 

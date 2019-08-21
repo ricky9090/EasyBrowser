@@ -240,7 +240,7 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
 
         @Override
         public void goHome() {
-            tabController.gotoTabHome();
+            provideTabController().gotoTabHome();
         }
 
         @Override

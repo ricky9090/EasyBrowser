@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/web_linear"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,16 +19,25 @@
         <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/web_loading_progress_bar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_below="@id/address_bar_placeholder"
             android:layout_width="match_parent"
             android:layout_height="3dp"
             tools:progress="50" />
 
+        <ricky.easybrowser.web.webkit.PlaceholderView
+            android:id="@+id/nav_bar_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"/>
+
         <ricky.easybrowser.web.webkit.EasyWebView
             android:id="@+id/page_webview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_above="@id/nav_bar_placeholder"
+            android:layout_below="@id/web_loading_progress_bar"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <ricky.easybrowser.web.webkit.AddressBar
         android:id="@+id/web_address_bar"
