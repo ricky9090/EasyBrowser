@@ -44,7 +44,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         if (entity == null) {
             return;
         }
-        holder.title.setText(entity.getTitle());
+        holder.title.setText(entity.getId() + ". " + entity.getTitle());
         holder.url.setText(entity.getUrl());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -212,11 +212,15 @@ public class PageWebView extends FrameLayout implements IWebView {
                 if (!isBrowserController) {
                     return;
                 }
-                IBrowser browser = (IBrowser) mContext;
-                HistoryEntity historyEntity = new HistoryEntity();
-                historyEntity.setTitle(view.getTitle());
-                historyEntity.setUrl(url);
-                browser.provideHistoryController().addHistory(historyEntity);
+                // FIXME 通过进度 == 100 判断，避免网页重定向生成多条无效历史记录
+                // https://stackoverflow.com/questions/3149216/how-to-listen-for-a-webview-finishing-loading-a-url
+                if (webView.getProgress() == 100) {
+                    IBrowser browser = (IBrowser) mContext;
+                    HistoryEntity historyEntity = new HistoryEntity();
+                    historyEntity.setTitle(view.getTitle());
+                    historyEntity.setUrl(url);
+                    browser.provideHistoryController().addHistory(historyEntity);
+                }
             }
 
             @Nullable

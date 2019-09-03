@@ -3,6 +3,7 @@ package ricky.easybrowser.page.browser;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -32,6 +33,8 @@ import ricky.easybrowser.utils.FragmentBackHandleHelper;
 
 public class BrowserActivity extends AppCompatActivity implements OnTabInteractionListener,
         IBrowser {
+
+    private static final String TAG = "BrowserActivity";
 
     private static final String SETTING_DIALOG_TAG = "setting_dialog";
     private static final String TAB_DIALOG_TAG = "tab_dialog";
@@ -271,6 +274,9 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
                     final EasyApplication application = (EasyApplication) getApplicationContext();
                     DaoSession daoSession = application.getDaoSession();
                     long rowId = daoSession.getHistoryEntityDao().insertOrReplace(entity);
+                    Log.i(TAG, "inserted id    is : " + rowId);
+                    Log.i(TAG, "inserted title is : " + entity.getTitle());
+                    Log.i(TAG, "inserted url   is : " + entity.getUrl());
                     emitter.onNext(rowId);
                 }
             }).observeOn(AndroidSchedulers.mainThread())

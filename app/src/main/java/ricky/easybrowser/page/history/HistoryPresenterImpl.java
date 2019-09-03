@@ -2,6 +2,8 @@ package ricky.easybrowser.page.history;
 
 import android.content.Context;
 
+import org.greenrobot.greendao.query.Query;
+
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -15,6 +17,7 @@ import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.entity.DaoSession;
 import ricky.easybrowser.entity.HistoryEntity;
+import ricky.easybrowser.entity.HistoryEntityDao;
 
 public class HistoryPresenterImpl implements HistoryContract.Presenter {
 
@@ -28,14 +31,19 @@ public class HistoryPresenterImpl implements HistoryContract.Presenter {
     }
 
     @Override
-    public void getHistory() {
+    public void getHistory(final int pageNo, final int pageSize) {
         Disposable dps = Observable.create(new ObservableOnSubscribe<List<HistoryEntity>>() {
 
             @Override
             public void subscribe(ObservableEmitter<List<HistoryEntity>> emitter) throws Exception {
                 final EasyApplication application = (EasyApplication) mContext.getApplicationContext();
                 DaoSession daoSession = application.getDaoSession();
-                List<HistoryEntity> result = daoSession.getHistoryEntityDao().loadAll();
+                Query<HistoryEntity> historyEntityQuery = daoSession.getHistoryEntityDao().queryBuilder()
+                        .offset(pageNo * pageSize)  // 总偏移 = 页数 * 分页大小
+                        .limit(pageSize)
+                        .orderDesc(HistoryEntityDao.Properties.Id)
+                        .build();
+                List<HistoryEntity> result = historyEntityQuery.list();
                 emitter.onNext(result);
             }
         }).observeOn(AndroidSchedulers.mainThread())

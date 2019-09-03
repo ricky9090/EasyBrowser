@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.List;
 
@@ -22,14 +21,18 @@ import ricky.easybrowser.R;
 import ricky.easybrowser.common.Const;
 import ricky.easybrowser.entity.HistoryEntity;
 import ricky.easybrowser.page.browser.TabInfo;
+import ricky.easybrowser.widget.ptr.PtrLayout;
 
 public class HistoryFragment extends Fragment implements HistoryContract.View {
 
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private PtrLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private HistoryAdapter adapter;
 
     private HistoryContract.Presenter presenter;
+
+    private int pageNo = 0;
+    private int pageSize = Const.PAGE_SIZE_20;
 
     public HistoryFragment() {
     }
@@ -47,7 +50,22 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
 
         swipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
         // TODO 实现分页加载
-        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setHasMore(true);
+        swipeRefreshLayout.setOnLoadListener(new PtrLayout.OnLoadListener() {
+            @Override
+            public void onLoadMore() {
+                pageNo++;
+                loadData(pageNo, pageSize);
+            }
+
+            @Override
+            public void onRefresh() {
+                adapter.clearDataList();
+                adapter.notifyDataSetChanged();
+                pageNo = 0;
+                loadData(pageNo, pageSize);
+            }
+        });
         recyclerView = rootView.findViewById(R.id.content_list);
 
         adapter = new HistoryAdapter(getContext());
@@ -89,7 +107,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
     @Override
     public void onResume() {
         super.onResume();
-        loadData();
+        loadData(pageNo, pageSize);
     }
 
     @Override
@@ -105,6 +123,12 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
 
     @Override
     public void showHistory(List<HistoryEntity> result) {
+        swipeRefreshLayout.setRefreshing(false);
+        if (result == null || result.size() < pageSize) {
+            swipeRefreshLayout.loadFinish(false, false);
+        } else {
+            swipeRefreshLayout.loadFinish(false, true);
+        }
         adapter.appendDataList(result);
         adapter.notifyDataSetChanged();
     }
@@ -114,10 +138,10 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
 
     }
 
-    private void loadData() {
+    private void loadData(int _pageNo, int _pageSize) {
         if (presenter == null) {
             return;
         }
-        presenter.getHistory();
+        presenter.getHistory(_pageNo, _pageSize);
     }
 }

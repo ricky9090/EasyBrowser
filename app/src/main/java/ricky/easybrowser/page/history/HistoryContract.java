@@ -12,7 +12,7 @@ public interface HistoryContract {
     }
 
     interface Presenter {
-        void getHistory();
+        void getHistory(int pageNo, int pageSize);
         void onDestroy();
     }
 }

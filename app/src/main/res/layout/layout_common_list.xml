@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <ricky.easybrowser.widget.ptr.PtrLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </ricky.easybrowser.widget.ptr.PtrLayout>
 
     <include
         android:id="@+id/load_more"
