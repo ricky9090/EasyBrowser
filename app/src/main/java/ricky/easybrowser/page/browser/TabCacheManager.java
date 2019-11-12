@@ -52,6 +52,8 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
 
     /**
      * 还原Tab页缓存，使用从Fragment中还原的参数生成TabInfo对象
+     * <p>
+     * 此方法仅还原一个标签页，上层可能需要在循环中调用
      * @param infoCopy 由Fragment中的参数还原的TabInfo对象，与复原列表里的hash值不同，put时需判断
      * @param fragment 目标Fragment
      */
@@ -74,7 +76,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
         }
     }
 
-    private void put(TabInfo info, Fragment fragment) {
+    private void addToCache(TabInfo info, Fragment fragment) {
         int prevIndex = -1;
         for (int i = 0; i < infoList.size(); i++) {
             if (info.equals(infoList.get(i))) {
@@ -91,11 +93,11 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
         }
     }
 
-    private Fragment get(TabInfo info) {
+    private Fragment getFromCache(TabInfo info) {
         return lruCache.get(info);
     }
 
-    private void remove(TabInfo info) {
+    private void removeFromCache(TabInfo info) {
         lruCache.remove(info);  // throw error when tag is null
 
         // 只有用户主动操作，才从recyclerview使用的列表中移除tag
@@ -119,7 +121,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
      */
     private void switchToTab(TabInfo info) {
         Fragment current = findVisibleFragment(fm);
-        Fragment target = get(info);
+        Fragment target = getFromCache(info);
 
         if (current == null) {
             // 当前没有显示任何Fragment，直接show，对应某一页面被关闭的情况
@@ -135,7 +137,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
             NewTabFragmentV2 fragmentToAdd = NewTabFragmentV2.newInstance();
             TabInfo fragmentInfo = info;
             fm.beginTransaction().hide(current).add(browserLayoutId, fragmentToAdd, info.getTag()).commit();
-            put(fragmentInfo, fragmentToAdd);
+            addToCache(fragmentInfo, fragmentToAdd);
         }
     }
 
@@ -164,7 +166,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
             transaction.hide(fragmentToAdd);
         }
         transaction.commit();
-        put(info, fragmentToAdd);
+        addToCache(info, fragmentToAdd);
         if (observer != null) {
             observer.updateQuickView();
         }
@@ -182,7 +184,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
      */
     private void closeTab(TabInfo info) {
         int orgIndex = findTabIndex(info);
-        remove(info);
+        removeFromCache(info);
         if (observer != null) {
             observer.updateQuickView();
         }
