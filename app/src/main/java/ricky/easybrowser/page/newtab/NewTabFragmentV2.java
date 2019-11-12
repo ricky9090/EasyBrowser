@@ -206,7 +206,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
             return;
         }
 
-        if (view instanceof PageWebView) {
+        if (view instanceof IWebView) {
             frameLayout.removeAllViews();
             destroyWebView();
             frameLayout.addView(newTabView);

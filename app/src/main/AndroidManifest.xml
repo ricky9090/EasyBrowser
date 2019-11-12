@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".page.browser.BrowserActivity" />
+        <activity android:name=".page.browser.BrowserActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
 
         <activity android:name=".page.history.HistoryActivity" />
     </application>
