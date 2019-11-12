@@ -7,45 +7,55 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="?attr/actionBarSize"
                 app:layout_scrollFlags="scroll|enterAlways">
 
-                <ImageView
-                    android:id="@+id/goto_button"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:contentDescription="TODO"
-                    android:src="@mipmap/ic_arrow_forward_black_36dp" />
-
-                <EditText
-                    android:id="@+id/page_url_edittext"
+                <ricky.easybrowser.web.webkit.AddressBar
+                    android:id="@+id/web_address_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_toLeftOf="@id/goto_button"
-                    android:inputType=""
-                    android:singleLine="true"/>
+                    android:layout_height="match_parent">
 
-            </RelativeLayout>
+                    <ImageView
+                        android:id="@+id/goto_button"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:contentDescription="TODO"
+                        android:src="@mipmap/ic_arrow_forward_black_36dp" />
+
+                    <EditText
+                        android:id="@+id/page_url_edittext"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toLeftOf="@id/goto_button"
+                        android:inputType=""
+                        android:singleLine="true" />
+
+                </ricky.easybrowser.web.webkit.AddressBar>
+
+                <androidx.core.widget.ContentLoadingProgressBar
+                    android:id="@+id/web_loading_progress_bar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_gravity="bottom"
+                    tools:progress="50" />
 
 
-            <androidx.core.widget.ContentLoadingProgressBar
-                android:id="@+id/web_loading_progress_bar"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                tools:progress="50"/>
+            </FrameLayout>
+
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -53,9 +63,16 @@
             android:id="@+id/page_webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <ricky.easybrowser.widget.BrowserNavBar
+        android:id="@+id/web_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom"
+        android:background="@android:color/white" />
 
 
 </FrameLayout>

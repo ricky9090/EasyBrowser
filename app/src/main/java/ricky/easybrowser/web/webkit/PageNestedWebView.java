@@ -35,6 +35,7 @@ import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.widget.BrowserNavBar;
 
 public class PageNestedWebView extends LinearLayout implements IWebView {
 
@@ -44,6 +45,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
     private ImageView goButton;
     private EditText webAddress;
     private ContentLoadingProgressBar progressBar;
+    private BrowserNavBar browserNavBar;
 
     private OnWebInteractListener onWebInteractListener;
 
@@ -104,6 +106,36 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
             }
         });
         progressBar = findViewById(R.id.web_loading_progress_bar);
+
+        browserNavBar = findViewById(R.id.web_nav_bar);
+        browserNavBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
+            @Override
+            public void onItemClick(View itemView) {
+                boolean isBrowserController = mContext instanceof IBrowser;
+                if (!isBrowserController) {
+                    return;
+                }
+                IBrowser browser = (IBrowser) mContext;
+                int id = itemView.getId();
+                switch (id) {
+                    case R.id.nav_back:
+                        browser.provideNavController().goBack();
+                        break;
+                    case R.id.nav_forward:
+                        browser.provideNavController().goForward();
+                        break;
+                    case R.id.nav_home:
+                        browser.provideNavController().goHome();
+                        break;
+                    case R.id.nav_show_tabs:
+                        browser.provideNavController().showTabs();
+                        break;
+                    case R.id.nav_setting:
+                        browser.provideNavController().showSetting();
+                        break;
+                }
+            }
+        });
     }
 
     private void configureWebView() {
