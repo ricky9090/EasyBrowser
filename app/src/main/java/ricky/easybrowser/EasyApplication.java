@@ -5,9 +5,9 @@ import android.app.Application;
 
 import org.greenrobot.greendao.database.Database;
 
-import ricky.easybrowser.entity.DaoMaster;
-import ricky.easybrowser.entity.DaoSession;
-import ricky.easybrowser.entity.SiteEntity;
+import ricky.easybrowser.entity.dao.DaoMaster;
+import ricky.easybrowser.entity.dao.DaoSession;
+import ricky.easybrowser.entity.dao.WebSite;
 
 public class EasyApplication extends Application {
 
@@ -26,27 +26,27 @@ public class EasyApplication extends Application {
         DaoMaster daoMaster = new DaoMaster(db);
         daoSession = daoMaster.newSession();
 
-        long defCount = daoSession.getSiteEntityDao().count();
+        long defCount = daoSession.getWebSiteDao().count();
         if (defCount != 0) {
             return;
         }
         try {
-            SiteEntity baidu = new SiteEntity(null, "Baidu", "www.baidu.com");
-            SiteEntity bing = new SiteEntity(null, "Bing", "bing.com");
-            SiteEntity qq = new SiteEntity(null, "QQ", "www.qq.com");
-            SiteEntity netEasy = new SiteEntity(null, "网易", "www.163.com");
-            SiteEntity myDrivers = new SiteEntity(null, "快科技", "mydrivers.com");
-            SiteEntity v2ex = new SiteEntity(null, "V2ex", "v2ex.com");
-            SiteEntity juejin = new SiteEntity(null, "掘金", "juejin.im");
-            SiteEntity w36kr = new SiteEntity(null, "36Kr", "36kr.com");
-            daoSession.getSiteEntityDao().insert(baidu);
-            daoSession.getSiteEntityDao().insert(bing);
-            daoSession.getSiteEntityDao().insert(qq);
-            daoSession.getSiteEntityDao().insert(netEasy);
-            daoSession.getSiteEntityDao().insert(myDrivers);
-            daoSession.getSiteEntityDao().insert(v2ex);
-            daoSession.getSiteEntityDao().insert(juejin);
-            daoSession.getSiteEntityDao().insert(w36kr);
+            WebSite baidu = new WebSite(null, "Baidu", "www.baidu.com");
+            WebSite bing = new WebSite(null, "Bing", "bing.com");
+            WebSite qq = new WebSite(null, "QQ", "www.qq.com");
+            WebSite netEasy = new WebSite(null, "网易", "www.163.com");
+            WebSite myDrivers = new WebSite(null, "快科技", "mydrivers.com");
+            WebSite v2ex = new WebSite(null, "V2ex", "v2ex.com");
+            WebSite juejin = new WebSite(null, "掘金", "juejin.im");
+            WebSite w36kr = new WebSite(null, "36Kr", "36kr.com");
+            daoSession.getWebSiteDao().insert(baidu);
+            daoSession.getWebSiteDao().insert(bing);
+            daoSession.getWebSiteDao().insert(qq);
+            daoSession.getWebSiteDao().insert(netEasy);
+            daoSession.getWebSiteDao().insert(myDrivers);
+            daoSession.getWebSiteDao().insert(v2ex);
+            daoSession.getWebSiteDao().insert(juejin);
+            daoSession.getWebSiteDao().insert(w36kr);
         } catch (Exception e) {
             e.printStackTrace();
         }

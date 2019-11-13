@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browser;
+package ricky.easybrowser.entity.bo;
 
 import android.net.Uri;
 import android.os.Parcel;
@@ -64,6 +64,21 @@ public class TabInfo implements Parcelable {
     }
 
     public TabInfo() {
+    }
+
+    public static TabInfo create(String tag, String title) {
+        TabInfo tabInfo = new TabInfo();
+        tabInfo.tag = tag;
+        tabInfo.title = title;
+        return tabInfo;
+    }
+
+    public static TabInfo create(String tag, String title, Uri uri) {
+        TabInfo tabInfo = new TabInfo();
+        tabInfo.tag = tag;
+        tabInfo.title = title;
+        tabInfo.uri = uri;
+        return tabInfo;
     }
 
     protected TabInfo(Parcel in) {

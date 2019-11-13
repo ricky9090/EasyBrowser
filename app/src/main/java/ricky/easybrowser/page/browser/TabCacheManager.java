@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.entity.bo.TabInfo;
+import ricky.easybrowser.page.newtab.ITab;
 import ricky.easybrowser.page.newtab.NewTabFragmentV2;
 
 /**
@@ -54,6 +57,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
      * 还原Tab页缓存，使用从Fragment中还原的参数生成TabInfo对象
      * <p>
      * 此方法仅还原一个标签页，上层可能需要在循环中调用
+     *
      * @param infoCopy 由Fragment中的参数还原的TabInfo对象，与复原列表里的hash值不同，put时需判断
      * @param fragment 目标Fragment
      */
@@ -141,17 +145,6 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
         }
     }
 
-    /**
-     * 新建标签页
-     */
-    private void addNewTab(String title) {
-        TabInfo tabInfo = new TabInfo();
-        tabInfo.setTitle(title);
-        tabInfo.setTag(System.currentTimeMillis() + "");
-
-        onAddNewTab(tabInfo, false);
-    }
-
     private void addNewTab(TabInfo info, boolean backstage) {
         if (fm == null || info == null) {
             return;
@@ -190,7 +183,10 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
         }
 
         if (infoList.size() <= 0 && observer != null) {
-            addNewTab(mContext.getString(R.string.new_tab_welcome));
+            TabInfo tabInfo = TabInfo.create(
+                    System.currentTimeMillis() + "",
+                    mContext.getString(R.string.new_tab_welcome));
+            onTabCreate(tabInfo, false);
             return;
         }
 
@@ -237,7 +233,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
         List<Fragment> fragments = fm.getFragments();
         for (int i = 0; i < fragments.size(); i++) {
             final Fragment tmp = fragments.get(i);
-            if ((!tmp.isHidden()) && (tmp instanceof NewTabFragmentV2)) {
+            if ((!tmp.isHidden()) && (tmp instanceof ITab)) {
                 current = fragments.get(i);
             }
         }
@@ -257,12 +253,12 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
     @Override
     public void updateTabInfo() {
         Fragment target = findVisibleFragment(fm);
-        if (!(target instanceof NewTabFragmentV2)) {
+        if (!(target instanceof ITab)) {
             return;
         }
         try {
-            String nTag = target.getArguments().getString(NewTabFragmentV2.ARG_TAG);
-            String nTitle = target.getArguments().getString(NewTabFragmentV2.ARG_TITLE);
+            String nTag = target.getArguments().getString(TabConst.ARG_TAG);
+            String nTitle = target.getArguments().getString(TabConst.ARG_TITLE);
 
             int i = findTabByTag(nTag);
             infoList.get(i).setTitle(nTitle);
@@ -286,19 +282,19 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
     }
 
     @Override
-    public void onAddNewTab(TabInfo tabInfo, boolean backstage) {
+    public void onTabCreate(TabInfo tabInfo, boolean backstage) {
         addNewTab(tabInfo, backstage);
     }
 
     @Override
-    public void gotoTabHome() {
+    public void onTabGoHome() {
         Fragment target = findVisibleFragment(fm);
         if (target == null) {
             return;
         }
 
-        if (target instanceof NewTabFragmentV2) {
-            ((NewTabFragmentV2) target).gotoHomePage();
+        if (target instanceof ITab) {
+            ((ITab) target).gotoHomePage();
         }
     }
 }

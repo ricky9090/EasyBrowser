@@ -160,8 +160,6 @@ public class PtrLayout extends SwipeRefreshLayout {
 
             if (layoutManager instanceof LinearLayoutManager) {
                 lastVisibleItem = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
-            } else if (layoutManager instanceof GridLayoutManager) {
-                lastVisibleItem = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
             } else if (layoutManager instanceof StaggeredGridLayoutManager) {
                 int[] spanItem = ((StaggeredGridLayoutManager) layoutManager).findLastCompletelyVisibleItemPositions(null);
                 lastVisibleItem = spanItem[0];

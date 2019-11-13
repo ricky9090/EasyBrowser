@@ -2,7 +2,8 @@ package ricky.easybrowser.page.browser;
 
 import androidx.annotation.NonNull;
 
-import ricky.easybrowser.entity.HistoryEntity;
+import ricky.easybrowser.entity.bo.TabInfo;
+import ricky.easybrowser.entity.dao.History;
 
 /**
  * 抽象的浏览器接口。负责提供导航，历史记录，下载，书签，标签页控制等管理对象
@@ -40,7 +41,7 @@ public interface IBrowser {
     }
 
     interface HistoryController {
-        void addHistory(HistoryEntity entity);
+        void addHistory(History entity);
     }
 
     interface DownloadController {
@@ -56,8 +57,8 @@ public interface IBrowser {
 
         void onTabClose(TabInfo tabInfo);
 
-        void onAddNewTab(TabInfo tabInfo, boolean backstage);
+        void onTabCreate(TabInfo tabInfo, boolean backstage);
 
-        void gotoTabHome();
+        void onTabGoHome();
     }
 }

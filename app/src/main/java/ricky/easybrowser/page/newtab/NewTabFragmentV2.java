@@ -12,32 +12,28 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.entity.SiteEntity;
+import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.entity.dao.WebSite;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.OnBackInteractionListener;
 import ricky.easybrowser.web.IWebView;
 import ricky.easybrowser.web.webkit.PageNestedWebView;
-import ricky.easybrowser.web.webkit.PageWebView;
 
 /**
  * 新标签页Fragment。显示收藏站点快捷按钮
  */
-public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListener {
-
-    public static final String ARG_TITLE = "param_title";
-    public static final String ARG_TAG = "param_tag";
-    public static final String ARG_URI = "param_uri";
+public class NewTabFragmentV2 extends Fragment implements ITab, OnBackInteractionListener {
 
     private String mTitle;
     private String mTag;
+    private Uri loadUri;
 
     private FrameLayout frameLayout;
     private NewTabView newTabView;
     private IWebView pageWebView;
 
-    private Uri loadUri;
 
-    private OnTabInteractionListener mListener;
+    private IWebView.OnWebInteractListener mListener;
 
     public NewTabFragmentV2() {
         // Required empty public constructor
@@ -51,7 +47,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     public static NewTabFragmentV2 newInstance(String title) {
         NewTabFragmentV2 fragment = new NewTabFragmentV2();
         Bundle args = new Bundle();
-        args.putString(ARG_TITLE, title);
+        args.putString(TabConst.ARG_TITLE, title);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,8 +62,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     public static NewTabFragmentV2 newInstance(String title, String tag) {
         NewTabFragmentV2 fragment = new NewTabFragmentV2();
         Bundle args = new Bundle();
-        args.putString(ARG_TITLE, title);
-        args.putString(ARG_TAG, tag);
+        args.putString(TabConst.ARG_TITLE, title);
+        args.putString(TabConst.ARG_TAG, tag);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,9 +71,9 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     public static NewTabFragmentV2 newInstance(String title, String tag, Uri uri) {
         NewTabFragmentV2 fragment = new NewTabFragmentV2();
         Bundle args = new Bundle();
-        args.putString(ARG_TITLE, title);
-        args.putString(ARG_TAG, tag);
-        args.putParcelable(ARG_URI, uri);
+        args.putString(TabConst.ARG_TITLE, title);
+        args.putString(TabConst.ARG_TAG, tag);
+        args.putParcelable(TabConst.ARG_URI, uri);
         fragment.setArguments(args);
         return fragment;
     }
@@ -86,18 +82,18 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            mTitle = savedInstanceState.getString(ARG_TITLE);
-            mTag = savedInstanceState.getString(ARG_TAG);
+            mTitle = savedInstanceState.getString(TabConst.ARG_TITLE);
+            mTag = savedInstanceState.getString(TabConst.ARG_TAG);
             Bundle resArg = new Bundle();
-            resArg.putString(ARG_TITLE, mTitle);
-            resArg.putString(ARG_TAG, mTag);
+            resArg.putString(TabConst.ARG_TITLE, mTitle);
+            resArg.putString(TabConst.ARG_TAG, mTag);
             setArguments(resArg);
 
-            loadUri = savedInstanceState.getParcelable(ARG_URI);
+            loadUri = savedInstanceState.getParcelable(TabConst.ARG_URI);
         } else if (getArguments() != null) {
-            mTitle = getArguments().getString(ARG_TITLE);
-            mTag = getArguments().getString(ARG_TAG);
-            loadUri = getArguments().getParcelable(ARG_URI);
+            mTitle = getArguments().getString(TabConst.ARG_TITLE);
+            mTag = getArguments().getString(TabConst.ARG_TAG);
+            loadUri = getArguments().getParcelable(TabConst.ARG_URI);
         }
 
         EasyLog.i("test", "title: " + mTitle);
@@ -115,10 +111,10 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
         newTabView.setSiteListener(new SiteAdapterV2.OnSiteItemClickListener() {
             @Override
-            public void onSiteItemClick(SiteEntity siteEntity) {
+            public void onSiteItemClick(WebSite webSite) {
                 Uri uri = new Uri.Builder()
                         .scheme("http")
-                        .authority(siteEntity.getSiteUrl())
+                        .authority(webSite.getSiteUrl())
                         .build();
                 loadUri = uri;
 
@@ -150,8 +146,8 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnTabInteractionListener) {
-            mListener = (OnTabInteractionListener) context;
+        if (context instanceof IWebView.OnWebInteractListener) {
+            mListener = (IWebView.OnWebInteractListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -196,6 +192,7 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
         }
     }
 
+    @Override
     public void gotoHomePage() {
         if (frameLayout.getChildCount() <= 0) {
             return;
@@ -236,9 +233,9 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
 
     private void updateTitle(String title) {
         mTitle = title;
-        getArguments().putString(ARG_TITLE, mTitle);
+        getArguments().putString(TabConst.ARG_TITLE, mTitle);
         if (mListener != null) {
-            mListener.onTabTitleChanged(mTitle);
+            mListener.onPageTitleChange(mTitle);
         }
     }
 
@@ -250,9 +247,9 @@ public class NewTabFragmentV2 extends Fragment implements OnBackInteractionListe
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(ARG_TITLE, mTitle);
-        outState.putString(ARG_TAG, mTag);
-        outState.putParcelable(ARG_URI, loadUri);
+        outState.putString(TabConst.ARG_TITLE, mTitle);
+        outState.putString(TabConst.ARG_TAG, mTag);
+        outState.putParcelable(TabConst.ARG_URI, loadUri);
         EasyLog.i("test", "newtabfragment onsaveinstancestate: " + this.hashCode());
     }
 }

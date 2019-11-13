@@ -1,4 +1,4 @@
-package ricky.easybrowser.entity;
+package ricky.easybrowser.entity.dao;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
@@ -6,7 +6,7 @@ import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
-public class SiteEntity {
+public class WebSite {
 
     @Id(autoincrement = true)
     private Long id;
@@ -14,15 +14,15 @@ public class SiteEntity {
     @NotNull
     private String siteUrl;
 
-    @Generated(hash = 713838518)
-    public SiteEntity(Long id, String siteName, @NotNull String siteUrl) {
+    @Generated(hash = 410994721)
+    public WebSite(Long id, String siteName, @NotNull String siteUrl) {
         this.id = id;
         this.siteName = siteName;
         this.siteUrl = siteUrl;
     }
 
-    @Generated(hash = 921364970)
-    public SiteEntity() {
+    @Generated(hash = 121794805)
+    public WebSite() {
     }
 
     public Long getId() {

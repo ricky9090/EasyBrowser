@@ -19,8 +19,8 @@ import java.util.List;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.common.Const;
-import ricky.easybrowser.entity.HistoryEntity;
-import ricky.easybrowser.page.browser.TabInfo;
+import ricky.easybrowser.entity.dao.History;
+import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.widget.ptr.PtrLayout;
 
 public class HistoryFragment extends Fragment implements HistoryContract.View {
@@ -71,7 +71,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
         adapter = new HistoryAdapter(getContext());
         adapter.setItemClickListener(new HistoryAdapter.OnHistoryItemClickListener() {
             @Override
-            public void onHistoryItemClick(HistoryEntity entity) {
+            public void onHistoryItemClick(History entity) {
                 Uri uri = null;
                 try {
                     uri = Uri.parse(entity.getUrl());
@@ -81,10 +81,10 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
                 if (uri == null) {
                     return;
                 }
-                TabInfo info = new TabInfo();
-                info.setTitle(entity.getTitle());
-                info.setUri(uri);
-                info.setTag(System.currentTimeMillis() + "");
+                TabInfo info = TabInfo.create(
+                        System.currentTimeMillis() + "",
+                        entity.getTitle(),
+                        uri);
                 Intent resultData = new Intent();
                 resultData.putExtra(Const.Key.TAB_INFO, info);
 
@@ -122,7 +122,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
     }
 
     @Override
-    public void showHistory(List<HistoryEntity> result) {
+    public void showHistory(List<History> result) {
         swipeRefreshLayout.setRefreshing(false);
         if (result == null || result.size() < pageSize) {
             swipeRefreshLayout.loadFinish(false, false);

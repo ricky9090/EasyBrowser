@@ -15,12 +15,12 @@ import java.util.List;
 
 import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
-import ricky.easybrowser.entity.DaoSession;
-import ricky.easybrowser.entity.SiteEntity;
+import ricky.easybrowser.entity.dao.DaoSession;
+import ricky.easybrowser.entity.dao.WebSite;
 
 public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHolder> {
 
-    private final List<SiteEntity> dataList = new ArrayList<>();
+    private final List<WebSite> dataList = new ArrayList<>();
     private Context context;
 
     private SiteAdapterV2.OnSiteItemClickListener listener;
@@ -29,7 +29,7 @@ public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHo
         this.context = context;
     }
 
-    public final List<SiteEntity> getDataList() {
+    public final List<WebSite> getDataList() {
         return dataList;
     }
 
@@ -37,7 +37,7 @@ public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHo
         dataList.clear();
     }
 
-    public void appendDataList(List<SiteEntity> list) {
+    public void appendDataList(List<WebSite> list) {
         dataList.addAll(list);
     }
 
@@ -63,7 +63,7 @@ public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHo
             return;
         }
 
-        final SiteEntity entity = dataList.get(position);
+        final WebSite entity = dataList.get(position);
         holder.title.setText(entity.getSiteName());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -95,20 +95,20 @@ public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHo
     }
 
     public interface OnSiteItemClickListener {
-        void onSiteItemClick(SiteEntity siteEntity);
+        void onSiteItemClick(WebSite webSite);
     }
 
-    public static List<SiteEntity> getTestDataList(Context context) {
+    public static List<WebSite> getTestDataList(Context context) {
         if (context == null || context.getApplicationContext() == null) {
             return new ArrayList<>();
         }
         final EasyApplication application = (EasyApplication) context.getApplicationContext();
         DaoSession daoSession = application.getDaoSession();
-        List<SiteEntity> dbList = daoSession.getSiteEntityDao().loadAll();
+        List<WebSite> dbList = daoSession.getWebSiteDao().loadAll();
         if (dbList == null || dbList.size() <= 0) {
             return new ArrayList<>();
         }
-        List<SiteEntity> list = new ArrayList<>();
+        List<WebSite> list = new ArrayList<>();
         list.addAll(dbList);
 
         return list;

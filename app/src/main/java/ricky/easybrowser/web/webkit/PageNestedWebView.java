@@ -29,8 +29,9 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import java.io.InputStream;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.browser.IBrowser;
-import ricky.easybrowser.page.browser.TabInfo;
+import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
@@ -174,6 +175,20 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
                 webAddress.setText(url);
                 if (onWebInteractListener != null) {
                     onWebInteractListener.onPageTitleChange(view.getTitle());
+                }
+
+                boolean isBrowserController = mContext instanceof IBrowser;
+                if (!isBrowserController) {
+                    return;
+                }
+                // FIXME 通过进度 == 100 判断，避免网页重定向生成多条无效历史记录
+                // https://stackoverflow.com/questions/3149216/how-to-listen-for-a-webview-finishing-loading-a-url
+                if (webView.getProgress() == 100) {
+                    IBrowser browser = (IBrowser) mContext;
+                    History history = new History();
+                    history.setTitle(view.getTitle());
+                    history.setUrl(url);
+                    browser.provideHistoryController().addHistory(history);
                 }
             }
 
@@ -353,11 +368,11 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         if (uri == null) {
             return;
         }
-        TabInfo tabInfo = new TabInfo();
-        tabInfo.setTag(System.currentTimeMillis() + "");
-        tabInfo.setTitle(mContext.getResources().getString(R.string.new_tab_welcome));
-        tabInfo.setUri(uri);
-        browser.provideTabController().onAddNewTab(tabInfo, backStage);
+        TabInfo tabInfo = TabInfo.create(
+                System.currentTimeMillis() + "",
+                mContext.getResources().getString(R.string.new_tab_welcome),
+                uri);
+        browser.provideTabController().onTabCreate(tabInfo, backStage);
     }
 
 }

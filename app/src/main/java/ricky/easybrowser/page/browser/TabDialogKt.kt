@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ricky.easybrowser.R
+import ricky.easybrowser.entity.bo.TabInfo
 
 class TabDialogKt : DialogFragment() {
 
@@ -54,7 +55,7 @@ class TabDialogKt : DialogFragment() {
                 var info = TabInfo()
                 info.title = context?.resources?.getString(R.string.new_tab_welcome)
                 info.tag = "" + System.currentTimeMillis()
-                browser?.provideTabController()?.onAddNewTab(info, false)
+                browser?.provideTabController()?.onTabCreate(info, false)
                 dismiss()
             }
         }

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.utils.StringUtils;
 
 public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements TabQuickViewContract.Observer {

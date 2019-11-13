@@ -2,12 +2,12 @@ package ricky.easybrowser.page.history;
 
 import java.util.List;
 
-import ricky.easybrowser.entity.HistoryEntity;
+import ricky.easybrowser.entity.dao.History;
 
 public interface HistoryContract {
 
     interface View {
-        void showHistory(List<HistoryEntity> result);
+        void showHistory(List<History> result);
         void showEmptyResult();
     }
 

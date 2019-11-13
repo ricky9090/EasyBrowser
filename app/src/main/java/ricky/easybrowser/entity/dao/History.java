@@ -1,4 +1,4 @@
-package ricky.easybrowser.entity;
+package ricky.easybrowser.entity.dao;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
@@ -7,7 +7,7 @@ import org.greenrobot.greendao.annotation.Generated;
 
 
 @Entity
-public class HistoryEntity {
+public class History {
 
     @Id(autoincrement = true)
     private Long id;
@@ -15,30 +15,38 @@ public class HistoryEntity {
     private String title;
     @NotNull
     private String url;
-    @Generated(hash = 1647152660)
-    public HistoryEntity(Long id, String title, @NotNull String url) {
+
+    @Generated(hash = 1554579216)
+    public History(Long id, String title, @NotNull String url) {
         this.id = id;
         this.title = title;
         this.url = url;
     }
-    @Generated(hash = 1235354573)
-    public HistoryEntity() {
+
+    @Generated(hash = 869423138)
+    public History() {
     }
+
     public Long getId() {
         return this.id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getTitle() {
         return this.title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
+
     public String getUrl() {
         return this.url;
     }
+
     public void setUrl(String url) {
         this.url = url;
     }

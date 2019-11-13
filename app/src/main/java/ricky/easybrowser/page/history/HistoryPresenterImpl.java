@@ -15,9 +15,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
-import ricky.easybrowser.entity.DaoSession;
-import ricky.easybrowser.entity.HistoryEntity;
-import ricky.easybrowser.entity.HistoryEntityDao;
+import ricky.easybrowser.entity.dao.DaoSession;
+import ricky.easybrowser.entity.dao.History;
+import ricky.easybrowser.entity.dao.HistoryDao;
 
 public class HistoryPresenterImpl implements HistoryContract.Presenter {
 
@@ -32,25 +32,25 @@ public class HistoryPresenterImpl implements HistoryContract.Presenter {
 
     @Override
     public void getHistory(final int pageNo, final int pageSize) {
-        Disposable dps = Observable.create(new ObservableOnSubscribe<List<HistoryEntity>>() {
+        Disposable dps = Observable.create(new ObservableOnSubscribe<List<History>>() {
 
             @Override
-            public void subscribe(ObservableEmitter<List<HistoryEntity>> emitter) throws Exception {
+            public void subscribe(ObservableEmitter<List<History>> emitter) throws Exception {
                 final EasyApplication application = (EasyApplication) mContext.getApplicationContext();
                 DaoSession daoSession = application.getDaoSession();
-                Query<HistoryEntity> historyEntityQuery = daoSession.getHistoryEntityDao().queryBuilder()
+                Query<History> historyEntityQuery = daoSession.getHistoryDao().queryBuilder()
                         .offset(pageNo * pageSize)  // 总偏移 = 页数 * 分页大小
                         .limit(pageSize)
-                        .orderDesc(HistoryEntityDao.Properties.Id)
+                        .orderDesc(HistoryDao.Properties.Id)
                         .build();
-                List<HistoryEntity> result = historyEntityQuery.list();
+                List<History> result = historyEntityQuery.list();
                 emitter.onNext(result);
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<List<HistoryEntity>>() {
+                .subscribe(new Consumer<List<History>>() {
                     @Override
-                    public void accept(List<HistoryEntity> historyEntities) throws Exception {
+                    public void accept(List<History> historyEntities) throws Exception {
                         // handle result
                         if (historyEntities == null || historyEntities.size() == 0) {
                             view.showEmptyResult();

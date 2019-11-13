@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.entity.HistoryEntity;
+import ricky.easybrowser.entity.dao.History;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
 
     private Context mContext;
-    private final List<HistoryEntity> dataList = new ArrayList<>();
+    private final List<History> dataList = new ArrayList<>();
 
     private OnHistoryItemClickListener itemClickListener;
 
@@ -40,7 +40,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         if (dataList.size() <= position) {
             return;
         }
-        final HistoryEntity entity = dataList.get(position);
+        final History entity = dataList.get(position);
         if (entity == null) {
             return;
         }
@@ -66,7 +66,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         dataList.clear();
     }
 
-    public void appendDataList(List<HistoryEntity> list) {
+    public void appendDataList(List<History> list) {
         dataList.addAll(list);
     }
 
@@ -88,6 +88,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     }
 
     interface OnHistoryItemClickListener {
-        void onHistoryItemClick(HistoryEntity entity);
+        void onHistoryItemClick(History entity);
     }
 }

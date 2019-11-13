@@ -23,15 +23,17 @@ import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
 import ricky.easybrowser.common.Const;
-import ricky.easybrowser.entity.DaoSession;
-import ricky.easybrowser.entity.HistoryEntity;
+import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.entity.bo.TabInfo;
+import ricky.easybrowser.entity.dao.DaoSession;
+import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.history.HistoryActivity;
-import ricky.easybrowser.page.newtab.NewTabFragmentV2;
-import ricky.easybrowser.page.newtab.OnTabInteractionListener;
+import ricky.easybrowser.page.newtab.ITab;
 import ricky.easybrowser.page.setting.SettingDialogKt;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
+import ricky.easybrowser.web.IWebView;
 
-public class BrowserActivity extends AppCompatActivity implements OnTabInteractionListener,
+public class BrowserActivity extends AppCompatActivity implements IWebView.OnWebInteractListener,
         IBrowser {
 
     private static final String TAG = "BrowserActivity";
@@ -62,10 +64,10 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
 
         if (savedInstanceState == null) {
             // 默认添加一个新标签页
-            TabInfo tabInfo = new TabInfo();
-            tabInfo.setTag(System.currentTimeMillis() + "");
-            tabInfo.setTitle(getString(R.string.new_tab_welcome));
-            ((IBrowser.TabController) tabCacheManager).onAddNewTab(tabInfo, false);
+            TabInfo tabInfo = TabInfo.create(
+                    System.currentTimeMillis() + "",
+                    getString(R.string.new_tab_welcome));
+            ((IBrowser.TabController) tabCacheManager).onTabCreate(tabInfo, false);
         } else {
             Fragment prevDialog = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
             if (prevDialog instanceof TabDialogKt) {
@@ -92,11 +94,11 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
         List<Fragment> restoredFragmentList = getSupportFragmentManager().getFragments();
         if (restoredFragmentList.size() > 0) {
             for (Fragment target : restoredFragmentList) {
-                if (target instanceof NewTabFragmentV2 && target.getArguments() != null) {
+                if (target instanceof ITab && target.getArguments() != null) {
                     // 根据Fragment参数，还原TabInfo信息用于列表中查找
-                    TabInfo info = new TabInfo();
-                    info.setTitle(target.getArguments().getString(NewTabFragmentV2.ARG_TITLE));
-                    info.setTag(target.getArguments().getString(NewTabFragmentV2.ARG_TAG));
+                    TabInfo info = TabInfo.create(
+                            target.getArguments().getString(TabConst.ARG_TAG),
+                            target.getArguments().getString(TabConst.ARG_TITLE));
                     tabCacheManager.restoreTabCache(info, target);
                 }
             }
@@ -128,7 +130,7 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
     }
 
     @Override
-    public void onTabTitleChanged(String title) {
+    public void onPageTitleChange(String newTitle) {
         tabCacheManager.updateTabInfo();
     }
 
@@ -159,7 +161,7 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
             return;
         }
 
-        provideTabController().onAddNewTab(info, false);
+        provideTabController().onTabCreate(info, false);
     }
 
     private void showTabDialog() {
@@ -243,7 +245,7 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
 
         @Override
         public void goHome() {
-            provideTabController().gotoTabHome();
+            provideTabController().onTabGoHome();
         }
 
         @Override
@@ -266,14 +268,14 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
 
     class EasyHistoryController implements IBrowser.HistoryController {
         @Override
-        public void addHistory(final HistoryEntity entity) {
+        public void addHistory(final History entity) {
             Disposable dps = Observable.create(new ObservableOnSubscribe<Long>() {
 
                 @Override
                 public void subscribe(ObservableEmitter<Long> emitter) throws Exception {
                     final EasyApplication application = (EasyApplication) getApplicationContext();
                     DaoSession daoSession = application.getDaoSession();
-                    long rowId = daoSession.getHistoryEntityDao().insertOrReplace(entity);
+                    long rowId = daoSession.getHistoryDao().insertOrReplace(entity);
                     Log.i(TAG, "inserted id    is : " + rowId);
                     Log.i(TAG, "inserted title is : " + entity.getTitle());
                     Log.i(TAG, "inserted url   is : " + entity.getUrl());
@@ -308,16 +310,16 @@ public class BrowserActivity extends AppCompatActivity implements OnTabInteracti
         }
 
         @Override
-        public void onAddNewTab(TabInfo tabInfo, boolean backstage) {
+        public void onTabCreate(TabInfo tabInfo, boolean backstage) {
             if (next != null) {
-                next.onAddNewTab(tabInfo, backstage);
+                next.onTabCreate(tabInfo, backstage);
             }
         }
 
         @Override
-        public void gotoTabHome() {
+        public void onTabGoHome() {
             if (next != null) {
-                next.gotoTabHome();
+                next.onTabGoHome();
             }
         }
     }
