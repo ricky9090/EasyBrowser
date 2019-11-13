@@ -130,8 +130,8 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
     }
 
     @Override
-    public void onPageTitleChange(String newTitle) {
-        tabCacheManager.updateTabInfo();
+    public void onPageTitleChange(TabInfo tabInfo) {
+        tabCacheManager.updateTabInfo(tabInfo);
     }
 
     @Override
@@ -240,7 +240,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
         @Override
         public void goForward() {
-
+            provideTabController().onTabGoForward();
         }
 
         @Override
@@ -320,6 +320,13 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         public void onTabGoHome() {
             if (next != null) {
                 next.onTabGoHome();
+            }
+        }
+
+        @Override
+        public void onTabGoForward() {
+            if (next != null) {
+                next.onTabGoForward();
             }
         }
     }

@@ -60,5 +60,7 @@ public interface IBrowser {
         void onTabCreate(TabInfo tabInfo, boolean backstage);
 
         void onTabGoHome();
+
+        void onTabGoForward();
     }
 }

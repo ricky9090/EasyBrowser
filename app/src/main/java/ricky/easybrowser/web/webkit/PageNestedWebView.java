@@ -174,7 +174,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
                 super.onPageFinished(view, url);
                 webAddress.setText(url);
                 if (onWebInteractListener != null) {
-                    onWebInteractListener.onPageTitleChange(view.getTitle());
+                    onWebInteractListener.onPageTitleChange(TabInfo.create("", view.getTitle()));
                 }
 
                 boolean isBrowserController = mContext instanceof IBrowser;
@@ -279,6 +279,16 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
     }
 
     @Override
+    public void goForward() {
+        webView.goForward();
+    }
+
+    @Override
+    public boolean canGoForward() {
+        return webView.canGoForward();
+    }
+
+    @Override
     public void setOnWebInteractListener(OnWebInteractListener listener) {
         this.onWebInteractListener = listener;
     }
@@ -299,6 +309,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         webView.removeAllViews();
         webView.destroy();
         webView = null;
+        onWebInteractListener = null;
     }
 
     /**

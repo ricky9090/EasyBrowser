@@ -204,7 +204,7 @@ public class PageWebView extends FrameLayout implements IWebView {
                 super.onPageFinished(view, url);
                 webAddress.setText(url);
                 if (onWebInteractListener != null) {
-                    onWebInteractListener.onPageTitleChange(view.getTitle());
+                    onWebInteractListener.onPageTitleChange(TabInfo.create("", view.getTitle()));
                 }
 
                 boolean isBrowserController = mContext instanceof IBrowser;
@@ -317,6 +317,16 @@ public class PageWebView extends FrameLayout implements IWebView {
     @Override
     public void goBack() {
         webView.goBack();
+    }
+
+    @Override
+    public void goForward() {
+        webView.goForward();
+    }
+
+    @Override
+    public boolean canGoForward() {
+        return webView.canGoForward();
     }
 
     @Override

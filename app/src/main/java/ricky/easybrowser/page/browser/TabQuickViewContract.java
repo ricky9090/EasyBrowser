@@ -11,7 +11,7 @@ public interface TabQuickViewContract {
 
         List<TabInfo> provideInfoList();
 
-        void updateTabInfo();
+        void updateTabInfo(TabInfo info);
     }
 
     interface Observer {

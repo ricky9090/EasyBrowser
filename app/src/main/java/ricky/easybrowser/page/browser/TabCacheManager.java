@@ -251,16 +251,14 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
     }
 
     @Override
-    public void updateTabInfo() {
-        Fragment target = findVisibleFragment(fm);
-        if (!(target instanceof ITab)) {
-            return;
-        }
+    public void updateTabInfo(TabInfo tabInfo) {
         try {
-            String nTag = target.getArguments().getString(TabConst.ARG_TAG);
-            String nTitle = target.getArguments().getString(TabConst.ARG_TITLE);
+            int i = findTabIndex(tabInfo);
+            if (i < 0) {
+                return;
+            }
+            String nTitle = tabInfo.getTitle();
 
-            int i = findTabByTag(nTag);
             infoList.get(i).setTitle(nTitle);
         } catch (Exception e) {
             e.printStackTrace();
@@ -295,6 +293,18 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
 
         if (target instanceof ITab) {
             ((ITab) target).gotoHomePage();
+        }
+    }
+
+    @Override
+    public void onTabGoForward() {
+        Fragment target = findVisibleFragment(fm);
+        if (target == null) {
+            return;
+        }
+
+        if (target instanceof ITab) {
+            ((ITab) target).goForward();
         }
     }
 }

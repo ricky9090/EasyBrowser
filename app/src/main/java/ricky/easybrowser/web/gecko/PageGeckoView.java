@@ -44,6 +44,16 @@ public class PageGeckoView extends LinearLayout implements IWebView {
     }
 
     @Override
+    public void goForward() {
+
+    }
+
+    @Override
+    public boolean canGoForward() {
+        return false;
+    }
+
+    @Override
     public void releaseSession() {
 
     }

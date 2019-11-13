@@ -13,16 +13,16 @@ import androidx.fragment.app.Fragment;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.WebSite;
 import ricky.easybrowser.utils.EasyLog;
-import ricky.easybrowser.utils.OnBackInteractionListener;
 import ricky.easybrowser.web.IWebView;
 import ricky.easybrowser.web.webkit.PageNestedWebView;
 
 /**
  * 新标签页Fragment。显示收藏站点快捷按钮
  */
-public class NewTabFragmentV2 extends Fragment implements ITab, OnBackInteractionListener {
+public class NewTabFragmentV2 extends Fragment implements ITab {
 
     private String mTitle;
     private String mTag;
@@ -94,6 +94,8 @@ public class NewTabFragmentV2 extends Fragment implements ITab, OnBackInteractio
             mTitle = getArguments().getString(TabConst.ARG_TITLE);
             mTag = getArguments().getString(TabConst.ARG_TAG);
             loadUri = getArguments().getParcelable(TabConst.ARG_URI);
+        } else {
+            mTag = "" + System.currentTimeMillis();
         }
 
         EasyLog.i("test", "title: " + mTitle);
@@ -135,8 +137,9 @@ public class NewTabFragmentV2 extends Fragment implements ITab, OnBackInteractio
         pageWebView = new PageNestedWebView(getContext());
         pageWebView.setOnWebInteractListener(new IWebView.OnWebInteractListener() {
             @Override
-            public void onPageTitleChange(String newTitle) {
-                updateTitle(newTitle);
+            public void onPageTitleChange(TabInfo tabInfo) {
+                tabInfo.setTag(mTag);
+                updateTitle(tabInfo);
             }
         });
         frameLayout.addView((View) pageWebView);
@@ -150,7 +153,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab, OnBackInteractio
             mListener = (IWebView.OnWebInteractListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement IWebView.OnWebInteractListener");
         }
     }
 
@@ -167,28 +170,58 @@ public class NewTabFragmentV2 extends Fragment implements ITab, OnBackInteractio
         }
 
         View view = frameLayout.getChildAt(0);
+        // 已经在网站快捷方式 不能返回
         if (view instanceof NewTabView) {
             return false;
         }
 
+        // 不是IWebView 不能返回
         if (!(view instanceof IWebView)) {
             return false;
         }
+
         if (pageWebView.canGoBack()) {
+            // 网页可返回，执行网页的返回逻辑
             pageWebView.goBack();
             return true;
         } else {
+            // 网页不能返回，将WebView移除，替换成网站快捷方式
             frameLayout.removeAllViews();
             destroyWebView();
             frameLayout.addView(newTabView);
             try {
-                String newTitle = getContext().getString(R.string.new_tab_welcome);
-                updateTitle(newTitle);
+                mTitle = getContext().getString(R.string.new_tab_welcome);
                 loadUri = null;
+                updateTitle(provideTagInfo());
             } catch (Exception e) {
 
             }
             return true;
+        }
+    }
+
+    @Override
+    public TabInfo provideTagInfo() {
+        TabInfo.create(this.mTag, this.mTitle, this.loadUri);
+        return null;
+    }
+
+    @Override
+    public void goForward() {
+        if (frameLayout.getChildCount() <= 0) {
+            return;
+        }
+
+        View view = frameLayout.getChildAt(0);
+        if (view instanceof NewTabView) {
+            return;
+        }
+
+        if (view instanceof IWebView) {
+            IWebView iWebView = (IWebView) view;
+            if (iWebView.canGoForward()) {
+                iWebView.goForward();
+            }
         }
     }
 
@@ -208,9 +241,9 @@ public class NewTabFragmentV2 extends Fragment implements ITab, OnBackInteractio
             destroyWebView();
             frameLayout.addView(newTabView);
             try {
-                String newTitle = getContext().getString(R.string.new_tab_welcome);
-                updateTitle(newTitle);
+                mTitle = getContext().getString(R.string.new_tab_welcome);
                 loadUri = null;
+                updateTitle(provideTagInfo());
             } catch (Exception e) {
 
             }
@@ -231,11 +264,13 @@ public class NewTabFragmentV2 extends Fragment implements ITab, OnBackInteractio
         }
     }
 
-    private void updateTitle(String title) {
-        mTitle = title;
-        getArguments().putString(TabConst.ARG_TITLE, mTitle);
+    private void updateTitle(TabInfo tabInfo) {
+        mTitle = tabInfo.getTitle();
+        if (getArguments() != null) {
+            getArguments().putString(TabConst.ARG_TITLE, mTitle);
+        }
         if (mListener != null) {
-            mListener.onPageTitleChange(mTitle);
+            mListener.onPageTitleChange(tabInfo);
         }
     }
 

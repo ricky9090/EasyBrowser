@@ -5,6 +5,8 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.List;
 
+import ricky.easybrowser.page.newtab.ITab;
+
 public class FragmentBackHandleHelper {
 
     public static boolean isFragmentBackHandled(FragmentManager fragmentManager) {
@@ -30,8 +32,8 @@ public class FragmentBackHandleHelper {
     public static boolean isFragmentBackable(Fragment fragment) {
         return fragment.isVisible()
                 && fragment.getUserVisibleHint()
-                && fragment instanceof OnBackInteractionListener
-                && ((OnBackInteractionListener) fragment).onBackPressed();
+                && fragment instanceof ITab
+                && ((ITab) fragment).onBackPressed();
 
     }
 }
