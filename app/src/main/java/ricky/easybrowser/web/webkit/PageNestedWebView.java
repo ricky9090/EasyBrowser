@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -29,12 +28,14 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import java.io.InputStream;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.browser.IBrowser;
-import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
+import ricky.easybrowser.utils.TabHelper;
 import ricky.easybrowser.web.IWebView;
 import ricky.easybrowser.widget.BrowserNavBar;
 
@@ -109,147 +110,14 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         progressBar = findViewById(R.id.web_loading_progress_bar);
 
         browserNavBar = findViewById(R.id.web_nav_bar);
-        browserNavBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
-            @Override
-            public void onItemClick(View itemView) {
-                boolean isBrowserController = mContext instanceof IBrowser;
-                if (!isBrowserController) {
-                    return;
-                }
-                IBrowser browser = (IBrowser) mContext;
-                int id = itemView.getId();
-                switch (id) {
-                    case R.id.nav_back:
-                        browser.provideNavController().goBack();
-                        break;
-                    case R.id.nav_forward:
-                        browser.provideNavController().goForward();
-                        break;
-                    case R.id.nav_home:
-                        browser.provideNavController().goHome();
-                        break;
-                    case R.id.nav_show_tabs:
-                        browser.provideNavController().showTabs();
-                        break;
-                    case R.id.nav_setting:
-                        browser.provideNavController().showSetting();
-                        break;
-                }
-            }
-        });
+        browserNavBar.setNavListener(new WebNavListener(getContext()));
     }
 
     private void configureWebView() {
         webView = findViewById(R.id.page_webview);
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                if (newProgress == 100) {
-                    progressBar.setProgress(0);
-                    progressBar.hide();
-                    return;
-                }
-
-                if ((newProgress > 0) && (progressBar.getVisibility() == View.INVISIBLE
-                        || progressBar.getVisibility() == View.GONE)) {
-                    progressBar.show();
-                }
-                progressBar.setProgress(newProgress);
-
-            }
-        });
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return super.shouldOverrideUrlLoading(view, request);
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                webAddress.setText(url);
-                if (onWebInteractListener != null) {
-                    onWebInteractListener.onPageTitleChange(TabInfo.create("", view.getTitle()));
-                }
-
-                boolean isBrowserController = mContext instanceof IBrowser;
-                if (!isBrowserController) {
-                    return;
-                }
-                // FIXME 通过进度 == 100 判断，避免网页重定向生成多条无效历史记录
-                // https://stackoverflow.com/questions/3149216/how-to-listen-for-a-webview-finishing-loading-a-url
-                if (webView.getProgress() == 100) {
-                    IBrowser browser = (IBrowser) mContext;
-                    History history = new History();
-                    history.setTitle(view.getTitle());
-                    history.setUrl(url);
-                    browser.provideHistoryController().addHistory(history);
-                }
-            }
-
-            @Nullable
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                try {
-                    String targetPath = request.getUrl().getPath();
-                    if (StringUtils.isEmpty(targetPath)) {
-                        return super.shouldInterceptRequest(view, request);
-                    }
-                    if (noPicMode && isPicResources(targetPath)) {
-                        InputStream placeHolderIS = mContext.getAssets().open("emptyplaceholder.png");
-                        return new WebResourceResponse("image/png", "UTF-8", placeHolderIS);
-                    }
-                } catch (Exception e) {
-
-                }
-
-                return super.shouldInterceptRequest(view, request);
-            }
-
-            private boolean isPicResources(String path) {
-                if (path.endsWith(".jpg")
-                        || path.endsWith(".jpeg")
-                        || path.endsWith(".png")
-                        || path.endsWith(".gif")) {
-                    return true;
-                }
-                return false;
-            }
-        });
-        webView.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                final WebView.HitTestResult result = ((WebView) v).getHitTestResult();
-                if (result == null) {
-                    return false;
-                }
-                final int type = result.getType();
-                final String extra = result.getExtra();
-                hitResultExtra = result.getExtra();
-                switch (type) {
-                    case WebView.HitTestResult.IMAGE_TYPE:
-                        EasyLog.i("test", "press image: " + extra);
-                        showImageActionsDialog();
-                        break;
-                    case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
-                        EasyLog.i("test", "press image anchor: " + extra);
-                        // TODO 实现image anchor类型弹窗，需要获取图片url及父节点<a>标签的url
-                        break;
-                    case WebView.HitTestResult.SRC_ANCHOR_TYPE:
-                        EasyLog.i("test", "press url: " + extra);
-                        showUrlActionsDialog();
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
+        webView.setWebChromeClient(new MyWebChromeClient());
+        webView.setWebViewClient(new MyWebViewClient());
+        webView.setOnLongClickListener(new MyWebLongClickListener());
     }
 
     private void loadInputUrl() {
@@ -324,10 +192,16 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         imageDialogbuilder.setItems(R.array.image_actions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {  // backstage
-                    notifyAddNewTab(true);
-                } else if (which == 1) {
-                    notifyAddNewTab(false);
+                if (which == TabConst.TAB_OPEN_ACTION_BACKSTAGE) {
+                    TabHelper.createTab(mContext,
+                            R.string.new_tab_welcome,
+                            hitResultExtra,
+                            true);
+                } else if (which == TabConst.TAB_OPEN_ACTION_FRONTSTAGE) {
+                    TabHelper.createTab(mContext,
+                            R.string.new_tab_welcome,
+                            hitResultExtra,
+                            false);
                 }
             }
         });
@@ -347,10 +221,16 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         urlDialogbuilder.setItems(R.array.url_actions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {  // backstage
-                    notifyAddNewTab(true);
-                } else if (which == 1) {
-                    notifyAddNewTab(false);
+                if (which == TabConst.TAB_OPEN_ACTION_BACKSTAGE) {
+                    TabHelper.createTab(mContext,
+                            R.string.new_tab_welcome,
+                            hitResultExtra,
+                            true);
+                } else if (which == TabConst.TAB_OPEN_ACTION_FRONTSTAGE) {
+                    TabHelper.createTab(mContext,
+                            R.string.new_tab_welcome,
+                            hitResultExtra,
+                            false);
                 }
             }
         });
@@ -358,32 +238,115 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         urlActionsDialog.show();
     }
 
-    private void notifyAddNewTab(boolean backStage) {
-        IBrowser browser = null;
-        if (mContext instanceof IBrowser) {
-            browser = (IBrowser) mContext;
+    class MyWebChromeClient extends WebChromeClient {
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            if (newProgress == 100) {
+                progressBar.setProgress(0);
+                progressBar.hide();
+                return;
+            }
+
+            if ((newProgress > 0) && (progressBar.getVisibility() == View.INVISIBLE
+                    || progressBar.getVisibility() == View.GONE)) {
+                progressBar.show();
+            }
+            progressBar.setProgress(newProgress);
 
         }
-        if (browser == null) {
-            return;
-        }
-        if (StringUtils.isEmpty(hitResultExtra)) {
-            return;
-        }
-        Uri uri = null;
-        try {
-            uri = Uri.parse(hitResultExtra);
-        } catch (Exception e) {
-            uri = null;
-        }
-        if (uri == null) {
-            return;
-        }
-        TabInfo tabInfo = TabInfo.create(
-                System.currentTimeMillis() + "",
-                mContext.getResources().getString(R.string.new_tab_welcome),
-                uri);
-        browser.provideTabController().onTabCreate(tabInfo, backStage);
     }
 
+    class MyWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            return super.shouldOverrideUrlLoading(view, request);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            webAddress.setText(url);
+            if (onWebInteractListener != null) {
+                onWebInteractListener.onPageTitleChange(TabInfo.create("", view.getTitle()));
+            }
+
+            boolean isBrowserController = mContext instanceof IBrowser;
+            if (!isBrowserController) {
+                return;
+            }
+            // FIXME 通过进度 == 100 判断，避免网页重定向生成多条无效历史记录
+            // https://stackoverflow.com/questions/3149216/how-to-listen-for-a-webview-finishing-loading-a-url
+            if (webView.getProgress() == 100) {
+                IBrowser browser = (IBrowser) mContext;
+                History history = new History();
+                history.setTitle(view.getTitle());
+                history.setUrl(url);
+                browser.provideHistoryController().addHistory(history);
+            }
+        }
+
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            try {
+                String targetPath = request.getUrl().getPath();
+                if (StringUtils.isEmpty(targetPath)) {
+                    return super.shouldInterceptRequest(view, request);
+                }
+                if (noPicMode && isPicResources(targetPath)) {
+                    InputStream placeHolderIS = mContext.getAssets().open("emptyplaceholder.png");
+                    return new WebResourceResponse("image/png", "UTF-8", placeHolderIS);
+                }
+            } catch (Exception e) {
+
+            }
+
+            return super.shouldInterceptRequest(view, request);
+        }
+
+        private boolean isPicResources(String path) {
+            if (path.endsWith(".jpg")
+                    || path.endsWith(".jpeg")
+                    || path.endsWith(".png")
+                    || path.endsWith(".gif")) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    class MyWebLongClickListener implements OnLongClickListener {
+        @Override
+        public boolean onLongClick(View v) {
+            final WebView.HitTestResult result = ((WebView) v).getHitTestResult();
+            if (result == null) {
+                return false;
+            }
+            final int type = result.getType();
+            final String extra = result.getExtra();
+            hitResultExtra = result.getExtra();
+            switch (type) {
+                case WebView.HitTestResult.IMAGE_TYPE:
+                    EasyLog.i("test", "press image: " + extra);
+                    showImageActionsDialog();
+                    break;
+                case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
+                    EasyLog.i("test", "press image anchor: " + extra);
+                    // TODO 实现image anchor类型弹窗，需要获取图片url及父节点<a>标签的url
+                    break;
+                case WebView.HitTestResult.SRC_ANCHOR_TYPE:
+                    EasyLog.i("test", "press url: " + extra);
+                    showUrlActionsDialog();
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+    }
 }

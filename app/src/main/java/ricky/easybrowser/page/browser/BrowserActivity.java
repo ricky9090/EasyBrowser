@@ -28,8 +28,10 @@ import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.DaoSession;
 import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.history.HistoryActivity;
-import ricky.easybrowser.page.newtab.ITab;
 import ricky.easybrowser.page.setting.SettingDialogKt;
+import ricky.easybrowser.page.tab.ITab;
+import ricky.easybrowser.page.tabpreview.TabDialogKt;
+import ricky.easybrowser.page.tabpreview.TabQuickViewContract;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 import ricky.easybrowser.web.IWebView;
 
@@ -43,7 +45,6 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
     FrameLayout webContentFrame;
 
-    TabCacheManager tabCacheManager;
     TabDialogKt tabDialog;
     SettingDialogKt settingDialog;
 
@@ -56,9 +57,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
-        if (tabCacheManager == null) {
-            tabCacheManager = new TabCacheManager(this, getSupportFragmentManager(), 3, R.id.web_content_frame);
-        }
+        provideTabController();
 
         webContentFrame = findViewById(R.id.web_content_frame);
 
@@ -67,11 +66,11 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
             TabInfo tabInfo = TabInfo.create(
                     System.currentTimeMillis() + "",
                     getString(R.string.new_tab_welcome));
-            ((IBrowser.TabController) tabCacheManager).onTabCreate(tabInfo, false);
+            provideTabController().onTabCreate(tabInfo, false);
         } else {
             Fragment prevDialog = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
             if (prevDialog instanceof TabDialogKt) {
-                ((TabDialogKt) prevDialog).setTabCacheManager(tabCacheManager);
+                ((TabDialogKt) prevDialog).setTabViewSubject(provideTabController());
                 ((TabDialogKt) prevDialog).dismiss();
             }
         }
@@ -90,7 +89,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
         // 当横竖屏切换后，将复原的Fragment重新推入cache
         // 由于tablist可能超出cache的大小(即Activity销毁前Fragment数量)，这里首先还原tablist信息
-        tabCacheManager.provideInfoList().addAll(restoreList);
+        provideTabController().provideInfoList().addAll(restoreList);
         List<Fragment> restoredFragmentList = getSupportFragmentManager().getFragments();
         if (restoredFragmentList.size() > 0) {
             for (Fragment target : restoredFragmentList) {
@@ -99,7 +98,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
                     TabInfo info = TabInfo.create(
                             target.getArguments().getString(TabConst.ARG_TAG),
                             target.getArguments().getString(TabConst.ARG_TITLE));
-                    tabCacheManager.restoreTabCache(info, target);
+                    provideTabController().onRestoreTabCache(info, target);
                 }
             }
         }
@@ -109,14 +108,14 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         ArrayList<TabInfo> storeList = new ArrayList<>();
-        storeList.addAll(tabCacheManager.provideInfoList());
+        storeList.addAll(provideTabController().provideInfoList());
         outState.putParcelableArrayList("tablist", storeList);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        tabCacheManager.closeAllTabs();
+        provideTabController().onCloseAllTabs();
     }
 
     @Override
@@ -131,7 +130,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
     @Override
     public void onPageTitleChange(TabInfo tabInfo) {
-        tabCacheManager.updateTabInfo(tabInfo);
+        provideTabController().updateTabInfo(tabInfo);
     }
 
     @Override
@@ -174,7 +173,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
             tabDialog = new TabDialogKt();
             tabDialog.setCancelable(false);
         }
-        tabDialog.setTabCacheManager(tabCacheManager);
+        tabDialog.setTabViewSubject(provideTabController());
         tabDialog.show(getSupportFragmentManager(), TAB_DIALOG_TAG);
     }
 
@@ -227,7 +226,8 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
     @Override
     public TabController provideTabController() {
         if (tabController == null) {
-            tabController = new EasyTabController(tabCacheManager);
+            IBrowser.TabController next = new TabCacheManager(this, getSupportFragmentManager(), 3, R.id.web_content_frame);
+            tabController = new EasyTabController(next);
         }
         return tabController;
     }
@@ -327,6 +327,42 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         public void onTabGoForward() {
             if (next != null) {
                 next.onTabGoForward();
+            }
+        }
+
+        @Override
+        public void onRestoreTabCache(TabInfo infoCopy, @Nullable Fragment fragment) {
+            if (next != null) {
+                next.onRestoreTabCache(infoCopy, fragment);
+            }
+        }
+
+        @Override
+        public void onCloseAllTabs() {
+            if (next != null) {
+                next.onCloseAllTabs();
+            }
+        }
+
+        @Override
+        public void attach(TabQuickViewContract.Observer observer) {
+            if (next != null) {
+                next.attach(observer);
+            }
+        }
+
+        @Override
+        public List<TabInfo> provideInfoList() {
+            if (next != null) {
+                return next.provideInfoList();
+            }
+            return null;
+        }
+
+        @Override
+        public void updateTabInfo(TabInfo info) {
+            if (next != null) {
+                next.updateTabInfo(info);
             }
         }
     }

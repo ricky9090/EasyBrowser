@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browser
+package ricky.easybrowser.page.tabpreview
 
 import android.os.Bundle
 import android.view.*
@@ -8,10 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ricky.easybrowser.R
 import ricky.easybrowser.entity.bo.TabInfo
+import ricky.easybrowser.page.browser.IBrowser
 
 class TabDialogKt : DialogFragment() {
 
-    lateinit var tabCacheManager: TabCacheManager
+    lateinit var tabViewSubject: TabQuickViewContract.Subject
     private var browser: IBrowser? = null
 
     lateinit var tabRecyclerView: RecyclerView
@@ -39,7 +40,7 @@ class TabDialogKt : DialogFragment() {
         tabRecyclerView = dialogView.findViewById(R.id.tab_list_recyclerview)
         tabRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         tabQuickViewAdapter = TabQuickViewAdapter(context)
-        tabQuickViewAdapter.attachToSubject(tabCacheManager)
+        tabQuickViewAdapter.attachToSubject(tabViewSubject)
         tabQuickViewAdapter.listener = object : TabQuickViewAdapter.OnTabClickListener {
             override fun onTabClick(info: TabInfo) {
                 browser?.provideTabController()?.onTabSelected(info)

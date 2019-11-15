@@ -12,16 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.common.TabConst;
 import ricky.easybrowser.entity.bo.TabInfo;
-import ricky.easybrowser.page.newtab.ITab;
-import ricky.easybrowser.page.newtab.NewTabFragmentV2;
+import ricky.easybrowser.page.tab.ITab;
+import ricky.easybrowser.page.tab.NewTabFragmentV2;
+import ricky.easybrowser.page.tabpreview.TabQuickViewContract;
 
 /**
  * LRU实现的标签页缓存。负责标签页的缓存及切换显示逻辑。
  */
-public class TabCacheManager implements TabQuickViewContract.Subject,
-        IBrowser.TabController {
+public class TabCacheManager implements IBrowser.TabController {
 
     private final Context mContext;
     private final FragmentManager fm;
@@ -61,7 +60,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
      * @param infoCopy 由Fragment中的参数还原的TabInfo对象，与复原列表里的hash值不同，put时需判断
      * @param fragment 目标Fragment
      */
-    public void restoreTabCache(TabInfo infoCopy, @Nullable Fragment fragment) {
+    private void restoreTabCache(TabInfo infoCopy, @Nullable Fragment fragment) {
         int prevIndex = -1;
         for (int i = 0; i < infoList.size(); i++) {
             if (infoCopy.equals(infoList.get(i))) {
@@ -113,7 +112,7 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
         }
     }
 
-    public void closeAllTabs() {
+    private void closeAllTabs() {
         lruCache.evictAll();
         infoList.clear();
     }
@@ -306,5 +305,15 @@ public class TabCacheManager implements TabQuickViewContract.Subject,
         if (target instanceof ITab) {
             ((ITab) target).goForward();
         }
+    }
+
+    @Override
+    public void onRestoreTabCache(TabInfo infoCopy, @Nullable Fragment fragment) {
+        restoreTabCache(infoCopy, fragment);
+    }
+
+    @Override
+    public void onCloseAllTabs() {
+        closeAllTabs();
     }
 }

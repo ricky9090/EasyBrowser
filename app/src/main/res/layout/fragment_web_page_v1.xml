@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ricky.easybrowser.web.webkit.PlaceholderView
+        <ricky.easybrowser.web.legacy.PlaceholderView
             android:id="@+id/address_bar_placeholder"
             android:layout_width="match_parent"
             android:layout_height="48dp" />
@@ -24,13 +24,13 @@
             android:layout_height="3dp"
             tools:progress="50" />
 
-        <ricky.easybrowser.web.webkit.PlaceholderView
+        <ricky.easybrowser.web.legacy.PlaceholderView
             android:id="@+id/nav_bar_placeholder"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_alignParentBottom="true"/>
 
-        <ricky.easybrowser.web.webkit.EasyWebView
+        <ricky.easybrowser.web.legacy.EasyWebView
             android:id="@+id/page_webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

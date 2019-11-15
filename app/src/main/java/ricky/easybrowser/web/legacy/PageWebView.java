@@ -1,4 +1,4 @@
-package ricky.easybrowser.web.webkit;
+package ricky.easybrowser.web.legacy;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -40,6 +40,8 @@ import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.web.webkit.AddressBar;
+import ricky.easybrowser.web.webkit.WebNavListener;
 import ricky.easybrowser.widget.BrowserNavBar;
 
 public class PageWebView extends FrameLayout implements IWebView {
@@ -139,34 +141,7 @@ public class PageWebView extends FrameLayout implements IWebView {
                 orgBrowserNavBarHeight = browserNavBar.getMeasuredHeight();
             }
         });
-        browserNavBar.setNavListener(new BrowserNavBar.OnNavClickListener() {
-            @Override
-            public void onItemClick(View itemView) {
-                boolean isBrowserController = mContext instanceof IBrowser;
-                if (!isBrowserController) {
-                    return;
-                }
-                IBrowser browser = (IBrowser) mContext;
-                int id = itemView.getId();
-                switch (id) {
-                    case R.id.nav_back:
-                        browser.provideNavController().goBack();
-                        break;
-                    case R.id.nav_forward:
-                        browser.provideNavController().goForward();
-                        break;
-                    case R.id.nav_home:
-                        browser.provideNavController().goHome();
-                        break;
-                    case R.id.nav_show_tabs:
-                        browser.provideNavController().showTabs();
-                        break;
-                    case R.id.nav_setting:
-                        browser.provideNavController().showSetting();
-                        break;
-                }
-            }
-        });
+        browserNavBar.setNavListener(new WebNavListener(getContext()));
     }
 
     private void configureWebView() {

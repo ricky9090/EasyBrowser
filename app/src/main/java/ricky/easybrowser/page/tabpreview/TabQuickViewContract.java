@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.browser;
+package ricky.easybrowser.page.tabpreview;
 
 import java.util.List;
 

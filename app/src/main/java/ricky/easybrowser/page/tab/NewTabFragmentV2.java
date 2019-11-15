@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.newtab;
+package ricky.easybrowser.page.tab;
 
 import android.content.Context;
 import android.net.Uri;
@@ -15,6 +15,8 @@ import ricky.easybrowser.R;
 import ricky.easybrowser.common.TabConst;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.WebSite;
+import ricky.easybrowser.page.frontpage.FrontPageView;
+import ricky.easybrowser.page.frontpage.SiteAdapterV2;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.web.IWebView;
 import ricky.easybrowser.web.webkit.PageNestedWebView;
@@ -29,7 +31,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
     private Uri loadUri;
 
     private FrameLayout frameLayout;
-    private NewTabView newTabView;
+    private FrontPageView frontPageView;
     private IWebView pageWebView;
 
 
@@ -108,10 +110,10 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
         View rootView = inflater.inflate(R.layout.fragment_new_tab_v2, container, false);
         frameLayout = rootView.findViewById(R.id.new_tab_v2_frame);
 
-        newTabView = new NewTabView(getContext());
-        newTabView.setTabTitle(mTitle);
+        frontPageView = new FrontPageView(getContext());
+        frontPageView.setTabTitle(mTitle);
 
-        newTabView.setSiteListener(new SiteAdapterV2.OnSiteItemClickListener() {
+        frontPageView.setSiteListener(new SiteAdapterV2.OnSiteItemClickListener() {
             @Override
             public void onSiteItemClick(WebSite webSite) {
                 Uri uri = new Uri.Builder()
@@ -124,7 +126,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
             }
         });
         if (loadUri == null) {
-            frameLayout.addView(newTabView);
+            frameLayout.addView(frontPageView);
         } else {
             addWebView(loadUri);
         }
@@ -171,7 +173,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
 
         View view = frameLayout.getChildAt(0);
         // 已经在网站快捷方式 不能返回
-        if (view instanceof NewTabView) {
+        if (view instanceof FrontPageView) {
             return false;
         }
 
@@ -188,7 +190,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
             // 网页不能返回，将WebView移除，替换成网站快捷方式
             frameLayout.removeAllViews();
             destroyWebView();
-            frameLayout.addView(newTabView);
+            frameLayout.addView(frontPageView);
             try {
                 mTitle = getContext().getString(R.string.new_tab_welcome);
                 loadUri = null;
@@ -213,7 +215,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
         }
 
         View view = frameLayout.getChildAt(0);
-        if (view instanceof NewTabView) {
+        if (view instanceof FrontPageView) {
             return;
         }
 
@@ -232,14 +234,14 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
         }
 
         View view = frameLayout.getChildAt(0);
-        if (view instanceof NewTabView) {
+        if (view instanceof FrontPageView) {
             return;
         }
 
         if (view instanceof IWebView) {
             frameLayout.removeAllViews();
             destroyWebView();
-            frameLayout.addView(newTabView);
+            frameLayout.addView(frontPageView);
             try {
                 mTitle = getContext().getString(R.string.new_tab_welcome);
                 loadUri = null;

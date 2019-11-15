@@ -1,4 +1,4 @@
-package ricky.easybrowser.web.webkit;
+package ricky.easybrowser.web.legacy;
 
 import android.content.Context;
 import android.util.AttributeSet;
