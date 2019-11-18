@@ -42,16 +42,23 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#999999"/>
+        android:background="#999999" />
 
-    <ImageView
-        android:id="@+id/nav_fold"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_margin="8dp"
-        android:contentDescription="TODO"
-        android:scaleType="centerInside"
-        android:layout_gravity="center_horizontal"
-        android:src="@mipmap/ic_expand_more_black_36dp" />
+        android:layout_height="?attr/actionBarSize">
+
+        <ImageView
+            android:id="@+id/nav_fold"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:contentDescription="TODO"
+            android:scaleType="centerInside"
+            android:layout_gravity="center"
+            android:src="@mipmap/ic_expand_more_black_36dp" />
+
+    </FrameLayout>
+
 
 </LinearLayout>
