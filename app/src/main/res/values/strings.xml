@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">EasyBrowser</string>
 
+    <string name="placeholder_todo">TODO</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="new_tab_welcome">新标签页</string>
 

@@ -11,7 +11,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="center"
-        android:contentDescription="TODO"
+        android:contentDescription="@string/placeholder_todo"
         android:scaleType="centerInside"
         android:src="@mipmap/ic_add_black_36dp" />
 

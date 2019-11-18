@@ -32,7 +32,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:contentDescription="TODO"
+                        android:contentDescription="@string/placeholder_todo"
                         android:src="@mipmap/ic_arrow_forward_black_36dp" />
 
                     <EditText

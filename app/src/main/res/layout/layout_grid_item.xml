@@ -13,7 +13,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center_horizontal"
-        android:contentDescription="TODO"
+        android:contentDescription="@string/placeholder_todo"
         android:src="@mipmap/ic_launcher" />
 
     <TextView

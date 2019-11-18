@@ -18,7 +18,7 @@
             android:layout_height="32dp"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/placeholder_todo"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_arrow_back_black_36dp" />
 
@@ -28,7 +28,7 @@
             android:layout_height="32dp"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/placeholder_todo"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_arrow_forward_black_36dp" />
 
@@ -38,7 +38,7 @@
             android:layout_height="32dp"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/placeholder_todo"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_home_black_36dp" />
 
@@ -48,7 +48,7 @@
             android:layout_height="32dp"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/placeholder_todo"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_tab_black_36dp" />
 
@@ -58,7 +58,7 @@
             android:layout_height="32dp"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/placeholder_todo"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_menu_black_36dp" />
     </LinearLayout>

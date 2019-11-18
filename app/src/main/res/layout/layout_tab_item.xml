@@ -10,16 +10,21 @@
         android:id="@+id/item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:singleLine="true"
+        android:layout_gravity="center_horizontal|bottom"
         android:gravity="center_horizontal"
-        android:text="new tab" />
+        android:background="@color/deep_black"
+        android:textColor="@color/white"
+        android:text="@string/new_tab_welcome" />
 
     <ImageView
         android:id="@+id/item_close_button"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_gravity="top|right"
-        android:contentDescription="TODO"
+        android:contentDescription="@string/placeholder_todo"
         android:scaleType="centerInside"
         android:src="@mipmap/ic_cancel_black_36dp" />
 

@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="32dp"
             android:layout_margin="8dp"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/placeholder_todo"
             android:scaleType="centerInside"
             android:layout_gravity="center"
             android:src="@mipmap/ic_expand_more_black_36dp" />
