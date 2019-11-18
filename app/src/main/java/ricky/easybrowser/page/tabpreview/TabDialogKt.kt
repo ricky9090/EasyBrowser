@@ -16,7 +16,7 @@ class TabDialogKt : DialogFragment() {
     private var browser: IBrowser? = null
 
     lateinit var tabRecyclerView: RecyclerView
-    lateinit var tabQuickViewAdapter: TabQuickViewAdapter
+    var tabQuickViewAdapter: TabQuickViewAdapter? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +40,8 @@ class TabDialogKt : DialogFragment() {
         tabRecyclerView = dialogView.findViewById(R.id.tab_list_recyclerview)
         tabRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         tabQuickViewAdapter = TabQuickViewAdapter(context)
-        tabQuickViewAdapter.attachToSubject(tabViewSubject)
-        tabQuickViewAdapter.listener = object : TabQuickViewAdapter.OnTabClickListener {
+        tabQuickViewAdapter?.attachToSubject(tabViewSubject)
+        tabQuickViewAdapter?.listener = object : TabQuickViewAdapter.OnTabClickListener {
             override fun onTabClick(info: TabInfo) {
                 browser?.provideTabController()?.onTabSelected(info)
                 dismiss()
@@ -73,8 +73,14 @@ class TabDialogKt : DialogFragment() {
             it.gravity = Gravity.BOTTOM
             dialog?.window?.attributes = it
         }
-        tabQuickViewAdapter.notifyDataSetChanged()
+        tabQuickViewAdapter?.notifyDataSetChanged()
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        tabQuickViewAdapter?.listener = null
+        tabQuickViewAdapter?.detachSubject()
+        tabQuickViewAdapter = null
+        browser = null
+    }
 }

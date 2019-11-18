@@ -245,6 +245,11 @@ public class TabCacheManager implements IBrowser.TabController {
     }
 
     @Override
+    public void detach() {
+        this.observer = null;
+    }
+
+    @Override
     public List<TabInfo> provideInfoList() {
         return this.infoList;
     }
@@ -315,5 +320,10 @@ public class TabCacheManager implements IBrowser.TabController {
     @Override
     public void onCloseAllTabs() {
         closeAllTabs();
+    }
+
+    @Override
+    public void onDestroy() {
+
     }
 }

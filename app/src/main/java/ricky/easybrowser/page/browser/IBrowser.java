@@ -69,5 +69,7 @@ public interface IBrowser {
         void onRestoreTabCache(TabInfo infoCopy, @Nullable Fragment fragment);
 
         void onCloseAllTabs();
+
+        void onDestroy();
     }
 }

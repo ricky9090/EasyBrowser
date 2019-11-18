@@ -50,9 +50,6 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
     FrameLayout webContentFrame;
 
-    TabDialogKt tabDialog;
-    SettingDialogKt settingDialog;
-
     IBrowser.NavController navController;
     IBrowser.HistoryController historyController;
     IBrowser.TabController tabController;
@@ -120,7 +117,12 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        provideTabController().onCloseAllTabs();
+        if (tabController != null) {
+            tabController.onCloseAllTabs();
+            tabController.detach();
+            tabController.onDestroy();
+            tabController = null;
+        }
     }
 
     @Override
@@ -193,10 +195,10 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
             ((TabDialogKt) prev).dismiss();
             return;
         }
-        if (tabDialog == null) {
-            tabDialog = new TabDialogKt();
-            tabDialog.setCancelable(false);
-        }
+
+        TabDialogKt tabDialog = new TabDialogKt();
+        tabDialog.setCancelable(false);
+
         tabDialog.setTabViewSubject(provideTabController());
         tabDialog.show(getSupportFragmentManager(), TAB_DIALOG_TAG);
     }
@@ -208,10 +210,8 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
             return;
         }
 
-        if (settingDialog == null) {
-            settingDialog = new SettingDialogKt();
-            settingDialog.setCancelable(false);
-        }
+        SettingDialogKt settingDialog = new SettingDialogKt();
+        settingDialog.setCancelable(false);
 
         settingDialog.show(getSupportFragmentManager(), SETTING_DIALOG_TAG);
     }
@@ -362,6 +362,11 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         }
 
         @Override
+        public void onDestroy() {
+            next = null;
+        }
+
+        @Override
         public void onTabSelected(TabInfo tabInfo) {
             if (next != null) {
                 next.onTabSelected(tabInfo);
@@ -414,6 +419,13 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         public void attach(TabQuickViewContract.Observer observer) {
             if (next != null) {
                 next.attach(observer);
+            }
+        }
+
+        @Override
+        public void detach() {
+            if (next != null) {
+                next.detach();
             }
         }
 

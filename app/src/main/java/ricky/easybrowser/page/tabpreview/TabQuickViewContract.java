@@ -9,6 +9,8 @@ public interface TabQuickViewContract {
     interface Subject {
         void attach(Observer observer);
 
+        void detach();
+
         List<TabInfo> provideInfoList();
 
         void updateTabInfo(TabInfo info);
