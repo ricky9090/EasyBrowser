@@ -29,6 +29,11 @@ public class PageGeckoView extends LinearLayout implements IWebView {
     }
 
     @Override
+    public OnWebInteractListener getOnWebInteractListener() {
+        return null;
+    }
+
+    @Override
     public void loadUrl(String url) {
 
     }

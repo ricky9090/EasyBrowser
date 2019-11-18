@@ -33,14 +33,11 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         View itemView;
         if (viewType == VIEW_ADD) {
             itemView = LayoutInflater.from(context).inflate(R.layout.layout_add_tab_item, parent, false);
-            TabAddViewHolder holder = new TabAddViewHolder(itemView);
-            return holder;
-        } else if (viewType == VIEW_TAB) {
+            return new TabAddViewHolder(itemView);
+        } else {
             itemView = LayoutInflater.from(context).inflate(R.layout.layout_tab_item, parent, false);
-            TabQuickViewHolder holder = new TabQuickViewHolder(itemView);
-            return holder;
+            return new TabQuickViewHolder(itemView);
         }
-        return null;
     }
 
     @Override
@@ -49,7 +46,6 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return;
         }
 
-
         if (holder instanceof TabAddViewHolder) {
             bindAddView((TabAddViewHolder) holder);
             return;
@@ -57,7 +53,6 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         if (holder instanceof TabQuickViewHolder) {
             bindQuickView((TabQuickViewHolder) holder, position);
-            return;
         }
 
     }
@@ -89,7 +84,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         });
 
-        holder.siteTitle.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listener != null) {

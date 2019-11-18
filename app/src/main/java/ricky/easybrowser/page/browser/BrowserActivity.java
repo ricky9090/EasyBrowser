@@ -1,13 +1,16 @@
 package ricky.easybrowser.page.browser;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -24,6 +27,7 @@ import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
 import ricky.easybrowser.common.Const;
 import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.entity.bo.ClickInfo;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.DaoSession;
 import ricky.easybrowser.entity.dao.History;
@@ -33,6 +37,7 @@ import ricky.easybrowser.page.tab.ITab;
 import ricky.easybrowser.page.tabpreview.TabDialogKt;
 import ricky.easybrowser.page.tabpreview.TabQuickViewContract;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
+import ricky.easybrowser.utils.TabHelper;
 import ricky.easybrowser.web.IWebView;
 
 public class BrowserActivity extends AppCompatActivity implements IWebView.OnWebInteractListener,
@@ -134,6 +139,25 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
     }
 
     @Override
+    public void onLongClick(ClickInfo clickInfo) {
+        if (clickInfo == null) {
+            return;
+        }
+
+        switch (clickInfo.type) {
+            case WebView.HitTestResult.IMAGE_TYPE:
+                showImageActionDialog(clickInfo);
+                break;
+            case WebView.HitTestResult.SRC_ANCHOR_TYPE:
+            case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
+                showUrlActionDialog(clickInfo);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         if (FragmentBackHandleHelper.isFragmentBackHandled(getSupportFragmentManager())) {
             return;
@@ -190,6 +214,48 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         }
 
         settingDialog.show(getSupportFragmentManager(), SETTING_DIALOG_TAG);
+    }
+
+    private void showImageActionDialog(@NonNull final ClickInfo clickInfo) {
+        AlertDialog.Builder imageDialogbuilder = new AlertDialog.Builder(this);
+        imageDialogbuilder.setItems(R.array.image_actions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == TabConst.TAB_OPEN_ACTION_BACKSTAGE) {
+                    TabHelper.createTab(BrowserActivity.this,
+                            R.string.new_tab_welcome,
+                            clickInfo.url,
+                            true);
+                } else if (which == TabConst.TAB_OPEN_ACTION_FRONTSTAGE) {
+                    TabHelper.createTab(BrowserActivity.this,
+                            R.string.new_tab_welcome,
+                            clickInfo.url,
+                            false);
+                }
+            }
+        });
+        imageDialogbuilder.show();
+    }
+
+    private void showUrlActionDialog(@NonNull final ClickInfo clickInfo) {
+        AlertDialog.Builder urlDialogbuilder = new AlertDialog.Builder(this);
+        urlDialogbuilder.setItems(R.array.url_actions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == TabConst.TAB_OPEN_ACTION_BACKSTAGE) {
+                    TabHelper.createTab(BrowserActivity.this,
+                            R.string.new_tab_welcome,
+                            clickInfo.url,
+                            true);
+                } else if (which == TabConst.TAB_OPEN_ACTION_FRONTSTAGE) {
+                    TabHelper.createTab(BrowserActivity.this,
+                            R.string.new_tab_welcome,
+                            clickInfo.url,
+                            false);
+                }
+            }
+        });
+        urlDialogbuilder.show();
     }
 
     @NonNull

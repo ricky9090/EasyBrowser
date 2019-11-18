@@ -2,9 +2,10 @@ package ricky.easybrowser.web.webkit;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,24 +23,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.ContentLoadingProgressBar;
 
 import java.io.InputStream;
 
 import ricky.easybrowser.R;
-import ricky.easybrowser.common.TabConst;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.browser.IBrowser;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
-import ricky.easybrowser.utils.TabHelper;
 import ricky.easybrowser.web.IWebView;
 import ricky.easybrowser.widget.BrowserNavBar;
 
 public class PageNestedWebView extends LinearLayout implements IWebView {
+
+    private Context mContext;
 
     private EasyNestedWebView webView;
     private AddressBar addressBar;
@@ -50,13 +50,10 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
     private BrowserNavBar browserNavBar;
 
     private OnWebInteractListener onWebInteractListener;
-
-    private Context mContext;
+    private WebViewClickHandler handler;
 
     private boolean noPicMode;
 
-    private AlertDialog imageActionsDialog = null;
-    private AlertDialog urlActionsDialog = null;
     private String hitResultExtra = null;
 
     public PageNestedWebView(Context context) {
@@ -72,6 +69,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         mContext = context;
         LayoutInflater.from(context).inflate(R.layout.fragment_web_page_v2, this);
         initViews();
+        handler = new WebViewClickHandler(this);
     }
 
     private void initViews() {
@@ -162,6 +160,11 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
     }
 
     @Override
+    public OnWebInteractListener getOnWebInteractListener() {
+        return onWebInteractListener;
+    }
+
+    @Override
     public void releaseSession() {
         // donothing, for geckoView
     }
@@ -178,64 +181,6 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         webView.destroy();
         webView = null;
         onWebInteractListener = null;
-    }
-
-    /**
-     * 点击图片弹窗
-     */
-    private void showImageActionsDialog() {
-        if (imageActionsDialog != null) {
-            imageActionsDialog.show();
-            return;
-        }
-        AlertDialog.Builder imageDialogbuilder = new AlertDialog.Builder(mContext);
-        imageDialogbuilder.setItems(R.array.image_actions, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == TabConst.TAB_OPEN_ACTION_BACKSTAGE) {
-                    TabHelper.createTab(mContext,
-                            R.string.new_tab_welcome,
-                            hitResultExtra,
-                            true);
-                } else if (which == TabConst.TAB_OPEN_ACTION_FRONTSTAGE) {
-                    TabHelper.createTab(mContext,
-                            R.string.new_tab_welcome,
-                            hitResultExtra,
-                            false);
-                }
-            }
-        });
-        imageActionsDialog = imageDialogbuilder.create();
-        imageActionsDialog.show();
-    }
-
-    /**
-     * 点击网页链接弹窗
-     */
-    private void showUrlActionsDialog() {
-        if (urlActionsDialog != null) {
-            urlActionsDialog.show();
-            return;
-        }
-        AlertDialog.Builder urlDialogbuilder = new AlertDialog.Builder(mContext);
-        urlDialogbuilder.setItems(R.array.url_actions, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == TabConst.TAB_OPEN_ACTION_BACKSTAGE) {
-                    TabHelper.createTab(mContext,
-                            R.string.new_tab_welcome,
-                            hitResultExtra,
-                            true);
-                } else if (which == TabConst.TAB_OPEN_ACTION_FRONTSTAGE) {
-                    TabHelper.createTab(mContext,
-                            R.string.new_tab_welcome,
-                            hitResultExtra,
-                            false);
-                }
-            }
-        });
-        urlActionsDialog = urlDialogbuilder.create();
-        urlActionsDialog.show();
     }
 
     class MyWebChromeClient extends WebChromeClient {
@@ -333,15 +278,26 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
             switch (type) {
                 case WebView.HitTestResult.IMAGE_TYPE:
                     EasyLog.i("test", "press image: " + extra);
-                    showImageActionsDialog();
-                    break;
-                case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
-                    EasyLog.i("test", "press image anchor: " + extra);
-                    // TODO 实现image anchor类型弹窗，需要获取图片url及父节点<a>标签的url
+                    Message imageMsg = handler.obtainMessage(type);
+                    Bundle imageBundle = new Bundle();
+                    imageBundle.putString(WebViewClickHandler.KEY_URL, hitResultExtra);
+                    imageMsg.setData(imageBundle);
+                    handler.sendMessage(imageMsg);
                     break;
                 case WebView.HitTestResult.SRC_ANCHOR_TYPE:
                     EasyLog.i("test", "press url: " + extra);
-                    showUrlActionsDialog();
+                    Message urlMsg = handler.obtainMessage(type);
+                    Bundle urlBundle = new Bundle();
+                    urlBundle.putString(WebViewClickHandler.KEY_URL, hitResultExtra);
+                    urlMsg.setData(urlBundle);
+                    handler.sendMessage(urlMsg);
+                    break;
+                case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
+                    EasyLog.i("test", "press image anchor: " + extra);
+                    // image anchor类型弹窗，需要获取图片url及父节点<a>标签的url
+                    Message msg = handler.obtainMessage(type);
+                    msg.setTarget(handler);
+                    webView.requestFocusNodeHref(msg);
                     break;
                 default:
                     break;

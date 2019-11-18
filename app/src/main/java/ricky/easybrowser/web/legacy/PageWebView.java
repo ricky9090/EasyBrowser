@@ -310,6 +310,11 @@ public class PageWebView extends FrameLayout implements IWebView {
     }
 
     @Override
+    public OnWebInteractListener getOnWebInteractListener() {
+        return this.onWebInteractListener;
+    }
+
+    @Override
     public void releaseSession() {
         // donothing, for geckoView
     }

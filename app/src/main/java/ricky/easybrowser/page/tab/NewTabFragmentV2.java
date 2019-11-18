@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.entity.bo.ClickInfo;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.WebSite;
 import ricky.easybrowser.page.frontpage.FrontPageView;
@@ -24,7 +25,7 @@ import ricky.easybrowser.web.webkit.PageNestedWebView;
 /**
  * 新标签页Fragment。显示收藏站点快捷按钮
  */
-public class NewTabFragmentV2 extends Fragment implements ITab {
+public class NewTabFragmentV2 extends Fragment implements ITab, IWebView.OnWebInteractListener {
 
     private String mTitle;
     private String mTag;
@@ -35,7 +36,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
     private IWebView pageWebView;
 
 
-    private IWebView.OnWebInteractListener mListener;
+    private IWebView.OnWebInteractListener webInteractParent;
 
     public NewTabFragmentV2() {
         // Required empty public constructor
@@ -137,13 +138,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
     private void addWebView(Uri uri) {
         frameLayout.removeAllViews();
         pageWebView = new PageNestedWebView(getContext());
-        pageWebView.setOnWebInteractListener(new IWebView.OnWebInteractListener() {
-            @Override
-            public void onPageTitleChange(TabInfo tabInfo) {
-                tabInfo.setTag(mTag);
-                updateTitle(tabInfo);
-            }
-        });
+        pageWebView.setOnWebInteractListener(this);
         frameLayout.addView((View) pageWebView);
         pageWebView.loadUrl(uri.toString());
     }
@@ -152,7 +147,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof IWebView.OnWebInteractListener) {
-            mListener = (IWebView.OnWebInteractListener) context;
+            webInteractParent = (IWebView.OnWebInteractListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement IWebView.OnWebInteractListener");
@@ -162,7 +157,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        webInteractParent = null;
     }
 
     @Override
@@ -194,7 +189,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
             try {
                 mTitle = getContext().getString(R.string.new_tab_welcome);
                 loadUri = null;
-                updateTitle(provideTagInfo());
+                updateTitle(provideTabInfo());
             } catch (Exception e) {
 
             }
@@ -203,7 +198,20 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
     }
 
     @Override
-    public TabInfo provideTagInfo() {
+    public void onPageTitleChange(TabInfo tabInfo) {
+        tabInfo.setTag(mTag);
+        updateTitle(tabInfo);
+    }
+
+    @Override
+    public void onLongClick(ClickInfo clickInfo) {
+        if (webInteractParent != null) {
+            webInteractParent.onLongClick(clickInfo);
+        }
+    }
+
+    @Override
+    public TabInfo provideTabInfo() {
         TabInfo.create(this.mTag, this.mTitle, this.loadUri);
         return null;
     }
@@ -245,7 +253,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
             try {
                 mTitle = getContext().getString(R.string.new_tab_welcome);
                 loadUri = null;
-                updateTitle(provideTagInfo());
+                updateTitle(provideTabInfo());
             } catch (Exception e) {
 
             }
@@ -271,8 +279,8 @@ public class NewTabFragmentV2 extends Fragment implements ITab {
         if (getArguments() != null) {
             getArguments().putString(TabConst.ARG_TITLE, mTitle);
         }
-        if (mListener != null) {
-            mListener.onPageTitleChange(tabInfo);
+        if (webInteractParent != null) {
+            webInteractParent.onPageTitleChange(tabInfo);
         }
     }
 
