@@ -12,7 +12,7 @@ import ricky.easybrowser.page.browser.IBrowser
 
 class TabDialogKt : DialogFragment() {
 
-    lateinit var tabViewSubject: TabQuickViewContract.Subject
+    var tabViewSubject: TabQuickViewContract.Subject? = null
     private var browser: IBrowser? = null
 
     lateinit var tabRecyclerView: RecyclerView
@@ -78,9 +78,12 @@ class TabDialogKt : DialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        tabRecyclerView.adapter = null
+        tabRecyclerView.layoutManager = null
         tabQuickViewAdapter?.listener = null
         tabQuickViewAdapter?.detachSubject()
         tabQuickViewAdapter = null
         browser = null
+        tabViewSubject = null
     }
 }

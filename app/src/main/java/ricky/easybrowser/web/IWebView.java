@@ -21,6 +21,10 @@ public interface IWebView {
 
     void releaseSession();
 
+    void onResume();
+
+    void onPause();
+
     void onDestroy();
 
 

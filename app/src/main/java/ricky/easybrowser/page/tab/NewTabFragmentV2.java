@@ -267,6 +267,30 @@ public class NewTabFragmentV2 extends Fragment implements ITab, IWebView.OnWebIn
         frameLayout.removeAllViews();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        resumeWebView();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        pauseWebView();
+    }
+
+    private void resumeWebView() {
+        if (pageWebView != null) {
+            pageWebView.onResume();
+        }
+    }
+
+    private void pauseWebView() {
+        if (pageWebView != null) {
+            pageWebView.onPause();
+        }
+    }
+
     private void destroyWebView() {
         if (pageWebView != null) {
             pageWebView.onDestroy();

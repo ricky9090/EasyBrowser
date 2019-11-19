@@ -320,6 +320,18 @@ public class PageWebView extends FrameLayout implements IWebView {
     }
 
     @Override
+    public void onResume() {
+        webView.onResume();
+        webView.resumeTimers();
+    }
+
+    @Override
+    public void onPause() {
+        webView.onPause();
+        webView.pauseTimers();
+    }
+
+    @Override
     public void onDestroy() {
         webView.stopLoading();
         webView.getSettings().setJavaScriptEnabled(false);

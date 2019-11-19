@@ -64,6 +64,16 @@ public class PageGeckoView extends LinearLayout implements IWebView {
     }
 
     @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
     public void onDestroy() {
 
     }

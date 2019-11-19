@@ -67,6 +67,7 @@ public class EasyNestedWebView extends WebView implements NestedScrollingChild {
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setLoadWithOverviewMode(true);
         settings.setDomStorageEnabled(true);
+        settings.setBlockNetworkImage(false);
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             settings.setSafeBrowsingEnabled(false);
         }*/

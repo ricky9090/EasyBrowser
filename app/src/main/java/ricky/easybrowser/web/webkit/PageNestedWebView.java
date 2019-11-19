@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -26,8 +27,10 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.ContentLoadingProgressBar;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.WebConst;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.browser.IBrowser;
@@ -52,6 +55,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
     private OnWebInteractListener onWebInteractListener;
     private WebViewClickHandler handler;
 
+    SharedPreferences sp;
     private boolean noPicMode;
 
     private String hitResultExtra = null;
@@ -127,10 +131,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
 
     @Override
     public void loadUrl(String url) {
-        SharedPreferences sp = SharedPreferencesUtils.getSettingSP(getContext());
-        if (sp != null) {
-            noPicMode = sp.getBoolean(SharedPreferencesUtils.KEY_NO_PIC_MODE, false);
-        }
+        updateWebSettings();
         webView.loadUrl(url);
     }
 
@@ -170,6 +171,18 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
     }
 
     @Override
+    public void onResume() {
+        webView.onResume();
+        webView.resumeTimers();
+    }
+
+    @Override
+    public void onPause() {
+        webView.onPause();
+        webView.pauseTimers();
+    }
+
+    @Override
     public void onDestroy() {
         webView.stopLoading();
         webView.getSettings().setJavaScriptEnabled(false);
@@ -181,6 +194,18 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         webView.destroy();
         webView = null;
         onWebInteractListener = null;
+    }
+
+    private void updateWebSettings() {
+        if (sp == null) {
+            sp = SharedPreferencesUtils.getSettingSP(getContext());
+        }
+        WebSettings webSettings = webView.getSettings();
+        if (sp != null && webSettings != null) {
+            noPicMode = sp.getBoolean(SharedPreferencesUtils.KEY_NO_PIC_MODE, false);
+            webView.getSettings().setBlockNetworkImage(noPicMode);
+        }
+
     }
 
     class MyWebChromeClient extends WebChromeClient {
@@ -238,7 +263,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         @Nullable
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-            try {
+            /*try {
                 String targetPath = request.getUrl().getPath();
                 if (StringUtils.isEmpty(targetPath)) {
                     return super.shouldInterceptRequest(view, request);
@@ -249,12 +274,12 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
                 }
             } catch (Exception e) {
 
-            }
-
+            }*/
             return super.shouldInterceptRequest(view, request);
         }
 
-        private boolean isPicResources(String path) {
+
+        /*private boolean isPicResources(String path) {
             if (path.endsWith(".jpg")
                     || path.endsWith(".jpeg")
                     || path.endsWith(".png")
@@ -262,7 +287,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
                 return true;
             }
             return false;
-        }
+        }*/
     }
 
     class MyWebLongClickListener implements OnLongClickListener {

@@ -104,6 +104,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             tabLruCache.detach();
         }
         tabLruCache = null;
+        context = null;
     }
 
     @Override
