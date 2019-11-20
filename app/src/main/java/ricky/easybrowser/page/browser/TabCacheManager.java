@@ -313,6 +313,18 @@ public class TabCacheManager implements IBrowser.TabController {
     }
 
     @Override
+    public void onTabLoadUrl(String url) {
+        Fragment target = findVisibleFragment(fm);
+        if (target == null) {
+            return;
+        }
+
+        if (target instanceof ITab) {
+            ((ITab) target).loadUrl(url);
+        }
+    }
+
+    @Override
     public void onRestoreTabCache(TabInfo infoCopy, @Nullable Fragment fragment) {
         restoreTabCache(infoCopy, fragment);
     }

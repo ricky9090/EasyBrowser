@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ricky.easybrowser.web.webkit.AddressBar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/web_address_bar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:background="@drawable/addressbar_text_bg">
+
+    <ImageView
+        android:id="@+id/goto_button"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="10dp"
+        android:contentDescription="@string/placeholder_todo"
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_refresh_black_36dp" />
+
+    <TextView
+        android:id="@+id/address_url"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_toLeftOf="@+id/goto_button"
+        android:gravity="center_vertical"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:singleLine="true"
+        tools:text="@string/placeholder_url" />
+
+</ricky.easybrowser.web.webkit.AddressBar>

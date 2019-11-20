@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- FIXME 调整全屏对话框样式，优化布局 -->
+    <!-- 节省代码设置Window LayoutParam以及地址栏的边距，在这里直接添加一层FrameLayout -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <include layout="@layout/layout_address_bar_edit" />
+
+    </FrameLayout>
+
+</FrameLayout>

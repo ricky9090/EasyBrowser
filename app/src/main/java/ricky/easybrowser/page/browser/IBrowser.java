@@ -38,6 +38,8 @@ public interface IBrowser {
 
         void showTabs();
 
+        void showAddress(String current);
+
         void showSetting();
 
         void showHistory();
@@ -65,6 +67,8 @@ public interface IBrowser {
         void onTabGoHome();
 
         void onTabGoForward();
+
+        void onTabLoadUrl(String url);
 
         void onRestoreTabCache(TabInfo infoCopy, @Nullable Fragment fragment);
 

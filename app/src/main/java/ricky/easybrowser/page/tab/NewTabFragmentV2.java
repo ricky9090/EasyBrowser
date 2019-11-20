@@ -261,6 +261,18 @@ public class NewTabFragmentV2 extends Fragment implements ITab, IWebView.OnWebIn
     }
 
     @Override
+    public void loadUrl(String url) {
+        if (frameLayout.getChildCount() <= 0) {
+            return;
+        }
+
+        View view = frameLayout.getChildAt(0);
+        if (view instanceof IWebView) {
+            ((IWebView) view).loadUrl(url);
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         destroyWebView();

@@ -11,6 +11,7 @@
         android:layout_marginBottom="?attr/actionBarSize">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -19,31 +20,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_scrollFlags="scroll|enterAlways|snap">
 
-                <ricky.easybrowser.web.webkit.AddressBar
-                    android:id="@+id/web_address_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/goto_button"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:contentDescription="@string/placeholder_todo"
-                        android:src="@mipmap/ic_arrow_forward_black_36dp" />
-
-                    <EditText
-                        android:id="@+id/page_url_edittext"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_toLeftOf="@id/goto_button"
-                        android:inputType=""
-                        android:singleLine="true" />
-
-                </ricky.easybrowser.web.webkit.AddressBar>
+                <include layout="@layout/layout_address_bar"/>
 
                 <androidx.core.widget.ContentLoadingProgressBar
                     android:id="@+id/web_loading_progress_bar"
@@ -53,9 +30,7 @@
                     android:layout_gravity="bottom"
                     tools:progress="50" />
 
-
             </FrameLayout>
-
 
         </com.google.android.material.appbar.AppBarLayout>
 

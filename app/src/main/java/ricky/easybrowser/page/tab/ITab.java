@@ -10,4 +10,6 @@ public interface ITab {
     void goForward();
 
     void gotoHomePage();
+
+    void loadUrl(String url);
 }

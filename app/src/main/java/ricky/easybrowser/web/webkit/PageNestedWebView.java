@@ -48,7 +48,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
     private AddressBar addressBar;
 
     private ImageView goButton;
-    private EditText webAddress;
+    private TextView webAddress;
     private ContentLoadingProgressBar progressBar;
     private BrowserNavBar browserNavBar;
 
@@ -86,27 +86,21 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         goButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadInputUrl();
+                loadUrl();
             }
         });
 
-        webAddress = findViewById(R.id.page_url_edittext);
-        webAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        webAddress = findViewById(R.id.address_url);
+        webAddress.setOnClickListener(new OnClickListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
-                        || actionId == EditorInfo.IME_ACTION_SEND
-                        || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    webAddress.clearFocus();
-                    if (getContext() instanceof Activity) {
-                        Activity activity = (Activity) getContext();
-                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
-                    }
-
-                    loadInputUrl();
+            public void onClick(View v) {
+                // 地址栏弹窗
+                IBrowser browser = (IBrowser) mContext;
+                if (webAddress.getText() != null) {
+                    browser.provideNavController().showAddress(webAddress.getText().toString());
+                } else {
+                    browser.provideNavController().showAddress("about:blank");
                 }
-                return false;
             }
         });
         progressBar = findViewById(R.id.web_loading_progress_bar);
@@ -122,7 +116,7 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         webView.setOnLongClickListener(new MyWebLongClickListener());
     }
 
-    private void loadInputUrl() {
+    private void loadUrl() {
         if (webAddress.getText() != null) {
             String url = webAddress.getText().toString();
             this.loadUrl(url);

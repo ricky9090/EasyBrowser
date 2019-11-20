@@ -31,11 +31,11 @@ import ricky.easybrowser.entity.bo.ClickInfo;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.DaoSession;
 import ricky.easybrowser.entity.dao.History;
+import ricky.easybrowser.page.address.AddressDialog;
 import ricky.easybrowser.page.history.HistoryActivity;
 import ricky.easybrowser.page.setting.SettingDialogKt;
 import ricky.easybrowser.page.tab.ITab;
 import ricky.easybrowser.page.tabpreview.TabDialogKt;
-import ricky.easybrowser.page.tabpreview.TabQuickViewContract;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 import ricky.easybrowser.utils.TabHelper;
 import ricky.easybrowser.web.IWebView;
@@ -47,6 +47,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
     private static final String SETTING_DIALOG_TAG = "setting_dialog";
     private static final String TAB_DIALOG_TAG = "tab_dialog";
+    private static final String ADDRESS_DIALOG_TAG = "address_dialog";
 
     FrameLayout webContentFrame;
 
@@ -216,6 +217,18 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         settingDialog.show(getSupportFragmentManager(), SETTING_DIALOG_TAG);
     }
 
+    private void showAddressDialog(String currentUrl) {
+        Fragment prev = getSupportFragmentManager().findFragmentByTag(ADDRESS_DIALOG_TAG);
+        if (prev != null) {
+            ((AddressDialog) prev).dismiss();
+            return;
+        }
+
+        AddressDialog addressDialog = new AddressDialog();
+        addressDialog.setCurrentUrl(currentUrl);
+        addressDialog.show(getSupportFragmentManager(), ADDRESS_DIALOG_TAG);
+    }
+
     private void showImageActionDialog(@NonNull final ClickInfo clickInfo) {
         AlertDialog.Builder imageDialogbuilder = new AlertDialog.Builder(this);
         imageDialogbuilder.setItems(R.array.image_actions, new DialogInterface.OnClickListener() {
@@ -292,8 +305,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
     @Override
     public TabController provideTabController() {
         if (tabController == null) {
-            IBrowser.TabController next = new TabCacheManager(this, getSupportFragmentManager(), 3, R.id.web_content_frame);
-            tabController = new EasyTabController(next);
+            tabController = new TabCacheManager(this, getSupportFragmentManager(), 3, R.id.web_content_frame);
         }
         return tabController;
     }
@@ -317,6 +329,11 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         @Override
         public void showTabs() {
             showTabDialog();
+        }
+
+        @Override
+        public void showAddress(String currentUrl) {
+            showAddressDialog(currentUrl);
         }
 
         @Override
@@ -353,7 +370,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         }
     }
 
-    class EasyTabController implements IBrowser.TabController {
+    /*class EasyTabController implements IBrowser.TabController {
 
         private TabController next = null;
 
@@ -443,7 +460,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
                 next.updateTabInfo(info);
             }
         }
-    }
+    }*/
 
     private class StubDownloadController implements IBrowser.DownloadController {
     }
