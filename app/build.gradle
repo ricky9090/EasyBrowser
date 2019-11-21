@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao' // apply plugin for greendao
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.greenrobot.greendao' // apply plugin for greendao
 
 android {
     compileSdkVersion 28
@@ -39,6 +39,7 @@ dependencies {
     implementation 'org.greenrobot:greendao:3.2.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    //implementation 'com.github.bumptech.glide:glide:4.10.0'
 
     // testing
     testImplementation 'junit:junit:4.12'

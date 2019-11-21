@@ -14,11 +14,15 @@ public class WebSite {
     @NotNull
     private String siteUrl;
 
-    @Generated(hash = 410994721)
-    public WebSite(Long id, String siteName, @NotNull String siteUrl) {
+    private String favicoUrl;
+
+    @Generated(hash = 283602442)
+    public WebSite(Long id, String siteName, @NotNull String siteUrl,
+            String favicoUrl) {
         this.id = id;
         this.siteName = siteName;
         this.siteUrl = siteUrl;
+        this.favicoUrl = favicoUrl;
     }
 
     @Generated(hash = 121794805)
@@ -47,5 +51,13 @@ public class WebSite {
 
     public void setSiteUrl(String siteUrl) {
         this.siteUrl = siteUrl;
+    }
+
+    public String getFavicoUrl() {
+        return favicoUrl;
+    }
+
+    public void setFavicoUrl(String favicoUrl) {
+        this.favicoUrl = favicoUrl;
     }
 }

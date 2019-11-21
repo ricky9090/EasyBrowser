@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -21,8 +22,6 @@ public class FrontPageView extends FrameLayout {
     private SiteAdapterV2 siteAdapter;
     private BrowserNavBar navBar;
 
-    private TextView title;
-
     public FrontPageView(Context context) {
         this(context, null);
     }
@@ -36,10 +35,8 @@ public class FrontPageView extends FrameLayout {
 
         LayoutInflater.from(context).inflate(R.layout.layout_new_tab, this);
 
-        title = findViewById(R.id.new_tab_tag);
-
         siteGird = findViewById(R.id.site_grid);
-        siteGird.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        siteGird.setLayoutManager(new GridLayoutManager(getContext(), 4));
         siteAdapter = new SiteAdapterV2(getContext());
         siteAdapter.appendDataList(SiteAdapterV2.getTestDataList(context));
         siteGird.setAdapter(siteAdapter);
@@ -48,6 +45,20 @@ public class FrontPageView extends FrameLayout {
 
         navBar = findViewById(R.id.new_tab_nav_bar);
         navBar.setNavListener(new FrontPageNavListener(getContext()));
+
+        ImageView gotoButton = findViewById(R.id.goto_button);
+        gotoButton.setImageResource(R.mipmap.ic_arrow_forward_black_36dp);
+        TextView addressBar = findViewById(R.id.address_url);
+        addressBar.setText(R.string.search_or_type_url);
+        addressBar.setTextColor(getResources().getColor(R.color.gray_600, null));
+        addressBar.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (context instanceof IBrowser) {
+                    ((IBrowser) context).provideNavController().showAddress("about:blank");
+                }
+            }
+        });
     }
 
     public void setSiteListener(SiteAdapterV2.OnSiteItemClickListener listener) {
@@ -55,7 +66,7 @@ public class FrontPageView extends FrameLayout {
     }
 
     public void setTabTitle(String name) {
-        title.setText(name);
+        // FIXME
     }
 
     static class FrontPageNavListener implements BrowserNavBar.OnNavClickListener {

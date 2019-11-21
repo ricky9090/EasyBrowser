@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +16,8 @@ import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
 import ricky.easybrowser.entity.dao.DaoSession;
 import ricky.easybrowser.entity.dao.WebSite;
+import ricky.easybrowser.utils.StringUtils;
+import ricky.easybrowser.widget.WebSiteLogo;
 
 public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHolder> {
 
@@ -65,6 +66,12 @@ public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHo
 
         final WebSite entity = dataList.get(position);
         holder.title.setText(entity.getSiteName());
+        if (StringUtils.isNotEmpty(entity.getSiteName()) && entity.getSiteName().length() > 0) {
+            String drawName = String.valueOf(entity.getSiteName().charAt(0));
+            holder.icon.setName(drawName);
+        } else {
+            holder.icon.setName("E");
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +90,7 @@ public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHo
 
     static class SiteViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView icon;
+        WebSiteLogo icon;
         TextView title;
 
         public SiteViewHolder(@NonNull View itemView) {

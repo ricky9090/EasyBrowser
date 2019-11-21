@@ -1,24 +1,19 @@
 package ricky.easybrowser.web.webkit;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,17 +21,11 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.widget.ContentLoadingProgressBar;
 
-import java.io.InputStream;
-import java.util.Map;
-
 import ricky.easybrowser.R;
-import ricky.easybrowser.common.WebConst;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.browser.IBrowser;
-import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
-import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
 import ricky.easybrowser.widget.BrowserNavBar;
 
@@ -257,31 +246,10 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         @Nullable
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-            /*try {
-                String targetPath = request.getUrl().getPath();
-                if (StringUtils.isEmpty(targetPath)) {
-                    return super.shouldInterceptRequest(view, request);
-                }
-                if (noPicMode && isPicResources(targetPath)) {
-                    InputStream placeHolderIS = mContext.getAssets().open("emptyplaceholder.png");
-                    return new WebResourceResponse("image/png", "UTF-8", placeHolderIS);
-                }
-            } catch (Exception e) {
-
-            }*/
+            // TODO
+            //WebkitManagerKt.captureWebSiteFavicon(view.getContext(), request);
             return super.shouldInterceptRequest(view, request);
         }
-
-
-        /*private boolean isPicResources(String path) {
-            if (path.endsWith(".jpg")
-                    || path.endsWith(".jpeg")
-                    || path.endsWith(".png")
-                    || path.endsWith(".gif")) {
-                return true;
-            }
-            return false;
-        }*/
     }
 
     class MyWebLongClickListener implements OnLongClickListener {
@@ -292,27 +260,17 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
                 return false;
             }
             final int type = result.getType();
-            final String extra = result.getExtra();
             hitResultExtra = result.getExtra();
             switch (type) {
                 case WebView.HitTestResult.IMAGE_TYPE:
-                    EasyLog.i("test", "press image: " + extra);
-                    Message imageMsg = handler.obtainMessage(type);
+                case WebView.HitTestResult.SRC_ANCHOR_TYPE:
+                    Message hitMsg = handler.obtainMessage(type);
                     Bundle imageBundle = new Bundle();
                     imageBundle.putString(WebViewClickHandler.KEY_URL, hitResultExtra);
-                    imageMsg.setData(imageBundle);
-                    handler.sendMessage(imageMsg);
-                    break;
-                case WebView.HitTestResult.SRC_ANCHOR_TYPE:
-                    EasyLog.i("test", "press url: " + extra);
-                    Message urlMsg = handler.obtainMessage(type);
-                    Bundle urlBundle = new Bundle();
-                    urlBundle.putString(WebViewClickHandler.KEY_URL, hitResultExtra);
-                    urlMsg.setData(urlBundle);
-                    handler.sendMessage(urlMsg);
+                    hitMsg.setData(imageBundle);
+                    handler.sendMessage(hitMsg);
                     break;
                 case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
-                    EasyLog.i("test", "press image anchor: " + extra);
                     // image anchor类型弹窗，需要获取图片url及父节点<a>标签的url
                     Message msg = handler.obtainMessage(type);
                     msg.setTarget(handler);

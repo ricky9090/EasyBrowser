@@ -19,6 +19,7 @@ import ricky.easybrowser.entity.dao.WebSite;
 import ricky.easybrowser.page.frontpage.FrontPageView;
 import ricky.easybrowser.page.frontpage.SiteAdapterV2;
 import ricky.easybrowser.utils.EasyLog;
+import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.web.IWebView;
 import ricky.easybrowser.web.webkit.PageNestedWebView;
 
@@ -117,11 +118,9 @@ public class NewTabFragmentV2 extends Fragment implements ITab, IWebView.OnWebIn
         frontPageView.setSiteListener(new SiteAdapterV2.OnSiteItemClickListener() {
             @Override
             public void onSiteItemClick(WebSite webSite) {
-                Uri uri = new Uri.Builder()
-                        .scheme("http")
-                        .authority(webSite.getSiteUrl())
-                        .build();
-                loadUri = uri;
+                // TODO
+                Uri siteUri = Uri.parse(webSite.getSiteUrl());
+                loadUri = siteUri;
 
                 addWebView(loadUri);
             }
@@ -262,13 +261,15 @@ public class NewTabFragmentV2 extends Fragment implements ITab, IWebView.OnWebIn
 
     @Override
     public void loadUrl(String url) {
-        if (frameLayout.getChildCount() <= 0) {
+        if (frameLayout.getChildCount() <= 0 || StringUtils.isEmpty(url)) {
             return;
         }
 
         View view = frameLayout.getChildAt(0);
         if (view instanceof IWebView) {
             ((IWebView) view).loadUrl(url);
+        } else {
+            addWebView(Uri.parse(url));
         }
     }
 

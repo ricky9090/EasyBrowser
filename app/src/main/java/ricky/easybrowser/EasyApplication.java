@@ -31,14 +31,14 @@ public class EasyApplication extends Application {
             return;
         }
         try {
-            WebSite baidu = new WebSite(null, "Baidu", "www.baidu.com");
-            WebSite bing = new WebSite(null, "Bing", "bing.com");
-            WebSite qq = new WebSite(null, "QQ", "www.qq.com");
-            WebSite netEasy = new WebSite(null, "网易", "www.163.com");
-            WebSite myDrivers = new WebSite(null, "快科技", "mydrivers.com");
-            WebSite v2ex = new WebSite(null, "V2ex", "v2ex.com");
-            WebSite juejin = new WebSite(null, "掘金", "juejin.im");
-            WebSite w36kr = new WebSite(null, "36Kr", "36kr.com");
+            WebSite baidu = new WebSite(null, "Baidu", "https://www.baidu.com", null);
+            WebSite bing = new WebSite(null, "Bing", "https://bing.com", null);
+            WebSite qq = new WebSite(null, "QQ", "https://www.qq.com", null);
+            WebSite netEasy = new WebSite(null, "网易", "https://www.163.com", null);
+            WebSite myDrivers = new WebSite(null, "快科技", "https://mydrivers.com", null);
+            WebSite v2ex = new WebSite(null, "V2ex", "https://v2ex.com", null);
+            WebSite juejin = new WebSite(null, "掘金", "https://juejin.im", null);
+            WebSite w36kr = new WebSite(null, "36Kr", "https://36kr.com", null);
             daoSession.getWebSiteDao().insert(baidu);
             daoSession.getWebSiteDao().insert(bing);
             daoSession.getWebSiteDao().insert(qq);

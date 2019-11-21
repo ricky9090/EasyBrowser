@@ -2,19 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="96dp"
+    android:layout_height="80dp"
     android:layout_gravity="center"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="8dp"
     android:orientation="vertical">
 
-    <ImageView
+    <ricky.easybrowser.widget.WebSiteLogo
         android:id="@+id/item_image"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center_horizontal"
-        android:contentDescription="@string/placeholder_todo"
-        android:src="@mipmap/ic_launcher" />
+        android:contentDescription="@string/placeholder_todo" />
 
     <TextView
         android:id="@+id/item_title"
@@ -23,6 +22,7 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:textSize="16sp"
-        tools:text="Google" />
+        android:singleLine="true"
+        tools:text="Google,Google" />
 
 </LinearLayout>

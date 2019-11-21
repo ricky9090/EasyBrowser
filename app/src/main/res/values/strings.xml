@@ -7,9 +7,14 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="new_tab_welcome">新标签页</string>
 
+    <string name="start">开始</string>
     <string name="no_picture_mode">无图模式</string>
     <string name="history">历史记录</string>
     <string name="settings">设置</string>
     <string name="quit">退出</string>
+
+    <string name="search_or_type_url">搜索或输入网址</string>
+
+    <string name="warn_invalid_url">请输入有效的地址</string>
 
 </resources>
