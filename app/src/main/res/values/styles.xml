@@ -15,4 +15,9 @@
         <item name="android:windowBackground">@drawable/full_screen_dialog_bg</item>
     </style>
 
+    <style name="BottomDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/bottom_dialog_open</item>
+        <item name="android:windowExitAnimation">@anim/bottom_dialog_close</item>
+    </style>
+
 </resources>

@@ -39,11 +39,6 @@
         android:text="@string/quit"
         android:textSize="18sp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#999999" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
@@ -57,6 +52,12 @@
             android:scaleType="centerInside"
             android:layout_gravity="center"
             android:src="@mipmap/ic_expand_more_black_36dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#999999"
+            android:layout_gravity="top"/>
 
     </FrameLayout>
 

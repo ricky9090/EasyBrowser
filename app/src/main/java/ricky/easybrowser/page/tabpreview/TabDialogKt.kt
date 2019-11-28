@@ -30,6 +30,14 @@ class TabDialogKt : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        // 设置对话框在屏幕底部
+        val param: WindowManager.LayoutParams? = dialog?.window?.attributes
+        param?.let {
+            it.windowAnimations = R.style.BottomDialogAnimation
+            it.gravity = Gravity.BOTTOM
+            dialog?.window?.attributes = it
+        }
+
         val dialogView: View = inflater.inflate(R.layout.layout_tab_dialog, container, false)
 
         val foldButton: ImageView = dialogView.findViewById(R.id.nav_fold)
@@ -67,12 +75,7 @@ class TabDialogKt : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        // 设置对话框在屏幕底部
-        val param: WindowManager.LayoutParams? = dialog?.window?.attributes
-        param?.let {
-            it.gravity = Gravity.BOTTOM
-            dialog?.window?.attributes = it
-        }
+
         tabQuickViewAdapter?.notifyDataSetChanged()
     }
 
