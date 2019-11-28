@@ -217,13 +217,16 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            webAddress.setText(url);
+            if (onWebInteractListener != null) {
+                onWebInteractListener.onPageTitleChange(TabInfo.create("", url));
+            }
             super.onPageStarted(view, url, favicon);
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            webAddress.setText(url);
             if (onWebInteractListener != null) {
                 onWebInteractListener.onPageTitleChange(TabInfo.create("", view.getTitle()));
             }
