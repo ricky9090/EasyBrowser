@@ -29,7 +29,7 @@ import ricky.easybrowser.common.Const;
 import ricky.easybrowser.common.TabConst;
 import ricky.easybrowser.entity.bo.ClickInfo;
 import ricky.easybrowser.entity.bo.TabInfo;
-import ricky.easybrowser.entity.dao.DaoSession;
+import ricky.easybrowser.entity.dao.AppDatabase;
 import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.address.AddressDialog;
 import ricky.easybrowser.page.history.HistoryActivity;
@@ -357,11 +357,11 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
                 @Override
                 public void subscribe(ObservableEmitter<Long> emitter) throws Exception {
                     final EasyApplication application = (EasyApplication) getApplicationContext();
-                    DaoSession daoSession = application.getDaoSession();
-                    long rowId = daoSession.getHistoryDao().insertOrReplace(entity);
+                    AppDatabase db = application.getAppDatabase();
+                    long rowId = db.historyDao().insertHistory(entity);
                     Log.i(TAG, "inserted id    is : " + rowId);
-                    Log.i(TAG, "inserted title is : " + entity.getTitle());
-                    Log.i(TAG, "inserted url   is : " + entity.getUrl());
+                    Log.i(TAG, "inserted title is : " + entity.title);
+                    Log.i(TAG, "inserted url   is : " + entity.url);
                     emitter.onNext(rowId);
                 }
             }).observeOn(AndroidSchedulers.mainThread())

@@ -119,7 +119,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab, IWebView.OnWebIn
             @Override
             public void onSiteItemClick(WebSite webSite) {
                 // TODO
-                Uri siteUri = Uri.parse(webSite.getSiteUrl());
+                Uri siteUri = Uri.parse(webSite.siteUrl);
                 loadUri = siteUri;
 
                 addWebView(loadUri);

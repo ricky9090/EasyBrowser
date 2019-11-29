@@ -2,8 +2,6 @@ package ricky.easybrowser.page.history;
 
 import android.content.Context;
 
-import org.greenrobot.greendao.query.Query;
-
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -15,9 +13,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
-import ricky.easybrowser.entity.dao.DaoSession;
+import ricky.easybrowser.entity.dao.AppDatabase;
 import ricky.easybrowser.entity.dao.History;
-import ricky.easybrowser.entity.dao.HistoryDao;
 
 public class HistoryPresenterImpl implements HistoryContract.Presenter {
 
@@ -37,13 +34,8 @@ public class HistoryPresenterImpl implements HistoryContract.Presenter {
             @Override
             public void subscribe(ObservableEmitter<List<History>> emitter) throws Exception {
                 final EasyApplication application = (EasyApplication) mContext.getApplicationContext();
-                DaoSession daoSession = application.getDaoSession();
-                Query<History> historyEntityQuery = daoSession.getHistoryDao().queryBuilder()
-                        .offset(pageNo * pageSize)  // 总偏移 = 页数 * 分页大小
-                        .limit(pageSize)
-                        .orderDesc(HistoryDao.Properties.Id)
-                        .build();
-                List<History> result = historyEntityQuery.list();
+                AppDatabase db = application.getAppDatabase();
+                List<History> result = db.historyDao().getHistory(pageNo, pageSize);
                 emitter.onNext(result);
             }
         }).observeOn(AndroidSchedulers.mainThread())

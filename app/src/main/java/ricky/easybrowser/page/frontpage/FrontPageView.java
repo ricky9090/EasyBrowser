@@ -12,15 +12,20 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import ricky.easybrowser.R;
+import ricky.easybrowser.entity.dao.WebSite;
 import ricky.easybrowser.page.browser.IBrowser;
 import ricky.easybrowser.widget.BrowserNavBar;
 
-public class FrontPageView extends FrameLayout {
+public class FrontPageView extends FrameLayout implements FrontPageContract.View {
 
     private RecyclerView siteGird;
     private SiteAdapterV2 siteAdapter;
     private BrowserNavBar navBar;
+
+    private FrontPageContract.Presenter presenter;
 
     public FrontPageView(Context context) {
         this(context, null);
@@ -38,7 +43,6 @@ public class FrontPageView extends FrameLayout {
         siteGird = findViewById(R.id.site_grid);
         siteGird.setLayoutManager(new GridLayoutManager(getContext(), 4));
         siteAdapter = new SiteAdapterV2(getContext());
-        siteAdapter.appendDataList(SiteAdapterV2.getTestDataList(context));
         siteGird.setAdapter(siteAdapter);
         //PagerSnapHelper snapHelper = new PagerSnapHelper();
         //snapHelper.attachToRecyclerView(siteGird);
@@ -59,6 +63,8 @@ public class FrontPageView extends FrameLayout {
                 }
             }
         });
+        presenter = new FrontPagePresenterImpl(getContext(), this);
+        presenter.getWebSite();
     }
 
     public void setSiteListener(SiteAdapterV2.OnSiteItemClickListener listener) {
@@ -67,6 +73,15 @@ public class FrontPageView extends FrameLayout {
 
     public void setTabTitle(String name) {
         // FIXME
+    }
+
+    @Override
+    public void showWebSite(List<WebSite> webSiteList) {
+        if (siteAdapter == null || webSiteList == null) {
+            return;
+        }
+        siteAdapter.appendDataList(webSiteList);
+        siteAdapter.notifyDataSetChanged();
     }
 
     static class FrontPageNavListener implements BrowserNavBar.OnNavClickListener {

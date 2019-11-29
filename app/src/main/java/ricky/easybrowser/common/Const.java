@@ -7,6 +7,8 @@ public class Const {
 
     public static final String LOG_TAG = "EasyBrowser";
 
+    public static final String APP_DATABASE_NAME = "browser-db";
+
     public static class Key {
         public static final String TAB_INFO = "tabInfo";
     }

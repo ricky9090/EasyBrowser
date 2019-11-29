@@ -31,7 +31,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
 
     private HistoryContract.Presenter presenter;
 
-    private int pageNo = 0;
+    private int pageNo = 1;
     private int pageSize = Const.PAGE_SIZE_20;
 
     public HistoryFragment() {
@@ -62,7 +62,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
             public void onRefresh() {
                 adapter.clearDataList();
                 adapter.notifyDataSetChanged();
-                pageNo = 0;
+                pageNo = 1;
                 loadData(pageNo, pageSize);
             }
         });
@@ -74,7 +74,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
             public void onHistoryItemClick(History entity) {
                 Uri uri = null;
                 try {
-                    uri = Uri.parse(entity.getUrl());
+                    uri = Uri.parse(entity.url);
                 } catch (Exception e) {
                     uri = null;
                 }
@@ -83,7 +83,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
                 }
                 TabInfo info = TabInfo.create(
                         System.currentTimeMillis() + "",
-                        entity.getTitle(),
+                        entity.title,
                         uri);
                 Intent resultData = new Intent();
                 resultData.putExtra(Const.Key.TAB_INFO, info);

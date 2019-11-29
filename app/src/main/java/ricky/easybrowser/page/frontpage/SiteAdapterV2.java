@@ -14,7 +14,7 @@ import java.util.List;
 
 import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
-import ricky.easybrowser.entity.dao.DaoSession;
+import ricky.easybrowser.entity.dao.AppDatabase;
 import ricky.easybrowser.entity.dao.WebSite;
 import ricky.easybrowser.utils.StringUtils;
 import ricky.easybrowser.widget.WebSiteLogo;
@@ -65,9 +65,9 @@ public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHo
         }
 
         final WebSite entity = dataList.get(position);
-        holder.title.setText(entity.getSiteName());
-        if (StringUtils.isNotEmpty(entity.getSiteName()) && entity.getSiteName().length() > 0) {
-            String drawName = String.valueOf(entity.getSiteName().charAt(0));
+        holder.title.setText(entity.siteName);
+        if (StringUtils.isNotEmpty(entity.siteName) && entity.siteName.length() > 0) {
+            String drawName = String.valueOf(entity.siteName.charAt(0));
             holder.icon.setName(drawName);
         } else {
             holder.icon.setName("E");
@@ -110,8 +110,8 @@ public class SiteAdapterV2 extends RecyclerView.Adapter<SiteAdapterV2.SiteViewHo
             return new ArrayList<>();
         }
         final EasyApplication application = (EasyApplication) context.getApplicationContext();
-        DaoSession daoSession = application.getDaoSession();
-        List<WebSite> dbList = daoSession.getWebSiteDao().loadAll();
+        AppDatabase db = application.getAppDatabase();
+        List<WebSite> dbList = db.webSiteDao().getAll();
         if (dbList == null || dbList.size() <= 0) {
             return new ArrayList<>();
         }

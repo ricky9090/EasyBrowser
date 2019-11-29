@@ -191,8 +191,9 @@ public class PageWebView extends FrameLayout implements IWebView {
                 if (webView.getProgress() == 100) {
                     IBrowser browser = (IBrowser) mContext;
                     History history = new History();
-                    history.setTitle(view.getTitle());
-                    history.setUrl(url);
+                    history.title = view.getTitle();
+                    history.url = view.getUrl();
+                    history.time = System.currentTimeMillis();
                     browser.provideHistoryController().addHistory(history);
                 }
             }
