@@ -211,8 +211,7 @@ public class NewTabFragmentV2 extends Fragment implements ITab, IWebView.OnWebIn
 
     @Override
     public TabInfo provideTabInfo() {
-        TabInfo.create(this.mTag, this.mTitle, this.loadUri);
-        return null;
+        return TabInfo.create(this.mTag, this.mTitle, this.loadUri);
     }
 
     @Override

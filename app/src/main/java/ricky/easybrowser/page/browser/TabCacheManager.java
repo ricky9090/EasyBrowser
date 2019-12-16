@@ -338,4 +338,18 @@ public class TabCacheManager implements IBrowser.TabController {
     public void onDestroy() {
 
     }
+
+    @Override
+    public TabInfo getCurrentTab() {
+        if (this.fm == null) {
+            return null;
+        }
+
+        Fragment fragment = findVisibleFragment(this.fm);
+        if (fragment instanceof ITab) {
+            TabInfo info = ((ITab) fragment).provideTabInfo();
+            return info;
+        }
+        return null;
+    }
 }

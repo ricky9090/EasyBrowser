@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.entity.bo.TabInfo;
+import ricky.easybrowser.page.browser.IBrowser;
 import ricky.easybrowser.utils.StringUtils;
 
 public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements TabQuickViewContract.Observer {
@@ -70,6 +71,16 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private void bindQuickView(TabQuickViewHolder holder, final int position) {
         final TabInfo info = tabLruCache.provideInfoList().get(position);
+
+        if (context instanceof IBrowser) {
+            TabInfo currentTab = ((IBrowser) context).provideTabController().getCurrentTab();
+            if (info != null && info.equals(currentTab)) {
+                holder.indicator.setVisibility(View.VISIBLE);
+            } else {
+                holder.indicator.setVisibility(View.INVISIBLE);
+            }
+        }
+
         holder.siteTitle.setText(info.getTitle());
         holder.closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,12 +156,14 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         TextView siteTitle;
         ImageView closeButton;
+        View indicator;
 
         public TabQuickViewHolder(@NonNull View itemView) {
             super(itemView);
 
             siteTitle = itemView.findViewById(R.id.item_title);
             closeButton = itemView.findViewById(R.id.item_close_button);
+            indicator = itemView.findViewById(R.id.tab_indicator);
         }
     }
 

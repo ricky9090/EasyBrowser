@@ -75,5 +75,7 @@ public interface IBrowser {
         void onCloseAllTabs();
 
         void onDestroy();
+
+        TabInfo getCurrentTab();
     }
 }
