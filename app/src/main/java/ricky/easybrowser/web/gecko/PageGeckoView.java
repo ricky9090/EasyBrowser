@@ -1,6 +1,7 @@
 package ricky.easybrowser.web.gecko;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
@@ -76,5 +77,10 @@ public class PageGeckoView extends LinearLayout implements IWebView {
     @Override
     public void onDestroy() {
 
+    }
+
+    @Override
+    public Bitmap capturePreview() {
+        return null;
     }
 }

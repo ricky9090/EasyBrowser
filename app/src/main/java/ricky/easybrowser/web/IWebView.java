@@ -1,5 +1,7 @@
 package ricky.easybrowser.web;
 
+import android.graphics.Bitmap;
+
 import ricky.easybrowser.entity.bo.ClickInfo;
 import ricky.easybrowser.entity.bo.TabInfo;
 
@@ -26,6 +28,8 @@ public interface IWebView {
     void onPause();
 
     void onDestroy();
+
+    Bitmap capturePreview();
 
 
     interface OnWebInteractListener {

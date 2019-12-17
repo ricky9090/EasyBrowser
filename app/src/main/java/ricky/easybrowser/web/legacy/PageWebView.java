@@ -345,6 +345,11 @@ public class PageWebView extends FrameLayout implements IWebView {
         webView = null;
     }
 
+    @Override
+    public Bitmap capturePreview() {
+        return null;
+    }
+
     /**
      * 点击图片弹窗
      */

@@ -3,6 +3,7 @@ package ricky.easybrowser.web.webkit;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -25,6 +26,7 @@ import ricky.easybrowser.R;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.browser.IBrowser;
+import ricky.easybrowser.utils.EasyViewUtils;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.web.IWebView;
 import ricky.easybrowser.widget.BrowserNavBar;
@@ -40,6 +42,8 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
     private TextView webAddress;
     private ContentLoadingProgressBar progressBar;
     private BrowserNavBar browserNavBar;
+
+    private Bitmap preview;
 
     private OnWebInteractListener onWebInteractListener;
     private WebViewClickHandler handler;
@@ -177,6 +181,33 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
         webView.destroy();
         webView = null;
         onWebInteractListener = null;
+    }
+
+    @Override
+    public Bitmap capturePreview() {
+
+        int width = (int) EasyViewUtils.dp2px(mContext, 90);
+        int height = (int) EasyViewUtils.dp2px(mContext, 160);
+
+        if (width > 0 && height > 0) {
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+            Canvas canvas = new Canvas(bitmap);
+
+            int left = webView.getScrollX();
+            int top = webView.getScrollY();
+            canvas.translate(-left, -top);
+
+            float scaleX = (float) width / webView.getWidth();
+            float scaleY = (float) height / webView.getHeight();
+            canvas.scale(scaleX, scaleY, left, top);
+
+            webView.draw(canvas);
+
+            canvas.setBitmap(null);
+
+            return bitmap;
+        }
+        return null;
     }
 
     private void updateWebSettings() {

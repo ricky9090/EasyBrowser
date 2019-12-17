@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tab_wrapper"
-    android:layout_width="110dp"
-    android:layout_height="180dp">
+    android:layout_width="166dp"
+    android:layout_height="316dp">
 
     <FrameLayout
-        android:layout_width="90dp"
-        android:layout_height="160dp"
-        android:layout_margin="10dp"
-        android:background="@color/blue_gray_100"
-        android:elevation="2dp">
+        android:layout_width="144dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/item_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="40dp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
+            android:paddingLeft="2dp"
             android:singleLine="true"
-            android:layout_gravity="center_horizontal|bottom"
-            android:gravity="center_horizontal"
-            android:background="@color/deep_black"
-            android:textColor="@color/white"
+            android:layout_gravity="left"
+            android:gravity="center_vertical"
+            android:textColor="@color/black"
             android:text="@string/new_tab_welcome" />
 
         <ImageView
@@ -36,13 +37,30 @@
 
     </FrameLayout>
 
+    <FrameLayout
+        android:layout_width="144dp"
+        android:layout_height="256dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="bottom"
+        android:background="@color/blue_gray_100"
+        android:elevation="2dp">
+
+        <ImageView
+            android:id="@+id/tab_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
     <View
         android:id="@+id/tab_indicator"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="@color/blue_gray_400"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_gravity="bottom"/>
+        android:layout_gravity="bottom"
+        android:background="@color/blue_gray_400" />
 
 </FrameLayout>

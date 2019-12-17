@@ -1,5 +1,7 @@
 package ricky.easybrowser.page.browser;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -77,5 +79,7 @@ public interface IBrowser {
         void onDestroy();
 
         TabInfo getCurrentTab();
+
+        Bitmap getPreviewForTab(TabInfo tabInfo);
     }
 }

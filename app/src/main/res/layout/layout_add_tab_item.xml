@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="90dp"
-    android:layout_height="160dp"
-    android:layout_margin="10dp"
-    android:background="@color/blue_gray_100"
-    android:elevation="2dp">
+    android:layout_width="166dp"
+    android:layout_height="316dp">
 
-    <ImageView
-        android:id="@+id/add_tab_button"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center"
-        android:contentDescription="@string/placeholder_todo"
-        android:scaleType="centerInside"
-        android:src="@mipmap/ic_add_black_36dp" />
+    <FrameLayout
+        android:layout_width="144dp"
+        android:layout_height="256dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/blue_gray_100"
+        android:elevation="2dp">
+
+        <ImageView
+            android:id="@+id/add_tab_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/placeholder_todo"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_add_black_36dp" />
+    </FrameLayout>
+
+
 
 </FrameLayout>

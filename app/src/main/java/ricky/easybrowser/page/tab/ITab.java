@@ -1,5 +1,7 @@
 package ricky.easybrowser.page.tab;
 
+import android.graphics.Bitmap;
+
 import ricky.easybrowser.entity.bo.TabInfo;
 
 public interface ITab {
@@ -12,4 +14,6 @@ public interface ITab {
     void gotoHomePage();
 
     void loadUrl(String url);
+
+    Bitmap getTabPreview();
 }

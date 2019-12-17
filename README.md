@@ -3,7 +3,7 @@
 
 |  Demo  |    |    |
 | -- | -- | -- |
-| ![Screenshot_1](img/Screenshot_1.png) | ![Screenshot_2](img/Screenshot_2.png) | ![Screenshot_3](img/Screenshot_3.png) |
+| ![Screenshot_1](img/Screenshot_1.jpg) | ![Screenshot_2](img/Screenshot_2.jpg) | ![Screenshot_3](img/Screenshot_3.jpg) |
 
 
 ## 目前实现功能
@@ -19,7 +19,6 @@
 - 历史记录，书签管理
 - 文件下载及浏览
 - 浏览器设置（开启JS，Cookie，UA自定义）
-- 标签页缩略图预览
 - 地址栏搜索
 - 广告拦截
 - 其他功能……

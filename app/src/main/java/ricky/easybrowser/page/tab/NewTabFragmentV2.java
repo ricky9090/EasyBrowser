@@ -1,6 +1,7 @@
 package ricky.easybrowser.page.tab;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -273,10 +274,29 @@ public class NewTabFragmentV2 extends Fragment implements ITab, IWebView.OnWebIn
     }
 
     @Override
+    public Bitmap getTabPreview() {
+        if (pageWebView != null) {
+            return pageWebView.capturePreview();
+        }
+        // TODO preview for shortcut
+        return null;
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         destroyWebView();
         frameLayout.removeAllViews();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            pauseWebView();
+        } else {
+            resumeWebView();
+        }
     }
 
     @Override

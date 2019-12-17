@@ -1,6 +1,7 @@
 package ricky.easybrowser.page.tabpreview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,8 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             } else {
                 holder.indicator.setVisibility(View.INVISIBLE);
             }
+            Bitmap bitmap = ((IBrowser) context).provideTabController().getPreviewForTab(info);
+            holder.preview.setImageBitmap(bitmap);
         }
 
         holder.siteTitle.setText(info.getTitle());
@@ -158,12 +161,15 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ImageView closeButton;
         View indicator;
 
+        ImageView preview;
+
         public TabQuickViewHolder(@NonNull View itemView) {
             super(itemView);
 
             siteTitle = itemView.findViewById(R.id.item_title);
             closeButton = itemView.findViewById(R.id.item_close_button);
             indicator = itemView.findViewById(R.id.tab_indicator);
+            preview = itemView.findViewById(R.id.tab_preview);
         }
     }
 

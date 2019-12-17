@@ -1,6 +1,7 @@
 package ricky.easybrowser.page.browser;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import androidx.annotation.Nullable;
@@ -349,6 +350,15 @@ public class TabCacheManager implements IBrowser.TabController {
         if (fragment instanceof ITab) {
             TabInfo info = ((ITab) fragment).provideTabInfo();
             return info;
+        }
+        return null;
+    }
+
+    @Override
+    public Bitmap getPreviewForTab(TabInfo tabInfo) {
+        Fragment fragment = getFromCache(tabInfo);
+        if (fragment instanceof ITab) {
+            return ((ITab) fragment).getTabPreview();
         }
         return null;
     }
