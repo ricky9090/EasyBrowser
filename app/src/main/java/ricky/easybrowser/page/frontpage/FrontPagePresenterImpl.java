@@ -52,8 +52,10 @@ public class FrontPagePresenterImpl implements FrontPageContract.Presenter {
                 }
 
                 boolean firstBoot = sp.getBoolean(SharedPreferencesUtils.KEY_FIRST_BOOT, true);
-                if (firstBoot) {
+                boolean siteListCreated = sp.getBoolean(SharedPreferencesUtils.KEY_SITE_LIST_CREATED, false);
+                if (firstBoot && !siteListCreated) {
                     DaoManager.createDefaultSiteList(db);
+                    sp.edit().putBoolean(SharedPreferencesUtils.KEY_SITE_LIST_CREATED, true).apply();
                 }
                 List<WebSite> result = db.webSiteDao().getAll();
                 emitter.onNext(result);
