@@ -6,7 +6,7 @@ import android.os.Message;
 import java.lang.ref.WeakReference;
 
 import ricky.easybrowser.entity.bo.ClickInfo;
-import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.contract.IWebView;
 
 public class WebViewClickHandler extends Handler {
 

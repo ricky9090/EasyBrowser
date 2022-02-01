@@ -12,17 +12,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.BrowserConst;
+import ricky.easybrowser.contract.ITabQuickView;
 import ricky.easybrowser.entity.bo.TabInfo;
-import ricky.easybrowser.page.browser.IBrowser;
+import ricky.easybrowser.contract.IBrowser;
 import ricky.easybrowser.utils.StringUtils;
 
-public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements TabQuickViewContract.Observer {
+public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ITabQuickView.Observer {
 
     private static final int VIEW_ADD = 100;
     private static final int VIEW_TAB = 101;
 
     private Context context;
-    private TabQuickViewContract.Subject tabLruCache;
+    private ITabQuickView.Subject tabLruCache;
     private OnTabClickListener listener;
 
     public TabQuickViewAdapter(Context context) {
@@ -74,17 +76,22 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         final TabInfo info = tabLruCache.provideInfoList().get(position);
 
         if (context instanceof IBrowser) {
-            TabInfo currentTab = ((IBrowser) context).provideTabController().getCurrentTab();
+            IBrowser.ITabController tabController = (IBrowser.ITabController)
+                    ((IBrowser) context).provideBrowserComponent(BrowserConst.TAB_COMPONENT);
+            TabInfo currentTab = tabController.getCurrentTab();
             if (info != null && info.equals(currentTab)) {
                 holder.indicator.setVisibility(View.VISIBLE);
             } else {
                 holder.indicator.setVisibility(View.INVISIBLE);
             }
-            Bitmap bitmap = ((IBrowser) context).provideTabController().getPreviewForTab(info);
+            Bitmap bitmap = tabController.getPreviewForTab(info);
             holder.preview.setImageBitmap(bitmap);
         }
 
-        holder.siteTitle.setText(info.getTitle());
+        if (info != null) {
+            holder.siteTitle.setText(info.getTitle());
+        }
+
         holder.closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +115,7 @@ public class TabQuickViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         });
     }
 
-    public void attachToSubject(TabQuickViewContract.Subject target) {
+    public void attachToSubject(ITabQuickView.Subject target) {
         tabLruCache = target;
         tabLruCache.attach(this);
     }

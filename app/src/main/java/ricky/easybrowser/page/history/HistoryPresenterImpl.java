@@ -13,16 +13,17 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
+import ricky.easybrowser.contract.IHistory;
 import ricky.easybrowser.entity.dao.AppDatabase;
 import ricky.easybrowser.entity.dao.History;
 
-public class HistoryPresenterImpl implements HistoryContract.Presenter {
+public class HistoryPresenterImpl implements IHistory.Presenter {
 
     private Context mContext;
-    private HistoryContract.View view;
+    private IHistory.View view;
     private CompositeDisposable mDisposable = new CompositeDisposable();
 
-    public HistoryPresenterImpl(Context mContext, HistoryContract.View v) {
+    public HistoryPresenterImpl(Context mContext, IHistory.View v) {
         this.mContext = mContext;
         this.view = v;
     }

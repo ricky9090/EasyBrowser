@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.contract.ITab;
 import ricky.easybrowser.entity.bo.ClickInfo;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.WebSite;
@@ -21,7 +22,7 @@ import ricky.easybrowser.page.frontpage.FrontPageView;
 import ricky.easybrowser.page.frontpage.SiteAdapterV2;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.StringUtils;
-import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.contract.IWebView;
 import ricky.easybrowser.web.webkit.PageNestedWebView;
 
 /**

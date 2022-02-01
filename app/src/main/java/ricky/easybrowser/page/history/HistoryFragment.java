@@ -19,17 +19,18 @@ import java.util.List;
 
 import ricky.easybrowser.R;
 import ricky.easybrowser.common.Const;
+import ricky.easybrowser.contract.IHistory;
 import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.widget.ptr.PtrLayout;
 
-public class HistoryFragment extends Fragment implements HistoryContract.View {
+public class HistoryFragment extends Fragment implements IHistory.View {
 
     private PtrLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private HistoryAdapter adapter;
 
-    private HistoryContract.Presenter presenter;
+    private IHistory.Presenter presenter;
 
     private int pageNo = 1;
     private int pageSize = Const.PAGE_SIZE_20;

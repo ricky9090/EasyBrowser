@@ -15,18 +15,19 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
+import ricky.easybrowser.contract.IFrontPage;
 import ricky.easybrowser.entity.dao.AppDatabase;
 import ricky.easybrowser.entity.dao.DaoManager;
 import ricky.easybrowser.entity.dao.WebSite;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 
-public class FrontPagePresenterImpl implements FrontPageContract.Presenter {
+public class FrontPagePresenterImpl implements IFrontPage.Presenter {
 
     private WeakReference<Context> mContext;
-    private WeakReference<FrontPageContract.View> mView;
+    private WeakReference<IFrontPage.View> mView;
     private CompositeDisposable mDisposable = new CompositeDisposable();
 
-    public FrontPagePresenterImpl(Context context, FrontPageContract.View view) {
+    public FrontPagePresenterImpl(Context context, IFrontPage.View view) {
         this.mContext = new WeakReference<>(context);
         this.mView = new WeakReference<>(view);
     }
@@ -66,7 +67,7 @@ public class FrontPagePresenterImpl implements FrontPageContract.Presenter {
                     @Override
                     public void accept(List<WebSite> webSiteList) throws Exception {
                         // handle result
-                        FrontPageContract.View _view = mView.get();
+                        IFrontPage.View _view = mView.get();
                         if (_view == null || webSiteList == null) {
                             return;
                         }

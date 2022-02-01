@@ -1,4 +1,4 @@
-package ricky.easybrowser.web;
+package ricky.easybrowser.contract;
 
 import android.graphics.Bitmap;
 

@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.List;
 
-import ricky.easybrowser.page.tab.ITab;
+import ricky.easybrowser.contract.ITab;
 
 public class FragmentBackHandleHelper {
 

@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
-import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.contract.IWebView;
 
 public class PageGeckoView extends LinearLayout implements IWebView {
 

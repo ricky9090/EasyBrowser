@@ -3,7 +3,8 @@ package ricky.easybrowser.web.webkit
 import android.content.Context
 import android.view.View
 import ricky.easybrowser.R
-import ricky.easybrowser.page.browser.IBrowser
+import ricky.easybrowser.common.BrowserConst
+import ricky.easybrowser.contract.IBrowser
 import ricky.easybrowser.widget.BrowserNavBar
 
 class WebNavListener(context: Context?): BrowserNavBar.OnNavClickListener {
@@ -16,12 +17,14 @@ class WebNavListener(context: Context?): BrowserNavBar.OnNavClickListener {
             return
         }
         val browser = mContext as IBrowser
+        val navController = browser.provideBrowserComponent(BrowserConst.NAVIGATION_COMPONENT)
+                as IBrowser.INavController
         when (itemView.id) {
-            R.id.nav_back -> browser.provideNavController().goBack()
-            R.id.nav_forward -> browser.provideNavController().goForward()
-            R.id.nav_home -> browser.provideNavController().goHome()
-            R.id.nav_show_tabs -> browser.provideNavController().showTabs()
-            R.id.nav_setting -> browser.provideNavController().showSetting()
+            R.id.nav_back -> navController.goBack()
+            R.id.nav_forward -> navController.goForward()
+            R.id.nav_home -> navController.goHome()
+            R.id.nav_show_tabs -> navController.showTabs()
+            R.id.nav_setting -> navController.showSetting()
         }
     }
 }

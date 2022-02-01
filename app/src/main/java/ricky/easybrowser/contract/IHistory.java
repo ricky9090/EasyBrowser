@@ -1,10 +1,10 @@
-package ricky.easybrowser.page.history;
+package ricky.easybrowser.contract;
 
 import java.util.List;
 
 import ricky.easybrowser.entity.dao.History;
 
-public interface HistoryContract {
+public interface IHistory {
 
     interface View {
         void showHistory(List<History> result);

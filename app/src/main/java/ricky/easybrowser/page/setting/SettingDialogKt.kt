@@ -8,7 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import ricky.easybrowser.R
-import ricky.easybrowser.page.browser.IBrowser
+import ricky.easybrowser.common.BrowserConst
+import ricky.easybrowser.contract.IBrowser
 import ricky.easybrowser.utils.SharedPreferencesUtils
 
 class SettingDialogKt : DialogFragment() {
@@ -56,7 +57,9 @@ class SettingDialogKt : DialogFragment() {
         history = dialogView.findViewById(R.id.history)
         history.setOnClickListener {
             if (context is IBrowser) {
-                (context as IBrowser).provideNavController().showHistory()
+                val navController = (context as IBrowser).provideBrowserComponent(BrowserConst.NAVIGATION_COMPONENT)
+                        as? IBrowser.INavController
+                navController?.showHistory()
             }
             dismiss()
         }

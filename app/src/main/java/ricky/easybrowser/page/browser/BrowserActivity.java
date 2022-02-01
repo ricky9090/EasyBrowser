@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -25,8 +27,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ricky.easybrowser.EasyApplication;
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.BrowserConst;
 import ricky.easybrowser.common.Const;
 import ricky.easybrowser.common.TabConst;
+import ricky.easybrowser.contract.IBrowser;
 import ricky.easybrowser.entity.bo.ClickInfo;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.AppDatabase;
@@ -34,11 +38,11 @@ import ricky.easybrowser.entity.dao.History;
 import ricky.easybrowser.page.address.AddressDialog;
 import ricky.easybrowser.page.history.HistoryActivity;
 import ricky.easybrowser.page.setting.SettingDialogKt;
-import ricky.easybrowser.page.tab.ITab;
+import ricky.easybrowser.contract.ITab;
 import ricky.easybrowser.page.tabpreview.TabDialogKt;
 import ricky.easybrowser.utils.FragmentBackHandleHelper;
 import ricky.easybrowser.utils.TabHelper;
-import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.contract.IWebView;
 
 public class BrowserActivity extends AppCompatActivity implements IWebView.OnWebInteractListener,
         IBrowser {
@@ -51,16 +55,19 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
     FrameLayout webContentFrame;
 
-    IBrowser.NavController navController;
-    IBrowser.HistoryController historyController;
-    IBrowser.TabController tabController;
+    IBrowser.INavController navController;
+    IBrowser.IHistoryController historyController;
+    IBrowser.ITabController tabController;
+    IBrowser.IBookmarkController bookmarkController;
+    IBrowser.IDownloadController downloadController;
+    IBrowser.IComponent stubComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
-        provideTabController();
+        getTabController();
 
         webContentFrame = findViewById(R.id.web_content_frame);
 
@@ -69,11 +76,11 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
             TabInfo tabInfo = TabInfo.create(
                     System.currentTimeMillis() + "",
                     getString(R.string.new_tab_welcome));
-            provideTabController().onTabCreate(tabInfo, false);
+            getTabController().onTabCreate(tabInfo, false);
         } else {
             Fragment prevDialog = getSupportFragmentManager().findFragmentByTag(TAB_DIALOG_TAG);
             if (prevDialog instanceof TabDialogKt) {
-                ((TabDialogKt) prevDialog).setTabViewSubject(provideTabController());
+                ((TabDialogKt) prevDialog).setTabViewSubject(getTabController());
                 ((TabDialogKt) prevDialog).dismiss();
             }
         }
@@ -92,7 +99,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
         // 当横竖屏切换后，将复原的Fragment重新推入cache
         // 由于tablist可能超出cache的大小(即Activity销毁前Fragment数量)，这里首先还原tablist信息
-        provideTabController().provideInfoList().addAll(restoreList);
+        getTabController().provideInfoList().addAll(restoreList);
         List<Fragment> restoredFragmentList = getSupportFragmentManager().getFragments();
         if (restoredFragmentList.size() > 0) {
             for (Fragment target : restoredFragmentList) {
@@ -101,7 +108,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
                     TabInfo info = TabInfo.create(
                             target.getArguments().getString(TabConst.ARG_TAG),
                             target.getArguments().getString(TabConst.ARG_TITLE));
-                    provideTabController().onRestoreTabCache(info, target);
+                    getTabController().onRestoreTabCache(info, target);
                 }
             }
         }
@@ -111,7 +118,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         ArrayList<TabInfo> storeList = new ArrayList<>();
-        storeList.addAll(provideTabController().provideInfoList());
+        storeList.addAll(getTabController().provideInfoList());
         outState.putParcelableArrayList("tablist", storeList);
     }
 
@@ -138,7 +145,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
     @Override
     public void onPageTitleChange(TabInfo tabInfo) {
-        provideTabController().updateTabInfo(tabInfo);
+        getTabController().updateTabInfo(tabInfo);
     }
 
     @Override
@@ -187,7 +194,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
             return;
         }
 
-        provideTabController().onTabCreate(info, false);
+        getTabController().onTabCreate(info, false);
     }
 
     private void showTabDialog() {
@@ -200,7 +207,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         TabDialogKt tabDialog = new TabDialogKt();
         tabDialog.setCancelable(false);
 
-        tabDialog.setTabViewSubject(provideTabController());
+        tabDialog.setTabViewSubject(getTabController());
         tabDialog.show(getSupportFragmentManager(), TAB_DIALOG_TAG);
     }
 
@@ -271,46 +278,75 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         urlDialogbuilder.show();
     }
 
+    @UiThread
     @NonNull
     @Override
-    public NavController provideNavController() {
-        if (navController == null) {
-            navController = new EasyNavController();
+    public IComponent provideBrowserComponent(String componentName) {
+        synchronized (this) {
+            if (TextUtils.isEmpty(componentName)) {
+                return getStubComponent();
+            }
+
+            switch (componentName) {
+                case BrowserConst.BOOKMARK_COMPONENT:
+                    return getBookmarkController();
+                case BrowserConst.DOWNLOAD_COMPONENT:
+                    return getDownloadController();
+                case BrowserConst.HISTORY_COMPONENT:
+                    return getHistoryController();
+                case BrowserConst.NAVIGATION_COMPONENT:
+                    return getNavController();
+                case BrowserConst.TAB_COMPONENT:
+                    return getTabController();
+                default:
+                    return getStubComponent();
+            }
         }
-        return navController;
     }
 
-    @NonNull
-    @Override
-    public HistoryController provideHistoryController() {
+    private IBrowser.IComponent getStubComponent() {
+        if (stubComponent == null) {
+            stubComponent = new StubBrowserComponent();
+        }
+        return stubComponent;
+    }
+
+    private IBrowser.IBookmarkController getBookmarkController() {
+        if (bookmarkController == null) {
+            bookmarkController = new StubBookmarkController();
+        }
+        return bookmarkController;
+    }
+
+    private IBrowser.IDownloadController getDownloadController() {
+        if (downloadController == null) {
+            downloadController = new StubDownloadController();
+        }
+        return downloadController;
+    }
+
+    private IBrowser.IHistoryController getHistoryController() {
         if (historyController == null) {
             historyController = new EasyHistoryController();
         }
         return historyController;
     }
 
-    @NonNull
-    @Override
-    public DownloadController provideDownloadController() {
-        return new StubDownloadController();
+    private IBrowser.INavController getNavController() {
+        if (navController == null) {
+            navController = new EasyNavController();
+        }
+        return navController;
     }
 
-    @NonNull
-    @Override
-    public BookmarkController provideBookmarkController() {
-        return new StubBookmarkController();
-    }
-
-    @NonNull
-    @Override
-    public TabController provideTabController() {
+    private IBrowser.ITabController getTabController() {
         if (tabController == null) {
             tabController = new TabCacheManager(this, getSupportFragmentManager(), 3, R.id.web_content_frame);
         }
         return tabController;
     }
 
-    class EasyNavController implements IBrowser.NavController {
+    class EasyNavController implements IBrowser.INavController {
         @Override
         public void goBack() {
             onBackPressed();
@@ -318,12 +354,12 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
 
         @Override
         public void goForward() {
-            provideTabController().onTabGoForward();
+            getTabController().onTabGoForward();
         }
 
         @Override
         public void goHome() {
-            provideTabController().onTabGoHome();
+            getTabController().onTabGoHome();
         }
 
         @Override
@@ -349,7 +385,7 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         }
     }
 
-    class EasyHistoryController implements IBrowser.HistoryController {
+    class EasyHistoryController implements IBrowser.IHistoryController {
         @Override
         public void addHistory(final History entity) {
             Disposable dps = Observable.create(new ObservableOnSubscribe<Long>() {
@@ -370,9 +406,12 @@ public class BrowserActivity extends AppCompatActivity implements IWebView.OnWeb
         }
     }
 
-    private class StubDownloadController implements IBrowser.DownloadController {
+    static class StubDownloadController implements IBrowser.IDownloadController {
     }
 
-    private class StubBookmarkController implements IBrowser.BookmarkController {
+    static class StubBookmarkController implements IBrowser.IBookmarkController {
+    }
+
+    static class StubBrowserComponent implements IBrowser.IComponent {
     }
 }

@@ -7,7 +7,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import ricky.easybrowser.R
-import ricky.easybrowser.page.browser.IBrowser
+import ricky.easybrowser.common.BrowserConst
+import ricky.easybrowser.contract.IBrowser
 import ricky.easybrowser.utils.StringUtils
 
 
@@ -48,7 +49,9 @@ class AddressDialog : DialogFragment() {
             // browser loadurl
             val url: String? = addressUrl?.editableText?.toString()
             if (StringUtils.isValidUrl(url)) {
-                browser?.provideTabController()?.onTabLoadUrl(url)
+                val tabController = browser?.provideBrowserComponent(BrowserConst.TAB_COMPONENT)
+                        as? IBrowser.ITabController
+                tabController?.onTabLoadUrl(url)
             } else {
                 Toast.makeText(context, getText(R.string.warn_invalid_url), Toast.LENGTH_SHORT).show()
             }
@@ -56,10 +59,6 @@ class AddressDialog : DialogFragment() {
         }
 
         return dialogView
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     override fun onDestroyView() {

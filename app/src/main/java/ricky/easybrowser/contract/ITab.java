@@ -1,4 +1,4 @@
-package ricky.easybrowser.page.tab;
+package ricky.easybrowser.contract;
 
 import android.graphics.Bitmap;
 

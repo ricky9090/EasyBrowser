@@ -7,12 +7,14 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ricky.easybrowser.R
+import ricky.easybrowser.common.BrowserConst
 import ricky.easybrowser.entity.bo.TabInfo
-import ricky.easybrowser.page.browser.IBrowser
+import ricky.easybrowser.contract.IBrowser
+import ricky.easybrowser.contract.ITabQuickView
 
 class TabDialogKt : DialogFragment() {
 
-    var tabViewSubject: TabQuickViewContract.Subject? = null
+    var tabViewSubject: ITabQuickView.Subject? = null
     private var browser: IBrowser? = null
 
     lateinit var tabRecyclerView: RecyclerView
@@ -51,12 +53,16 @@ class TabDialogKt : DialogFragment() {
         tabQuickViewAdapter?.attachToSubject(tabViewSubject)
         tabQuickViewAdapter?.listener = object : TabQuickViewAdapter.OnTabClickListener {
             override fun onTabClick(info: TabInfo) {
-                browser?.provideTabController()?.onTabSelected(info)
+                val tabController = browser?.provideBrowserComponent(BrowserConst.TAB_COMPONENT)
+                        as? IBrowser.ITabController
+                tabController?.onTabSelected(info)
                 dismiss()
             }
 
             override fun onTabClose(info: TabInfo) {
-                browser?.provideTabController()?.onTabClose(info)
+                val tabController = browser?.provideBrowserComponent(BrowserConst.TAB_COMPONENT)
+                        as? IBrowser.ITabController
+                tabController?.onTabClose(info)
                 dismiss()
             }
 
@@ -64,7 +70,9 @@ class TabDialogKt : DialogFragment() {
                 var info = TabInfo()
                 info.title = context?.resources?.getString(R.string.new_tab_welcome)
                 info.tag = "" + System.currentTimeMillis()
-                browser?.provideTabController()?.onTabCreate(info, false)
+                val tabController = browser?.provideBrowserComponent(BrowserConst.TAB_COMPONENT)
+                        as? IBrowser.ITabController
+                tabController?.onTabCreate(info, false)
                 dismiss()
             }
         }

@@ -1,10 +1,10 @@
-package ricky.easybrowser.page.frontpage;
+package ricky.easybrowser.contract;
 
 import java.util.List;
 
 import ricky.easybrowser.entity.dao.WebSite;
 
-public interface FrontPageContract {
+public interface IFrontPage {
 
     interface View {
         void showWebSite(List<WebSite> webSiteList);

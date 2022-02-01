@@ -13,21 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.contract.IBrowser;
+import ricky.easybrowser.contract.ITab;
+import ricky.easybrowser.contract.ITabQuickView;
 import ricky.easybrowser.entity.bo.TabInfo;
-import ricky.easybrowser.page.tab.ITab;
 import ricky.easybrowser.page.tab.NewTabFragmentV2;
-import ricky.easybrowser.page.tabpreview.TabQuickViewContract;
 
 /**
  * LRU实现的标签页缓存。负责标签页的缓存及切换显示逻辑。
  */
-public class TabCacheManager implements IBrowser.TabController {
+public class TabCacheManager implements IBrowser.ITabController {
 
     private final Context mContext;
     private final FragmentManager fm;
     private int browserLayoutId;
 
-    private TabQuickViewContract.Observer observer;
+    private ITabQuickView.Observer observer;
 
     private LruCache<TabInfo, Fragment> lruCache;
     private final List<TabInfo> infoList = new ArrayList<>();
@@ -241,7 +242,7 @@ public class TabCacheManager implements IBrowser.TabController {
     }
 
     @Override
-    public void attach(TabQuickViewContract.Observer observer) {
+    public void attach(ITabQuickView.Observer observer) {
         this.observer = observer;
     }
 

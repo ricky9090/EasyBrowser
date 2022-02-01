@@ -3,8 +3,9 @@ package ricky.easybrowser.utils;
 import android.content.Context;
 import android.net.Uri;
 
+import ricky.easybrowser.common.BrowserConst;
 import ricky.easybrowser.entity.bo.TabInfo;
-import ricky.easybrowser.page.browser.IBrowser;
+import ricky.easybrowser.contract.IBrowser;
 
 public class TabHelper {
 
@@ -19,10 +20,12 @@ public class TabHelper {
 
     public static void createTab(Context context, String title, String uriStr, boolean backStage) {
         IBrowser browser = null;
+        IBrowser.ITabController tabController = null;
         if (context instanceof IBrowser) {
             browser = (IBrowser) context;
+            tabController = (IBrowser.ITabController) browser.provideBrowserComponent(BrowserConst.TAB_COMPONENT);
         }
-        if (browser == null) {
+        if (tabController == null) {
             return;
         }
         if (StringUtils.isEmpty(uriStr)) {
@@ -41,6 +44,6 @@ public class TabHelper {
                 System.currentTimeMillis() + "",
                 title,
                 uri);
-        browser.provideTabController().onTabCreate(tabInfo, backStage);
+        tabController.onTabCreate(tabInfo, backStage);
     }
 }

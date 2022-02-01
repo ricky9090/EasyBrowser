@@ -1,10 +1,10 @@
-package ricky.easybrowser.page.tabpreview;
+package ricky.easybrowser.contract;
 
 import java.util.List;
 
 import ricky.easybrowser.entity.bo.TabInfo;
 
-public interface TabQuickViewContract {
+public interface ITabQuickView {
 
     interface Subject {
         void attach(Observer observer);

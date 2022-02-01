@@ -15,17 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.BrowserConst;
+import ricky.easybrowser.contract.IFrontPage;
 import ricky.easybrowser.entity.dao.WebSite;
-import ricky.easybrowser.page.browser.IBrowser;
+import ricky.easybrowser.contract.IBrowser;
 import ricky.easybrowser.widget.BrowserNavBar;
 
-public class FrontPageView extends FrameLayout implements FrontPageContract.View {
+public class FrontPageView extends FrameLayout implements IFrontPage.View {
 
     private RecyclerView siteGird;
     private SiteAdapterV2 siteAdapter;
     private BrowserNavBar navBar;
 
-    private FrontPageContract.Presenter presenter;
+    private IFrontPage.Presenter presenter;
 
     public FrontPageView(Context context) {
         this(context, null);
@@ -59,7 +61,9 @@ public class FrontPageView extends FrameLayout implements FrontPageContract.View
             @Override
             public void onClick(View v) {
                 if (context instanceof IBrowser) {
-                    ((IBrowser) context).provideNavController().showAddress("about:blank");
+                    IBrowser.INavController navController = (IBrowser.INavController)
+                            ((IBrowser) context).provideBrowserComponent(BrowserConst.NAVIGATION_COMPONENT);
+                    navController.showAddress("about:blank");
                 }
             }
         });
@@ -98,6 +102,8 @@ public class FrontPageView extends FrameLayout implements FrontPageContract.View
                 return;
             }
             IBrowser browser = (IBrowser) _context;
+            IBrowser.INavController navController = (IBrowser.INavController)
+                    browser.provideBrowserComponent(BrowserConst.NAVIGATION_COMPONENT);
             int id = itemView.getId();
             switch (id) {
                 case R.id.nav_back:
@@ -107,10 +113,10 @@ public class FrontPageView extends FrameLayout implements FrontPageContract.View
                 case R.id.nav_home:
                     break;
                 case R.id.nav_show_tabs:
-                    browser.provideNavController().showTabs();
+                    navController.showTabs();
                     break;
                 case R.id.nav_setting:
-                    browser.provideNavController().showSetting();
+                    navController.showSetting();
                     break;
             }
         }

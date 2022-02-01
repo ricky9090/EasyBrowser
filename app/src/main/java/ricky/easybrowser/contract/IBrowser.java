@@ -1,37 +1,29 @@
-package ricky.easybrowser.page.browser;
+package ricky.easybrowser.contract;
 
 import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.History;
-import ricky.easybrowser.page.tabpreview.TabQuickViewContract;
 
 /**
  * 抽象的浏览器接口。负责提供导航，历史记录，下载，书签，标签页控制等管理对象
  */
 public interface IBrowser {
 
+    @UiThread
     @NonNull
-    NavController provideNavController();
+    IComponent provideBrowserComponent(String componentName);
 
-    @NonNull
-    HistoryController provideHistoryController();
-
-    @NonNull
-    DownloadController provideDownloadController();
-
-    @NonNull
-    BookmarkController provideBookmarkController();
-
-    @NonNull
-    TabController provideTabController();
+    interface IComponent {
+    }
 
 
-    interface NavController {
+    interface INavController extends IComponent {
         void goBack();
 
         void goForward();
@@ -47,19 +39,19 @@ public interface IBrowser {
         void showHistory();
     }
 
-    interface HistoryController {
+    interface IHistoryController extends IComponent {
         void addHistory(History entity);
     }
 
-    interface DownloadController {
+    interface IDownloadController extends IComponent {
 
     }
 
-    interface BookmarkController {
+    interface IBookmarkController extends IComponent {
 
     }
 
-    interface TabController extends TabQuickViewContract.Subject {
+    interface ITabController extends ITabQuickView.Subject, IComponent {
         void onTabSelected(TabInfo tabInfo);
 
         void onTabClose(TabInfo tabInfo);

@@ -33,13 +33,14 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import java.io.InputStream;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.BrowserConst;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.History;
-import ricky.easybrowser.page.browser.IBrowser;
+import ricky.easybrowser.contract.IBrowser;
 import ricky.easybrowser.utils.EasyLog;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
 import ricky.easybrowser.utils.StringUtils;
-import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.contract.IWebView;
 import ricky.easybrowser.web.webkit.AddressBar;
 import ricky.easybrowser.web.webkit.WebNavListener;
 import ricky.easybrowser.widget.BrowserNavBar;
@@ -190,11 +191,13 @@ public class PageWebView extends FrameLayout implements IWebView {
                 // https://stackoverflow.com/questions/3149216/how-to-listen-for-a-webview-finishing-loading-a-url
                 if (webView.getProgress() == 100) {
                     IBrowser browser = (IBrowser) mContext;
+                    IBrowser.IHistoryController historyController = (IBrowser.IHistoryController)
+                            browser.provideBrowserComponent(BrowserConst.HISTORY_COMPONENT);
                     History history = new History();
                     history.title = view.getTitle();
                     history.url = view.getUrl();
                     history.time = System.currentTimeMillis();
-                    browser.provideHistoryController().addHistory(history);
+                    historyController.addHistory(history);
                 }
             }
 
@@ -398,11 +401,13 @@ public class PageWebView extends FrameLayout implements IWebView {
 
     private void notifyAddNewTab(boolean backStage) {
         IBrowser browser = null;
+        IBrowser.ITabController tabController = null;
         if (mContext instanceof IBrowser) {
             browser = (IBrowser) mContext;
-
+            tabController = (IBrowser.ITabController)
+                    browser.provideBrowserComponent(BrowserConst.TAB_COMPONENT);
         }
-        if (browser == null) {
+        if (tabController == null) {
             return;
         }
         if (StringUtils.isEmpty(hitResultExtra)) {
@@ -421,7 +426,7 @@ public class PageWebView extends FrameLayout implements IWebView {
                 System.currentTimeMillis() + "",
                 mContext.getResources().getString(R.string.new_tab_welcome),
                 uri);
-        browser.provideTabController().onTabCreate(tabInfo, backStage);
+        tabController.onTabCreate(tabInfo, backStage);
     }
 
     /**

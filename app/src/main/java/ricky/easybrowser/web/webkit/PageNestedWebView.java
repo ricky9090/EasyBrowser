@@ -23,12 +23,13 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.ContentLoadingProgressBar;
 
 import ricky.easybrowser.R;
+import ricky.easybrowser.common.BrowserConst;
 import ricky.easybrowser.entity.bo.TabInfo;
 import ricky.easybrowser.entity.dao.History;
-import ricky.easybrowser.page.browser.IBrowser;
+import ricky.easybrowser.contract.IBrowser;
 import ricky.easybrowser.utils.EasyViewUtils;
 import ricky.easybrowser.utils.SharedPreferencesUtils;
-import ricky.easybrowser.web.IWebView;
+import ricky.easybrowser.contract.IWebView;
 import ricky.easybrowser.widget.BrowserNavBar;
 
 public class PageNestedWebView extends LinearLayout implements IWebView {
@@ -89,10 +90,12 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
             public void onClick(View v) {
                 // 地址栏弹窗
                 IBrowser browser = (IBrowser) mContext;
+                IBrowser.INavController navController = (IBrowser.INavController)
+                        browser.provideBrowserComponent(BrowserConst.NAVIGATION_COMPONENT);
                 if (webAddress.getText() != null) {
-                    browser.provideNavController().showAddress(webAddress.getText().toString());
+                    navController.showAddress(webAddress.getText().toString());
                 } else {
-                    browser.provideNavController().showAddress("about:blank");
+                    navController.showAddress("about:blank");
                 }
             }
         });
@@ -270,11 +273,13 @@ public class PageNestedWebView extends LinearLayout implements IWebView {
             // https://stackoverflow.com/questions/3149216/how-to-listen-for-a-webview-finishing-loading-a-url
             if (webView.getProgress() == 100) {
                 IBrowser browser = (IBrowser) mContext;
+                IBrowser.IHistoryController historyController = (IBrowser.IHistoryController)
+                        browser.provideBrowserComponent(BrowserConst.HISTORY_COMPONENT);
                 History history = new History();
                 history.title = view.getTitle();
                 history.url = view.getUrl();
                 history.time = System.currentTimeMillis();
-                browser.provideHistoryController().addHistory(history);
+                historyController.addHistory(history);
             }
         }
 
